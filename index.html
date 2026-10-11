@@ -527,8 +527,6 @@ body:not(.no-anim) .modal{animation:pop .32s cubic-bezier(.2,1,.3,1) both}
 .login-tabs button{flex:1;padding:9px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted);transition:.2s}
 .login-tabs button.on{background:var(--accent);color:#241a28}
 .lk-hint{font-size:12.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:16px;line-height:1.6}
-.lk-hint a{color:var(--accent)}
-.lk-hint b{color:var(--text)}
 .lk-user{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;margin:12px 0}
 .lk-user img{width:32px;height:32px;border-radius:9px}
 .lk-user .lku-name{font-weight:600;font-size:14px}
@@ -552,7 +550,7 @@ body:not(.no-anim) .toast{animation:toastIn .32s cubic-bezier(.2,1.2,.3,1) both}
 .toast.warn .ic{color:var(--warn)}
 
 footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px 28px;color:var(--faint);
-  font-size:12px;font-family:'JetBrains Mono';display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  font-size:12px;font-family:'JetBrains Mono'}
 
 /* ---- адаптив ---- */
 @media (max-width:960px){
@@ -607,7 +605,7 @@ body.no-anim .tl-row{opacity:1}
     <button class="nav-btn" data-view="settings">Настройки</button>
   </nav>
   <div class="sync-wrap" id="sync-wrap">
-    <button class="btn" id="btn-login" title="Синхронизация каталога">
+    <button class="btn" id="btn-login" title="Вход">
       <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
       <span class="login-label">Вход</span>
     </button>
@@ -618,7 +616,7 @@ body.no-anim .tl-row{opacity:1}
     </div>
     <div class="sync-menu hidden" id="sync-menu"></div>
   </div>
-  <button class="btn btn-accent" id="btn-add">
+  <button class="btn btn-accent hidden" id="btn-add">
     <svg class="ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     <span class="add-label">Добавить тайтл</span>
   </button>
@@ -633,7 +631,7 @@ body.no-anim .tl-row{opacity:1}
         <h1 class="hero-title">Коллекция</h1>
         <p class="hero-sub">личный мир аниме — от SSS до E, сезоны, фильмы, OVA и история просмотра</p>
         <div class="hero-actions">
-          <button class="btn btn-accent" data-act="add">
+          <button class="btn btn-accent hidden" data-act="add">
             <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
             Добавить тайтл
           </button>
@@ -653,9 +651,9 @@ body.no-anim .tl-row{opacity:1}
     <div id="empty-state" class="empty-state" style="display:none">
       <div class="empty-word">ANIME</div>
       <h2>Каталог пока пуст</h2>
-      <p>Добавьте первый тайтл — и здесь появятся тир-лист, календарь и статистика.</p>
+      <p>Войдите по токену доступа — и наполняйте коллекцию.</p>
       <div class="row">
-        <button class="btn btn-accent" data-act="add">Добавить тайтл</button>
+        <button class="btn btn-accent hidden" data-act="add">Добавить тайтл</button>
       </div>
     </div>
   </section>
@@ -824,14 +822,6 @@ body.no-anim .tl-row{opacity:1}
     </div>
 
     <div class="set-sec">
-      <h3>Синхронизация</h3>
-      <div class="sw-row">
-        <div><div class="sw-name" id="sync-row-name">Не подключена</div><div class="sw-desc" id="sync-row-desc">Каталог хранится только в этом браузере</div></div>
-        <button class="btn" id="btn-sync-settings">Настроить</button>
-      </div>
-    </div>
-
-    <div class="set-sec">
       <h3>Данные</h3>
       <div class="set-actions">
         <button class="btn" id="btn-export">
@@ -855,7 +845,6 @@ body.no-anim .tl-row{opacity:1}
 
 <footer>
   <span>ANIME · личный каталог просмотра</span>
-  <span>данные — в браузере и в вашем репозитории GitHub</span>
 </footer>
 
 <!-- ======== детали тайтла ======== -->
@@ -960,23 +949,17 @@ body.no-anim .tl-row{opacity:1}
 <!-- ======== подтверждение ======== -->
 <div class="overlay hidden" id="ov-confirm"><div class="modal modal-confirm" id="m-confirm"></div></div>
 
-<!-- ======== вход / синхронизация ======== -->
+<!-- ======== вход ======== -->
 <div class="overlay hidden" id="ov-login">
   <div class="modal modal-login">
     <button class="modal-x" data-close><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <h2>Синхронизация через GitHub</h2>
+    <h2>Вход</h2>
     <div class="login-tabs">
       <button data-tab="rw" class="on">Владелец · чтение и запись</button>
       <button data-tab="ro">Чтение</button>
     </div>
 
     <div id="lk-rw">
-      <div class="lk-hint">
-        Создайте <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">personal access token</a>
-        с правом <b>Contents: Read and write</b> для репозитория с этим сайтом.
-        Токен хранится только в вашем браузере и никуда, кроме GitHub, не отправляется.
-        Каталог будет сохраняться в файл прямо в репозитории.
-      </div>
       <div class="field">
         <label>Токен доступа</label>
         <input type="password" id="lk-token" placeholder="github_pat_… или ghp_…" autocomplete="off">
@@ -991,10 +974,6 @@ body.no-anim .tl-row{opacity:1}
         <label>Ветка</label>
         <select id="lk-branch"></select>
       </div>
-      <div class="field">
-        <label>Файл данных</label>
-        <input id="lk-path" value="anime-data.json" autocomplete="off">
-      </div>
       <div class="lk-status" id="lk-status"></div>
       <div class="login-foot">
         <button type="button" class="btn" data-close>Отмена</button>
@@ -1003,19 +982,12 @@ body.no-anim .tl-row{opacity:1}
     </div>
 
     <div id="lk-ro" class="hidden">
-      <div class="lk-hint">
-        Режим для тех, кому дали ссылку на сайт: указывается публичный репозиторий владельца —
-        и каталог автоматически подтягивается оттуда каждые несколько секунд, без токена.
-        Ваши собственные правки при этом останутся только в вашем браузере.
-      </div>
+      <div class="lk-hint">Режим чтения: укажите публичный репозиторий владельца — каталог будет автоматически подтягиваться оттуда, без токена.</div>
       <div class="lk-row">
         <div class="field"><label>Владелец</label><input id="ro-owner" placeholder="github-логин" autocomplete="off"></div>
         <div class="field"><label>Репозиторий</label><input id="ro-repo" placeholder="имя репозитория" autocomplete="off"></div>
       </div>
-      <div class="lk-row">
-        <div class="field"><label>Ветка</label><input id="ro-branch" value="main" autocomplete="off"></div>
-        <div class="field"><label>Файл данных</label><input id="ro-path" value="anime-data.json" autocomplete="off"></div>
-      </div>
+      <div class="field"><label>Ветка</label><input id="ro-branch" value="main" autocomplete="off"></div>
       <div class="lk-status" id="ro-status"></div>
       <div class="login-foot">
         <button type="button" class="btn" data-close>Отмена</button>
@@ -1036,7 +1008,6 @@ const TIER_COLOR = {SSS:'#ffd76e',S:'#ff5c8a',A:'#ff9a62',B:'#d4b483',C:'#9b93a6
 const TIER_SCORE = {SSS:7,S:6,A:5,B:4,C:3,D:2,E:1};
 const TYPES = [{id:'tv',label:'Сериал'},{id:'film',label:'Фильм'},{id:'ova',label:'OVA'},{id:'ona',label:'ONA'}];
 const TYPE_SHORT = {tv:'TV',film:'ФИЛЬМ',ova:'OVA',ona:'ONA'};
-/* единицы структуры просмотра: тип задаёт бейдж и цвет, название — пользователь */
 const KIND = {
   season:  {label:'Сезон',  badge:'S',  color:'#ff7aa2'},
   film:    {label:'Фильм',  badge:'Ф',  color:'#ffd76e'},
@@ -1050,6 +1021,7 @@ const GENRES = ['Альтернативная история','Альтерна�
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MON_S = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const ACCENTS = {sakura:'#ff7aa2', flame:'#ff6b4a', violet:'#b18cff', mint:'#6fd6b1'};
+const DATA_PATH = 'anime-data.json';   /* внутренний путь к файлу данных, в интерфейсе не показывается */
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const $  = s => document.querySelector(s);
@@ -1072,7 +1044,6 @@ const DEFAULT_SETTINGS = {anim:true, tilt:true, glow:true, shine:true, counters:
 
 function normDate(d){ return (d && +d.y) ? {d:+d.d||null, m:+d.m||null, y:+d.y} : null; }
 
-/* имя записи: пользовательское, либо аккуратный фолбэк по типу */
 function unitName(t, u, i){
   if (u.name) return u.name;
   const us = t.units || [];
@@ -1085,7 +1056,6 @@ function unitName(t, u, i){
   return us.length > 1 ? KIND[u.kind].label + ' ' + (i + 1) : KIND[u.kind].label;
 }
 
-/* приводит тайтл к текущему формату, с миграцией старых версий */
 function normalizeTitle(t){
   const type = ['tv','film','ova','ona'].includes(t.type) ? t.type : 'tv';
   let units;
@@ -1163,7 +1133,6 @@ function persist(){
   catch(e){ toast('Не удалось сохранить: хранилище браузера переполнено (проверьте обложки-файлы)', 'warn'); }
 }
 
-/* мгновенное обновление между вкладками одного браузера */
 let bc = null;
 try{ bc = new BroadcastChannel('anime-catalog'); }catch(e){}
 function broadcastLocal(){ try{ bc && bc.postMessage({updatedAt: state.updatedAt}); }catch(e){} }
@@ -1610,7 +1579,7 @@ function renderTierlist(animate){
 let io = null;
 function renderTimeline(){
   const box = $('#timeline');
-  if (!state.titles.length){ box.innerHTML = '<p class="tier-empty" style="padding:40px 0">Список пуст — добавьте первый тайтл</p>'; return; }
+  if (!state.titles.length){ box.innerHTML = '<p class="tier-empty" style="padding:40px 0">Список пуст</p>'; return; }
   const sorted = [...state.titles].sort((a,b) => dateKey(b.date) - dateKey(a.date) || b.createdAt - a.createdAt);
   let html = '', lastYear = null, idx = 0;
   for (const t of sorted){
@@ -1652,7 +1621,6 @@ function yearPool(){
   });
   return [...s].sort((a,b) => b - a);
 }
-/* события: каждая запись структуры с датой (сезон, фильм, спешл, OVA, ONA) */
 function calEntries(){
   const out = [];
   for (const t of state.titles){
@@ -1782,7 +1750,7 @@ function openDay(y, m, d){
 /* ---- статистика ---- */
 function renderStats(){
   const box = $('#stats');
-  if (!state.titles.length){ box.innerHTML = '<p class="tier-empty" style="padding:40px 0">Статистика появится, как только вы добавите тайтлы</p>'; return; }
+  if (!state.titles.length){ box.innerHTML = '<p class="tier-empty" style="padding:40px 0">Статистика появится, как только в каталоге появятся тайтлы</p>'; return; }
   const t = totals();
   const byType = {tv:0, film:0, ova:0, ona:0};
   const byTier = {}; TIERS.forEach(x => byTier[x] = 0);
@@ -1939,7 +1907,7 @@ function openTitle(id){
 /* ================= форма ================= */
 let editId = null, formCover = '', formType = 'tv', formTier = 'A';
 let formGenres = new Set(), extraChips = [], fGenreQuery = '';
-let formUnits = [];   // [{kind, name, count, date, err}]
+let formUnits = [];
 
 function openForm(id = null){
   editId = id;
@@ -2312,7 +2280,7 @@ function bindSettingsValues(){
   a.href = URL.createObjectURL(blob);
   a.download = 'anime-catalog.json';
   a.click(); URL.revokeObjectURL(a.href);
-  toast('Экспорт готов — файл anime-catalog.json');
+  toast('Экспорт готов');
 };
  $('#btn-import').onclick = () => $('#file-import').click();
  $('#file-import').addEventListener('change', e => {
@@ -2346,7 +2314,7 @@ function bindSettingsValues(){
 });
  $('#btn-wipe').onclick = () => openConfirm({
   title:'Очистить весь каталог?',
-  text:'Все тайтлы и настройки будут сброшены. Действие необратимо — сначала можно сделать экспорт.',
+  text:'Все тайтлы и настройки будут сброшены. Действие необратимо.',
   okLabel:'Очистить', danger:true,
   onOk(){
     localStorage.removeItem(LS_KEY); localStorage.removeItem('anime.v2'); localStorage.removeItem('tsundoku.v1');
@@ -2363,8 +2331,11 @@ try{ sync = JSON.parse(localStorage.getItem(LS_SYNC)) || null; }catch(e){}
 let syncStatus = 'off', lastSyncAt = 0, pushTimer = null, pullTimer = null;
 const b64encode = str => { const b = new TextEncoder().encode(str); let s=''; b.forEach(x => s += String.fromCharCode(x)); return btoa(s); };
 
+/* редактирование доступно только владельцу, вошедшему по токену */
+function canEdit(){ return !!(sync && sync.mode === 'rw'); }
+
 function saveSync(){ if (sync) localStorage.setItem(LS_SYNC, JSON.stringify(sync)); else localStorage.removeItem(LS_SYNC); }
-function rawURL(){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${sync.path}`; }
+function rawURL(){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`; }
 async function gh(path, token, opts = {}){
   const h = {'Accept':'application/vnd.github+json', ...opts.headers};
   if (token) h.Authorization = 'Bearer ' + token;
@@ -2381,13 +2352,6 @@ function setSyncStatus(st){
   const dot = $('#su-dot');
   if (dot) dot.className = 'sync-dot ' + (st === 'ok' ? 'ok' : st === 'sync' ? 'sync' : st === 'err' ? 'err' : '');
   renderSyncMenu();
-  const rowN = $('#sync-row-name'), rowD = $('#sync-row-desc');
-  if (rowN) rowN.textContent = sync
-    ? (sync.mode === 'rw' ? `Подключена · ${sync.owner}/${sync.repo}` : `Режим чтения · ${sync.owner}/${sync.repo}`)
-    : 'Не подключена';
-  if (rowD) rowD.textContent = sync
-    ? (sync.mode === 'rw' ? 'изменения отправляются в GitHub автоматически' : 'каталог подтягивается из репозитория владельца')
-    : 'каталог хранится только в этом браузере';
 }
 function renderSyncMenu(){
   const m = $('#sync-menu');
@@ -2408,7 +2372,7 @@ function renderSyncMenu(){
   $('#sm-logout').onclick = () => {
     sync = null; saveSync();
     clearInterval(pullTimer); pullTimer = null;
-    setSyncStatus('off'); updateSyncUI(); toast('Синхронизация отключена');
+    setSyncStatus('off'); updateSyncUI(); toast('Вы вышли');
   };
 }
 function updateSyncUI(){
@@ -2420,6 +2384,10 @@ function updateSyncUI(){
     if (sync.avatar){ av.src = sync.avatar; av.classList.remove('hidden'); mini.classList.add('hidden'); }
     else { av.classList.add('hidden'); mini.classList.remove('hidden'); }
   }
+  /* кнопки добавления — только владельцу с токеном */
+  const editable = canEdit();
+  $('#btn-add').classList.toggle('hidden', !editable);
+  $$('[data-act="add"]').forEach(b => b.classList.toggle('hidden', !editable));
   setSyncStatus(sync ? syncStatus : 'off');
 }
  $('#sync-user').addEventListener('click', e => {
@@ -2437,7 +2405,7 @@ async function pull(silent = true){
     const r = await fetch(rawURL() + '?t=' + Date.now(), {cache:'no-store'});
     if (r.status === 404){
       setSyncStatus('err');
-      if (!silent) toast('Файл данных не найден в репозитории', 'warn');
+      if (!silent) toast('Данные не найдены', 'warn');
       return;
     }
     if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -2459,11 +2427,11 @@ async function pull(silent = true){
 }
 async function getFileSha(){
   try{
-    const cs = await gh(`/repos/${sync.owner}/${sync.repo}/commits?path=${encodeURIComponent(sync.path)}&sha=${sync.branch}&per_page=1`, sync.token);
+    const cs = await gh(`/repos/${sync.owner}/${sync.repo}/commits?path=${encodeURIComponent(DATA_PATH)}&sha=${sync.branch}&per_page=1`, sync.token);
     if (Array.isArray(cs) && cs.length && cs[0].files && cs[0].files.length) return cs[0].files[0].sha;
   }catch(e){}
   try{
-    const cur = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${sync.path}?ref=${sync.branch}`, sync.token);
+    const cur = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${DATA_PATH}?ref=${sync.branch}`, sync.token);
     if (cur && cur.sha) return cur.sha;
   }catch(e){ if (e.status === 404) return null; }
   return null;
@@ -2476,7 +2444,7 @@ async function push(){
     const payload = {v: 3, updatedAt: state.updatedAt || Date.now(), titles: state.titles};
     const content = b64encode(JSON.stringify(payload));
     if (content.length > 20 * 1024 * 1024) throw {message:'файл данных слишком большой — уменьшите обложки-файлы'};
-    await gh(`/repos/${sync.owner}/${sync.repo}/contents/${sync.path}`, sync.token, {
+    await gh(`/repos/${sync.owner}/${sync.repo}/contents/${DATA_PATH}`, sync.token, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({message: 'ANIME: обновление каталога', content, sha, branch: sync.branch})
@@ -2501,7 +2469,7 @@ async function connectAndSync(){
     await push();
     await pull(true);
   }
-  if (syncStatus === 'ok') toast('Синхронизация подключена');
+  if (syncStatus === 'ok') toast('Подключено');
   clearInterval(pullTimer);
   pullTimer = setInterval(() => {
     if (sync && document.visibilityState === 'visible') pull(true);
@@ -2527,7 +2495,6 @@ function openLogin(tab){
 }
  $$('.login-tabs button').forEach(b => b.addEventListener('click', () => openLogin(b.dataset.tab)));
  $('#btn-login').onclick = () => openLogin('rw');
- $('#btn-sync-settings').onclick = () => openLogin(sync ? sync.mode : 'rw');
 
  $('#lk-check').onclick = async () => {
   const token = $('#lk-token').value.trim();
@@ -2574,7 +2541,6 @@ async function loadBranches(){
   const [owner, repo] = full.split('/');
   sync = { mode:'rw', token: checkedToken, owner, repo,
            branch: $('#lk-branch').value || 'main',
-           path: ($('#lk-path').value.trim() || 'anime-data.json').replace(/^\/+/, ''),
            login: checkedUser.login, avatar: checkedUser.avatar_url };
   saveSync();
   closeOv('ov-login');
@@ -2585,12 +2551,11 @@ async function loadBranches(){
   if (!owner || !repo){ $('#ro-status').textContent = 'укажите владельца и репозиторий'; return; }
   const cfg = { mode:'ro', token:'', owner, repo,
     branch: $('#ro-branch').value.trim() || 'main',
-    path: ($('#ro-path').value.trim() || 'anime-data.json').replace(/^\/+/, ''),
     login: owner, avatar:'' };
   $('#ro-status').textContent = 'проверяю доступ…';
   try{
-    const r = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${cfg.branch}/${cfg.path}?t=${Date.now()}`, {cache:'no-store'});
-    if (r.status === 404){ $('#ro-status').textContent = 'файл данных не найден — проверьте адрес'; return; }
+    const r = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${cfg.branch}/${DATA_PATH}?t=${Date.now()}`, {cache:'no-store'});
+    if (r.status === 404){ $('#ro-status').textContent = 'данные не найдены — проверьте адрес'; return; }
     if (!r.ok) throw new Error('HTTP ' + r.status);
     sync = cfg; saveSync();
     closeOv('ov-login');
@@ -2638,8 +2603,7 @@ function switchView(name){
   const b = e.target.closest('[data-view]');
   if (b) switchView(b.dataset.view);
 });
- $('#btn-add').onclick = () => openForm();
- $$('[data-act="add"]').forEach(b => b.addEventListener('click', () => openForm()));
+ $$('[data-act="add"]').forEach(b => b.addEventListener('click', () => { if (canEdit()) openForm(); }));
  $('#btn-random').onclick = () => {
   if (!state.titles.length){ toast('Каталог пуст', 'warn'); return; }
   openTitle(state.titles[Math.floor(Math.random()*state.titles.length)].id);
