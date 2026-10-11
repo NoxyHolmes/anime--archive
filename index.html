@@ -19,7 +19,13 @@
   --t-sss:#ffd76e; --t-s:#ff5c8a; --t-a:#ff9a62; --t-b:#d4b483;
   --t-c:#9b93a6; --t-d:#736b82; --t-e:#524a5e;
   --shadow:0 20px 46px -18px rgba(0,0,0,.65);
-  --cover-w:126px;
+  --cover-w:120px;
+  --sp:1;            /* темп анимаций */
+  --tws:6s;          /* период движения тир-букв */
+  --pa:88%;          /* прозрачность панелей */
+  --rad:11px;        /* скругление карточек */
+  --grain-op:.045;   /* зерно */
+  --branch-alpha:.9; /* прозрачность ветвей */
 }
 body.light{
   --bg:#fbf4f6; --bg2:#fff8fa; --panel:#fffdfd; --panel2:#f8edf1;
@@ -60,6 +66,7 @@ body.has-bg #user-dim{display:block;background:var(--bg);opacity:var(--bg-dim,.5
 .bg-moon{position:fixed;top:-9vw;right:4vw;width:26vw;height:26vw;border-radius:50%;z-index:0;pointer-events:none;
   background:radial-gradient(circle at 36% 32%, color-mix(in srgb,var(--accent) 22%,transparent), transparent 60%);
   filter:blur(6px);opacity:.8}
+body.no-moon .bg-moon{display:none}
 body.light .bg-moon{opacity:.5}
 .bg-ambient{position:fixed;inset:0;z-index:0;pointer-events:none;filter:blur(70px);opacity:.55}
 body:not(.ambient) .bg-ambient{display:none}
@@ -68,18 +75,22 @@ body:not(.ambient) .bg-ambient{display:none}
 .amb.a2{width:38vw;height:38vw;background:radial-gradient(circle,rgba(177,140,255,.14),transparent 70%);bottom:-14%;left:-10%;animation:drift2 34s ease-in-out infinite alternate}
 @keyframes drift1{to{transform:translate(-7%,9%) scale(1.18)}}
 @keyframes drift2{to{transform:translate(8%,-7%) scale(1.12)}}
-.bg-branch{position:fixed;z-index:0;pointer-events:none;opacity:.9}
+.bg-branch{position:fixed;z-index:0;pointer-events:none;opacity:var(--branch-alpha);
+  transition:transform 1.3s cubic-bezier(.22,.9,.3,1)}
 body.no-branches .bg-branch{display:none}
-.bg-branch.br-tr{top:-14px;right:-24px;width:min(50vw,640px);aspect-ratio:700/560}
-.bg-branch.br-bl{bottom:-16px;left:-20px;width:min(36vw,440px);aspect-ratio:700/560;opacity:.75}
+body.light .bg-branch{opacity:calc(var(--branch-alpha)*.55)}
+.bg-branch.br-tr{top:-14px;right:-24px;width:min(50vw,640px)}
+.bg-branch.br-bl{bottom:-16px;left:-20px;width:min(36vw,440px)}
 .bg-branch svg{width:100%;height:100%;display:block}
-.bg-branch .sway{animation:sway 8.5s ease-in-out infinite alternate}
-.br-bl .sway{animation-duration:11s;animation-delay:-4s}
-@keyframes sway{from{transform:rotate(-.6deg)}to{transform:rotate(.75deg)}}
+.bg-branch .sway{animation:sway 9s ease-in-out infinite alternate}
+.br-bl .sway{animation-duration:12s;animation-delay:-5s}
+@keyframes sway{from{transform:rotate(-.5deg)}to{transform:rotate(.65deg)}}
 body.no-sway .sway,body.no-anim .sway{animation:none}
-body.light .bg-branch{opacity:.55}
+body.no-sway .twig{animation:none!important}
+.twig{animation:twigSway 6s ease-in-out infinite alternate;transform-box:view-box}
+@keyframes twigSway{from{transform:rotate(-.9deg)}to{transform:rotate(1.1deg)}}
 #petals{position:fixed;inset:0;z-index:80;pointer-events:none}
-body::after{content:'';position:fixed;inset:0;z-index:999;pointer-events:none;opacity:.045;
+body::after{content:'';position:fixed;inset:0;z-index:999;pointer-events:none;opacity:var(--grain-op);
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
 
 /* ---- шапка ---- */
@@ -93,27 +104,27 @@ body::after{content:'';position:fixed;inset:0;z-index:999;pointer-events:none;op
   display:inline-block;transition:transform .3s cubic-bezier(.3,2.2,.4,1),color .25s;cursor:default}
 .brand-word i:hover{transform:translateY(-4px);color:var(--accent)}
 @keyframes letterDrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1}}
-body:not(.no-anim) .brand-word i{animation:letterDrop .5s cubic-bezier(.2,1.2,.3,1) both}
-body:not(.no-anim) .brand-word i:nth-child(1){animation-delay:.05s}
-body:not(.no-anim) .brand-word i:nth-child(2){animation-delay:.12s}
-body:not(.no-anim) .brand-word i:nth-child(3){animation-delay:.19s}
-body:not(.no-anim) .brand-word i:nth-child(4){animation-delay:.26s}
-body:not(.no-anim) .brand-word i:nth-child(5){animation-delay:.33s}
+body:not(.no-anim) .brand-word i{animation:letterDrop calc(.5s*var(--sp)) cubic-bezier(.2,1.2,.3,1) both}
+body:not(.no-anim) .brand-word i:nth-child(1){animation-delay:calc(50ms*var(--sp))}
+body:not(.no-anim) .brand-word i:nth-child(2){animation-delay:calc(120ms*var(--sp))}
+body:not(.no-anim) .brand-word i:nth-child(3){animation-delay:calc(190ms*var(--sp))}
+body:not(.no-anim) .brand-word i:nth-child(4){animation-delay:calc(260ms*var(--sp))}
+body:not(.no-anim) .brand-word i:nth-child(5){animation-delay:calc(330ms*var(--sp))}
 .brand-sub{font-family:'JetBrains Mono';font-size:8.5px;letter-spacing:.34em;color:var(--muted)}
 .nav{position:relative;display:flex;gap:2px;padding:4px;border-radius:13px;
   background:var(--panel);border:1px solid var(--line);overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nav-pill{position:absolute;border-radius:9px;background:var(--accent);
-  box-shadow:0 5px 18px -6px var(--accent);z-index:0;
-  transition:left .38s cubic-bezier(.3,1.35,.4,1),width .38s cubic-bezier(.3,1.35,.4,1),top .38s cubic-bezier(.3,1.35,.4,1),height .38s cubic-bezier(.3,1.35,.4,1)}
+.nav-pill{position:absolute;border-radius:9px;background:var(--accent);z-index:0;
+  transition:left calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1),width calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1),top calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1),height calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1)}
+body.pill-glow .nav-pill{box-shadow:0 5px 18px -6px var(--accent),0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
 .nav-btn{position:relative;z-index:1;padding:8px 15px;border-radius:9px;font-weight:600;font-size:13.5px;color:var(--muted);white-space:nowrap;transition:color .25s}
 .nav-btn:hover{color:var(--text)}
 .nav-btn.active{color:#241a28}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 17px;border-radius:11px;
-  border:1px solid var(--line2);font-weight:600;font-size:14px;transition:.22s;white-space:nowrap;position:relative;overflow:hidden}
+  border:1px solid var(--line2);font-weight:600;font-size:14px;transition:calc(.22s*var(--sp));white-space:nowrap;position:relative;overflow:hidden}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.14) 50%,transparent 65%);transform:translateX(-130%);pointer-events:none}
 .btn:hover{border-color:var(--muted);background:var(--panel2);transform:translateY(-1px)}
-body:not(.no-anim) .btn:hover::after{animation:sweepBtn .7s ease}
+body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease}
 @keyframes sweepBtn{to{transform:translateX(130%)}}
 .btn-accent{background:var(--accent);border-color:var(--accent);color:#fff}
 .btn-accent:hover{background:color-mix(in srgb,var(--accent) 88%,#fff);border-color:transparent;box-shadow:0 8px 24px -8px var(--accent)}
@@ -143,7 +154,8 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn .7s ease}
 /* ---- каркас ---- */
 main{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:28px 28px 80px}
 @keyframes viewIn{from{opacity:0;transform:translateY(16px) scale(.99);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
-body:not(.no-anim) .view{animation:viewIn .45s cubic-bezier(.2,.9,.3,1) both}
+body:not(.no-anim) .view{animation:viewIn calc(.45s*var(--sp)) cubic-bezier(.2,.9,.3,1) both}
+body.no-modalpop .view{animation:none}
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:26px}
 .page-title{font-family:'Unbounded';font-weight:600;font-size:24px}
 .page-sub{color:var(--muted);font-size:13px;margin-top:6px}
@@ -151,7 +163,7 @@ body:not(.no-anim) .view{animation:viewIn .45s cubic-bezier(.2,.9,.3,1) both}
 /* ---- герой ---- */
 .hero{display:flex;align-items:center;justify-content:space-between;gap:26px;flex-wrap:wrap;
   margin-bottom:30px;padding:30px 34px;border:1px solid var(--line);border-radius:22px;
-  background:linear-gradient(115deg,color-mix(in srgb,var(--panel) 90%,transparent),color-mix(in srgb,var(--panel) 45%,transparent) 62%,transparent);
+  background:linear-gradient(115deg,color-mix(in srgb,var(--panel) var(--pa),transparent),color-mix(in srgb,var(--panel) calc(var(--pa)*.45),transparent) 62%,transparent);
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;right:-90px;top:-90px;width:280px;height:280px;border-radius:50%;
   background:radial-gradient(circle,var(--accent-soft),transparent 70%);pointer-events:none}
@@ -163,7 +175,7 @@ body:not(.no-anim) .view{animation:viewIn .45s cubic-bezier(.2,.9,.3,1) both}
 .hero-actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
 .hero-stats{display:flex;gap:13px;flex-wrap:wrap;position:relative}
 .hst{padding:15px 22px;border:1px solid var(--line);border-radius:16px;
-  background:color-mix(in srgb,var(--panel) 72%,transparent);min-width:106px;transition:transform .25s,border-color .25s}
+  background:color-mix(in srgb,var(--panel) var(--pa),transparent);min-width:106px;transition:transform .25s,border-color .25s}
 .hst:hover{transform:translateY(-3px);border-color:var(--line2)}
 .hst b{display:block;font-family:'Unbounded';font-weight:800;font-size:23px}
 .hst span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
@@ -175,9 +187,9 @@ body:not(.no-anim) .view{animation:viewIn .45s cubic-bezier(.2,.9,.3,1) both}
 .recent-head h2{font-family:'Unbounded';font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase}
 .recent-head span{font-family:'JetBrains Mono';font-size:11px;color:var(--faint)}
 .recent-strip{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 10px}
-.card.mini{--cover-w:100px}
+.card.mini{--cover-w:96px}
 .card.mini .card-title{font-size:11.5px;-webkit-line-clamp:1;line-clamp:1}
-body:not(.no-anim) .recent .card{animation:cardIn .5s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*50ms)}
+body:not(.no-anim):not(.no-cascade) .recent .card{animation:cardIn calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*50ms*var(--sp))}
 
 /* ---- фильтры + жанры ---- */
 .filters{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
@@ -187,6 +199,8 @@ body:not(.no-anim) .recent .card{animation:cardIn .5s cubic-bezier(.2,.9,.3,1.15
 .searchbox svg{color:var(--muted)}
 .searchbox input{background:none;border:none;outline:none;width:100%;font-size:14px}
 .searchbox input::placeholder{color:var(--faint)}
+.sb-clear{flex:none;width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:var(--muted);font-size:15px;transition:.15s}
+.sb-clear:hover{background:var(--panel2);color:var(--warn)}
 .genre-toggle{padding:9px 15px;font-size:13.5px}
 .genre-toggle.on{border-color:var(--accent);color:var(--accent)}
 .genre-toggle b{font-family:'JetBrains Mono';font-weight:600;font-size:12px}
@@ -197,7 +211,7 @@ body:not(.no-anim) .recent .card{animation:cardIn .5s cubic-bezier(.2,.9,.3,1.15
 .chip i{font-style:normal;font-family:'JetBrains Mono';font-size:10px;color:var(--faint);margin-left:6px}
 .chip.on i{color:var(--accent)}
 .filter-info{font-family:'JetBrains Mono';font-size:12px;color:var(--faint);margin-left:auto}
-.genre-panel{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel) 92%,transparent);padding:14px;animation:viewIn .25s ease both}
+.genre-panel{margin-top:10px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--panel) var(--pa),transparent);padding:14px;animation:viewIn .25s ease both}
 .gp-top{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .gp-search{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;transition:border-color .2s}
 .gp-search:focus-within{border-color:var(--accent)}
@@ -212,42 +226,59 @@ body:not(.no-anim) .recent .card{animation:cardIn .5s cubic-bezier(.2,.9,.3,1.15
 
 /* ---- тир-лист ---- */
 .tier-row{--i:0;display:flex;gap:26px;padding:22px 0 30px;border-top:1px solid var(--line);position:relative}
-.tier-row::before{content:'';position:absolute;left:0;top:22px;bottom:30px;width:220px;
-  background:linear-gradient(90deg,color-mix(in srgb,var(--tc) 7%,transparent),transparent);pointer-events:none;border-radius:10px}
-#tierlist.anim-in .tier-row{animation:rowIn .55s cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*85ms)}
+.tier-row::before{content:'';position:absolute;left:0;top:22px;bottom:30px;width:230px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--tc) 8%,transparent),transparent);pointer-events:none;border-radius:10px}
+body.no-tierbg .tier-row::before{display:none}
+#tierlist.anim-in .tier-row{animation:rowIn calc(.55s*var(--sp)) cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*85ms*var(--sp))}
+body.no-rowanim #tierlist.anim-in .tier-row{animation:none}
 @keyframes rowIn{from{opacity:0;transform:translateX(-34px);filter:blur(5px)}}
 .tier-side{flex:none;width:100px;border-left:3px solid var(--tc);padding-left:16px;
-  display:flex;flex-direction:column;gap:6px;padding-top:2px}
-.tier-letter{font-family:'Unbounded';font-weight:800;font-size:35px;line-height:1;
+  display:flex;flex-direction:column;gap:8px;padding-top:2px;perspective:600px}
+.tl-wrap{display:inline-block;transform-style:preserve-3d;
+  animation:tierWobble var(--tws) ease-in-out infinite;animation-delay:calc(var(--i)*-.73s)}
+body.no-tierwob .tl-wrap{animation:none}
+@keyframes tierWobble{
+  0%,100%{transform:rotateY(-26deg) rotateX(9deg)}
+  50%{transform:rotateY(26deg) rotateX(-9deg)}
+}
+.tl-spin{display:inline-block;transition:transform calc(.9s*var(--sp)) cubic-bezier(.3,1.5,.4,1)}
+.tier-side:hover .tl-spin{transform:rotateY(360deg) scale(1.14)}
+.tier-letter{display:inline-block;font-family:'Unbounded';font-weight:800;line-height:1;white-space:nowrap;cursor:default;
   background:linear-gradient(110deg,var(--tc) 25%,#fff 50%,var(--tc) 75%);background-size:200% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:shimmer 7s linear infinite;animation-delay:calc(var(--i)*1.15s);
-  transition:transform .3s cubic-bezier(.3,1.6,.4,1);cursor:default}
-.tier-side:hover .tier-letter{transform:scale(1.14) rotate(-3deg)}
+  animation:shimmer 7s linear infinite;animation-delay:calc(var(--i)*1.15s)}
+body.no-tiergrad .tier-letter{animation:none;background:none;color:var(--tc);-webkit-text-fill-color:var(--tc)}
+.tier-row[data-tier="SSS"] .tier-letter{font-size:23px}
+.tier-row[data-tier="S"] .tier-letter{font-size:28px}
+.tier-row[data-tier="A"] .tier-letter,.tier-row[data-tier="B"] .tier-letter,.tier-row[data-tier="C"] .tier-letter,
+.tier-row[data-tier="D"] .tier-letter,.tier-row[data-tier="E"] .tier-letter{font-size:34px}
 .tier-row[data-tier="SSS"] .tier-letter{
   background:linear-gradient(110deg,#ffd76e 20%,#fff6d8 50%,#ffb738 80%);background-size:200% 100%;
   -webkit-background-clip:text;background-clip:text;
   animation:shimmer 6s linear infinite,sssPulse 2.8s ease-in-out infinite;
   filter:drop-shadow(0 0 13px rgba(255,215,110,.45))}
+body.no-tiergrad .tier-row[data-tier="SSS"] .tier-letter{animation:sssPulse 2.8s ease-in-out infinite}
 @keyframes sssPulse{50%{filter:drop-shadow(0 0 24px rgba(255,215,110,.8))}}
-.tier-count{font-family:'JetBrains Mono';font-size:11px;color:var(--muted)}
+.tier-count{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);white-space:nowrap}
 .tier-count b{color:var(--text);font-weight:600}
-.tier-cards{display:flex;flex-wrap:wrap;gap:14px;align-content:flex-start;flex:1;min-width:0}
+.tier-cards{display:flex;flex-wrap:wrap;gap:13px;align-content:flex-start;flex:1;min-width:0}
 .tier-empty{color:var(--faint);font-size:13px;padding:38px 0;letter-spacing:.06em}
 
 /* ---- карточка ---- */
 .card{width:var(--cover-w);flex:none;cursor:pointer;--ci:0;transition:transform .25s cubic-bezier(.2,.9,.3,1.2)}
-#tierlist.anim-in .card{animation:cardIn .5s cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*45ms)}
+#tierlist.anim-in .card{animation:cardIn calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*45ms*var(--sp))}
+body.no-cascade #tierlist.anim-in .card{animation:none}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}}
 body.tilt-off .card:hover{transform:translateY(-6px)}
-.cover{position:relative;aspect-ratio:2/3;border-radius:11px;overflow:hidden;background:var(--panel2);border:1px solid var(--line)}
-.cover img{width:100%;height:100%;object-fit:cover;transition:transform .4s cubic-bezier(.2,.9,.3,1)}
+body.tilt-off.no-lift .card:hover{transform:none}
+.cover{position:relative;aspect-ratio:2/3;border-radius:var(--rad);overflow:hidden;background:var(--panel2);border:1px solid var(--line)}
+.cover img{width:100%;height:100%;object-fit:cover;transition:transform calc(.4s*var(--sp)) cubic-bezier(.2,.9,.3,1)}
 .card:hover .cover img{transform:scale(1.08)}
 body.glow .card:hover .cover{border-color:var(--tc);box-shadow:0 16px 38px -14px color-mix(in srgb,var(--tc) 65%,transparent)}
 .cover::after{content:'';position:absolute;inset:0;border-radius:inherit;z-index:1;pointer-events:none;
   background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.22) 46%,rgba(255,255,255,.06) 54%,transparent 66%);
   transform:translateX(-135%) skewX(-12deg)}
-body.shine .card:hover .cover::after{animation:sweep .85s ease}
+body.shine .card:hover .cover::after{animation:sweep calc(.85s*var(--sp)) ease}
 @keyframes sweep{to{transform:translateX(135%) skewX(-12deg)}}
 .cover .type-tag{position:absolute;top:7px;left:7px;z-index:3;padding:2px 7px;border-radius:5px;
   background:color-mix(in srgb,var(--bg) 74%,transparent);backdrop-filter:blur(4px);
@@ -278,9 +309,9 @@ body.shine .card:hover .cover::after{animation:sweep .85s ease}
 .tl-year span{font-family:'JetBrains Mono';font-size:11px;color:var(--faint)}
 .tl-row{display:flex;align-items:center;gap:16px;padding:11px 14px;border-radius:12px;
   border:1px solid transparent;border-bottom-color:var(--line);cursor:pointer;transition:background .2s,border-color .2s,transform .2s;opacity:0}
-.tl-row.in{opacity:1;animation:rowIn2 .5s cubic-bezier(.2,.9,.3,1) both;animation-delay:var(--d,0ms)}
+.tl-row.in{opacity:1;animation:rowIn2 calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1) both;animation-delay:var(--d,0ms)}
 @keyframes rowIn2{from{opacity:0;transform:translateY(14px)}}
-body.no-anim .tl-row{opacity:1}
+body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .tl-row:hover{background:var(--panel);border-color:var(--line2);border-bottom-color:var(--line2);transform:translateX(4px)}
 .tl-row img{width:44px;height:63px;object-fit:cover;border-radius:7px;flex:none}
 .tl-name{font-weight:600;font-size:14.5px}
@@ -299,7 +330,7 @@ body.no-anim .tl-row{opacity:1}
 .cal-sel:hover,.cal-sel:focus{border-color:var(--accent)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
 .cal-dow{font-family:'JetBrains Mono';font-size:10.5px;letter-spacing:.15em;color:var(--faint);text-align:center;padding:6px 0;text-transform:uppercase}
-.cal-cell{min-height:104px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--panel) 80%,transparent);
+.cal-cell{min-height:104px;border:1px solid var(--line);border-radius:var(--rad);background:color-mix(in srgb,var(--panel) var(--pa),transparent);
   padding:9px 10px;transition:border-color .2s,transform .2s;position:relative}
 .cal-cell.out{opacity:.3;background:transparent}
 .cal-cell.today{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
@@ -337,7 +368,7 @@ body.no-anim .tl-row{opacity:1}
 .sb-item .sb-v{font-family:'Unbounded';font-weight:800;font-size:44px;line-height:1}
 .sb-item .sb-l{color:var(--muted);font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-top:6px}
 .sb-item .sb-s{font-family:'JetBrains Mono';font-size:11px;color:var(--faint);margin-top:4px}
-.taste{border:1px solid var(--line);border-radius:16px;padding:22px;background:color-mix(in srgb,var(--panel) 85%,transparent)}
+.taste{border:1px solid var(--line);border-radius:16px;padding:22px;background:color-mix(in srgb,var(--panel) var(--pa),transparent)}
 .taste-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
 .taste-head b{font-family:'Unbounded';font-size:12px;letter-spacing:.14em}
 .taste-score{font-family:'Unbounded';font-weight:800;font-size:26px;color:var(--accent)}
@@ -346,7 +377,7 @@ body.no-anim .tl-row{opacity:1}
 .taste-ticks{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:9.5px;color:var(--faint)}
 .taste-verdict{margin-top:16px;font-size:14px;color:var(--muted);font-style:italic}
 .bars h3{font-family:'Unbounded';font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:26px 0 14px}
-.donut-panel{border:1px solid var(--line);border-radius:16px;padding:20px;background:color-mix(in srgb,var(--panel) 85%,transparent)}
+.donut-panel{border:1px solid var(--line);border-radius:16px;padding:20px;background:color-mix(in srgb,var(--panel) var(--pa),transparent)}
 .donut-panel h3{margin-top:0}
 .donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
 .donut{width:150px;height:150px;flex:none}
@@ -371,12 +402,12 @@ body.no-anim .tl-row{opacity:1}
 .bar-note{color:var(--faint);font-size:12.5px;margin-top:14px}
 
 /* ---- настройки ---- */
-.set-sec{border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--panel) 85%,transparent);padding:6px 24px;margin-bottom:20px;max-width:760px}
+.set-sec{border:1px solid var(--line);border-radius:16px;background:color-mix(in srgb,var(--panel) var(--pa),transparent);padding:6px 24px;margin-bottom:20px;max-width:760px}
 .set-sec>h3{font-family:'Unbounded';font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:18px 0 6px}
-.sw-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-top:1px solid var(--line)}
+.sw-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 0;border-top:1px solid var(--line)}
 .sw-row:first-of-type{border-top:none}
 .sw-name{font-weight:600;font-size:14.5px}
-.sw-desc{color:var(--muted);font-size:12.5px;margin-top:2px}
+.sw-desc{color:var(--muted);font-size:12.5px;margin-top:2px;max-width:420px}
 .switch{position:relative;width:44px;height:24px;flex:none;cursor:pointer}
 .switch input{position:absolute;opacity:0;inset:0;cursor:pointer}
 .switch i{position:absolute;inset:0;border-radius:99px;background:var(--line2);transition:.25s}
@@ -388,7 +419,9 @@ body.no-anim .tl-row{opacity:1}
 .range-in input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 5px var(--accent-soft);transition:transform .15s}
 .range-in input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
 .range-in input[type=range]::-moz-range-thumb{width:17px;height:17px;border:none;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 5px var(--accent-soft)}
-.rng-val{font-family:'JetBrains Mono';font-size:12.5px;color:var(--accent);min-width:42px;text-align:right}
+.rng-val{font-family:'JetBrains Mono';font-size:12.5px;color:var(--accent);min-width:48px;text-align:right}
+.sel-set{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13.5px;font-weight:500;outline:none;cursor:pointer;transition:border-color .2s;max-width:230px}
+.sel-set:hover,.sel-set:focus{border-color:var(--accent)}
 .acc-pick{display:flex;gap:10px}
 .acc-pick button{width:27px;height:27px;border-radius:50%;background:var(--c);border:2px solid transparent;cursor:pointer;transition:.2s}
 .acc-pick button:hover{transform:scale(1.15)}
@@ -398,7 +431,7 @@ body.no-anim .tl-row{opacity:1}
 .bg-actions label:hover{color:var(--accent);border-color:var(--accent)}
 .bg-actions button{padding:7px 13px;border:1px solid var(--line);border-radius:10px;font-size:13px;color:var(--muted);transition:.2s}
 .bg-actions button:hover{color:var(--warn);border-color:var(--warn)}
-.num-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 0;border-top:1px solid var(--line)}
+.num-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:15px 0;border-top:1px solid var(--line)}
 .num-in{display:flex;align-items:center;gap:10px}
 .num-in input{width:78px;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;text-align:center;font-family:'JetBrains Mono';font-size:14px;outline:none;transition:border-color .2s}
 .num-in input:focus{border-color:var(--accent)}
@@ -412,7 +445,8 @@ body.light .overlay{background:rgba(58,40,52,.4)}
 @keyframes pop{from{opacity:0;transform:translateY(18px) scale(.96);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
 .modal{background:var(--panel);border:1px solid var(--line2);border-radius:20px;box-shadow:var(--shadow);
   width:100%;max-height:calc(100vh - 48px);overflow-y:auto;position:relative}
-body:not(.no-anim) .modal{animation:pop .32s cubic-bezier(.2,1,.3,1) both}
+body:not(.no-anim):not(.no-modalpop) .modal{animation:pop calc(.32s*var(--sp)) cubic-bezier(.2,1,.3,1) both}
+body.no-modalpop .modal{animation:none}
 .modal-x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted);transition:.2s;z-index:5}
 .modal-x:hover{background:var(--panel2);color:var(--text);transform:rotate(90deg)}
 
@@ -429,7 +463,7 @@ body:not(.no-anim) .modal{animation:pop .32s cubic-bezier(.2,1,.3,1) both}
 .dt-genres span:hover{border-color:var(--accent);color:var(--accent)}
 .du-head{font-family:'Unbounded';font-weight:600;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
 .dt-units{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin:0 0 18px}
-.dt-unit{display:flex;align-items:center;gap:10px;padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:var(--bg2);font-size:13px}
+.dt-unit{display:flex;align-items:center;gap:10px;padding:8px 11px;border:1px solid var(--line);border-radius:calc(var(--rad) - 1px);background:var(--bg2);font-size:13px}
 .dt-unit b{min-width:32px;height:24px;padding:0 4px;border-radius:7px;display:grid;place-items:center;
   font-family:'JetBrains Mono';font-size:9.5px;font-weight:600;color:#241a28;background:var(--uc)}
 .dt-unit .du-name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
@@ -544,7 +578,8 @@ body:not(.no-anim) .modal{animation:pop .32s cubic-bezier(.2,1,.3,1) both}
 .toast{display:flex;align-items:center;gap:11px;padding:13px 18px;border-radius:12px;
   background:var(--panel2);border:1px solid var(--line2);border-left:3px solid var(--accent);
   box-shadow:var(--shadow);font-size:14px;font-weight:500;max-width:340px}
-body:not(.no-anim) .toast{animation:toastIn .32s cubic-bezier(.2,1.2,.3,1) both}
+body:not(.no-anim):not(.no-toastanim) .toast{animation:toastIn calc(.32s*var(--sp)) cubic-bezier(.2,1.2,.3,1) both}
+body.no-toastanim .toast{animation:none}
 .toast .ic{color:var(--accent)}
 .toast.warn{border-left-color:var(--warn)}
 .toast.warn .ic{color:var(--warn)}
@@ -560,13 +595,16 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px
   .modal-title,.modal-form{padding:24px}
   .topbar{padding:12px 16px;gap:12px}
   main{padding:22px 16px 70px}
-  .tier-side{width:70px}
-  .tier-letter{font-size:26px}
+  .tier-side{width:74px;perspective:500px}
+  .tier-row[data-tier="SSS"] .tier-letter{font-size:17px}
+  .tier-row[data-tier="S"] .tier-letter{font-size:20px}
+  .tier-row[data-tier="A"] .tier-letter,.tier-row[data-tier="B"] .tier-letter,.tier-row[data-tier="C"] .tier-letter,
+  .tier-row[data-tier="D"] .tier-letter,.tier-row[data-tier="E"] .tier-letter{font-size:25px}
   .tier-row::before{display:none}
   .hst{min-width:92px;padding:12px 16px}
   .add-label,.login-label{display:none}
   .br-bl{display:none}
-  .br-tr{width:88vw;opacity:.5}
+  .br-tr{width:88vw}
   .tl-year{top:64px}
   .cl-tier{display:none}
   .urow{grid-template-columns:32px 74px 1fr 62px 88px 24px}
@@ -580,7 +618,7 @@ body.no-anim .tl-row{opacity:1}
 }
 </style>
 </head>
-<body class="ambient shine">
+<body class="ambient pill-glow">
 
 <!-- фоновые слои -->
 <div id="user-bg" aria-hidden="true"></div>
@@ -716,40 +754,92 @@ body.no-anim .tl-row{opacity:1}
     <div class="page-head">
       <div>
         <h1 class="page-title">Настройки</h1>
-        <p class="page-sub">Атмосфера, эффекты и управление данными</p>
+        <p class="page-sub">Атмосфера, частицы, ветви, анимации, эффекты и данные</p>
       </div>
     </div>
 
     <div class="set-sec">
-      <h3>Атмосфера сакуры</h3>
+      <h3>Частицы и погода</h3>
       <div class="sw-row">
-        <div><div class="sw-name">Лепестки сакуры</div><div class="sw-desc">Падают по всему экрану и летят по ветру, реагируют на курсор</div></div>
-        <label class="switch"><input type="checkbox" id="s-petals"><i></i></label>
+        <div><div class="sw-name">Частицы</div><div class="sw-desc">Лепестки, снег, листья, светлячки — по выбранному стилю</div></div>
+        <label class="switch"><input type="checkbox" id="s-particles"><i></i></label>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Плотность лепестков</div><div class="sw-desc">Сколько лепестков одновременно в воздухе</div></div>
+        <div><div class="sw-name">Стиль частиц</div><div class="sw-desc">20 вариаций: сакура, зимний снег, осень, звёзды и другие</div></div>
+        <select class="sel-set" id="sel-pstyle"></select>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Плотность</div><div class="sw-desc">Сколько частиц одновременно в воздухе</div></div>
         <div class="range-in"><input type="range" id="s-density" min="5" max="100" step="5"><span class="rng-val" id="v-density"></span></div>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Сила ветра</div><div class="sw-desc">Порывы, которые разносят лепестки по экрану</div></div>
-        <div class="range-in"><input type="range" id="s-wind" min="0" max="200" step="10"><span class="rng-val" id="v-wind"></span></div>
+        <div><div class="sw-name">Скорость падения</div><div class="sw-desc">Как быстро частицы опускаются</div></div>
+        <div class="range-in"><input type="range" id="s-fall" min="20" max="250" step="10"><span class="rng-val" id="v-fall"></span></div>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Ветви сакуры на фоне</div><div class="sw-desc">Живые ветви по углам экрана — рисунок уникален при каждой загрузке</div></div>
+        <div><div class="sw-name">Размер частиц</div><div class="sw-desc">Крупнее или мельче</div></div>
+        <div class="range-in"><input type="range" id="s-psize" min="50" max="200" step="10"><span class="rng-val" id="v-psize"></span></div>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Прозрачность частиц</div><div class="sw-desc">Насколько частицы выражены</div></div>
+        <div class="range-in"><input type="range" id="s-palpha" min="20" max="100" step="5"><span class="rng-val" id="v-palpha"></span></div>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Вращение в полёте</div><div class="sw-desc">Частицы кувыркаются и переворачиваются</div></div>
+        <label class="switch"><input type="checkbox" id="s-pspin"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Мерцание</div><div class="sw-desc">Искры и светлячки пульсируют</div></div>
+        <label class="switch"><input type="checkbox" id="s-twinkle"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Сила ветра</div><div class="sw-desc">Порывы разносят частицы по экрану</div></div>
+        <div class="range-in"><input type="range" id="s-wind" min="0" max="200" step="10"><span class="rng-val" id="v-wind"></span></div>
+      </div>
+    </div>
+
+    <div class="set-sec">
+      <h3>Ветви сакуры</h3>
+      <div class="sw-row">
+        <div><div class="sw-name">Ветви на фоне</div><div class="sw-desc">Живые ветви по углам экрана — рисунок уникален при каждой загрузке</div></div>
         <label class="switch"><input type="checkbox" id="s-branches"><i></i></label>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Покачивание ветвей</div><div class="sw-desc">Ветви слегка колышутся на ветру</div></div>
+        <div><div class="sw-name">Стиль ветвей</div><div class="sw-desc">Сакура, зимняя, клён, магнолия, ночная, весенняя</div></div>
+        <select class="sel-set" id="sel-bstyle"></select>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Покачивание ветвей</div><div class="sw-desc">Ветви и веточки слегка колышутся на ветру</div></div>
         <label class="switch"><input type="checkbox" id="s-sway"><i></i></label>
       </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Параллакс от курсора</div><div class="sw-desc">Ветви плавно сдвигаются вслед за мышью</div></div>
+        <div class="range-in"><input type="range" id="s-parallax" min="0" max="100" step="10"><span class="rng-val" id="v-parallax"></span></div>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Прозрачность ветвей</div><div class="sw-desc">Насколько ветви заметны на фоне</div></div>
+        <div class="range-in"><input type="range" id="s-balpha" min="20" max="100" step="5"><span class="rng-val" id="v-balpha"></span></div>
+      </div>
+    </div>
+
+    <div class="set-sec">
+      <h3>Фон и глубина</h3>
       <div class="sw-row">
         <div><div class="sw-name">Фоновое свечение</div><div class="sw-desc">Мягкие дрейфующие пятна света за контентом</div></div>
         <label class="switch"><input type="checkbox" id="s-ambient"><i></i></label>
       </div>
-    </div>
-
-    <div class="set-sec">
-      <h3>Фоновая картина</h3>
+      <div class="sw-row">
+        <div><div class="sw-name">Луна</div><div class="sw-desc">Мягкое светило в верхнем углу</div></div>
+        <label class="switch"><input type="checkbox" id="s-moon"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Зерно плёнки</div><div class="sw-desc">Тонкая фактура поверх всего экрана</div></div>
+        <label class="switch"><input type="checkbox" id="s-grain"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Сила зерна</div><div class="sw-desc">Интенсивность плёночной фактуры</div></div>
+        <div class="range-in"><input type="range" id="s-grainop" min="1" max="15" step="1"><span class="rng-val" id="v-grainop"></span></div>
+      </div>
       <div class="sw-row">
         <div><div class="sw-name">Своя картина</div><div class="sw-desc">Собственное изображение на фоне (до 4 МБ, хранится только у вас)</div></div>
         <div class="bg-actions">
@@ -765,26 +855,95 @@ body.no-anim .tl-row{opacity:1}
     </div>
 
     <div class="set-sec">
-      <h3>Эффекты интерфейса</h3>
+      <h3>Анимации интерфейса</h3>
       <div class="sw-row">
-        <div><div class="sw-name">Анимации интерфейса</div><div class="sw-desc">Плавные появления, переходы и движение</div></div>
+        <div><div class="sw-name">Анимации интерфейса</div><div class="sw-desc">Общий выключатель плавных появлений и переходов</div></div>
         <label class="switch"><input type="checkbox" id="s-anim"><i></i></label>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Объёмный наклон карточек</div><div class="sw-desc">Карточки поворачиваются вслед за курсором</div></div>
+        <div><div class="sw-name">Темп анимаций</div><div class="sw-desc">Спокойный, обычный, живой или почти мгновенный</div></div>
+        <select class="sel-set" id="sel-tempo">
+          <option value="calm">Спокойный</option>
+          <option value="normal">Обычный</option>
+          <option value="lively">Живой</option>
+          <option value="instant">Мгновенный</option>
+        </select>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Каскад строк тир-листа</div><div class="sw-desc">Строки SSS–E въезжают по очереди</div></div>
+        <label class="switch"><input type="checkbox" id="s-rowanim"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Каскад карточек</div><div class="sw-desc">Карточки появляются волной</div></div>
+        <label class="switch"><input type="checkbox" id="s-cascade"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">3D-движение тир-букв</div><div class="sw-desc">Буквы SSS, S, A… постоянно поворачиваются в пространстве</div></div>
+        <label class="switch"><input type="checkbox" id="s-tierwob"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Скорость тир-букв</div><div class="sw-desc">Период полного цикла вращения</div></div>
+        <div class="range-in"><input type="range" id="s-tierwobspd" min="2" max="14" step="1"><span class="rng-val" id="v-tierwobspd"></span></div>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Перелив тир-букв</div><div class="sw-desc">Блеск градиента по буквам тиров</div></div>
+        <label class="switch"><input type="checkbox" id="s-tiergrad"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Свечение строки SSS</div><div class="sw-desc">Золотое сияние высшего тира</div></div>
+        <label class="switch"><input type="checkbox" id="s-sssglow"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Подсветка строк тиров</div><div class="sw-desc">Цветной полупрозрачный след слева от строки</div></div>
+        <label class="switch"><input type="checkbox" id="s-tierbg"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Появление модалок</div><div class="sw-desc">Окна всплывают с масштабом и лёгким размытием</div></div>
+        <label class="switch"><input type="checkbox" id="s-modalpop"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Анимация тостов</div><div class="sw-desc">Уведомления въезжают справа</div></div>
+        <label class="switch"><input type="checkbox" id="s-toastanim"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Свечение активной вкладки</div><div class="sw-desc">Подсветка пилюли навигации</div></div>
+        <label class="switch"><input type="checkbox" id="s-pillglow"><i></i></label>
+      </div>
+    </div>
+
+    <div class="set-sec">
+      <h3>Карточки</h3>
+      <div class="sw-row">
+        <div><div class="sw-name">Объёмный наклон</div><div class="sw-desc">Карточки поворачиваются вслед за курсором</div></div>
         <label class="switch"><input type="checkbox" id="s-tilt"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Сила наклона</div><div class="sw-desc">Амплитуда 3D-поворота карточек</div></div>
+        <div class="range-in"><input type="range" id="s-tiltpow" min="2" max="20" step="1"><span class="rng-val" id="v-tiltpow"></span></div>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Подъём при наведении</div><div class="sw-desc">Карточка приподнимается к курсору</div></div>
+        <label class="switch"><input type="checkbox" id="s-lift"><i></i></label>
       </div>
       <div class="sw-row">
         <div><div class="sw-name">Подсветка цветом тира</div><div class="sw-desc">Рамка и тень в цвете тира при наведении</div></div>
         <label class="switch"><input type="checkbox" id="s-glow"><i></i></label>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Блеск на обложках</div><div class="sw-desc">Световой блик пробегает по обложке при наведении</div></div>
+        <div><div class="sw-name">Блеск на обложках</div><div class="sw-desc">Световой блик пробегает по обложке</div></div>
         <label class="switch"><input type="checkbox" id="s-shine"><i></i></label>
       </div>
+    </div>
+
+    <div class="set-sec">
+      <h3>Счётчики и списки</h3>
       <div class="sw-row">
         <div><div class="sw-name">Анимация счётчиков</div><div class="sw-desc">Числа «набегают» от нуля</div></div>
         <label class="switch"><input type="checkbox" id="s-counters"><i></i></label>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Скорость счётчиков</div><div class="sw-desc">Длительность набегания чисел</div></div>
+        <div class="range-in"><input type="range" id="s-cntspd" min="200" max="2000" step="100"><span class="rng-val" id="v-cntspd"></span></div>
       </div>
       <div class="sw-row">
         <div><div class="sw-name">Лента недавних на главной</div><div class="sw-desc">Показывать последние 10 добавленных тайтлов</div></div>
@@ -799,7 +958,7 @@ body.no-anim .tl-row{opacity:1}
         <label class="switch"><input type="checkbox" id="s-light"><i></i></label>
       </div>
       <div class="sw-row">
-        <div><div class="sw-name">Акцентный цвет</div><div class="sw-desc">Оттенок активных элементов и лепестков интерфейса</div></div>
+        <div><div class="sw-name">Акцентный цвет</div><div class="sw-desc">Оттенок активных элементов</div></div>
         <div class="acc-pick" id="acc-pick">
           <button data-acc="sakura" style="--c:#ff7aa2" title="Сакура"></button>
           <button data-acc="flame" style="--c:#ff6b4a" title="Вермильон"></button>
@@ -807,17 +966,25 @@ body.no-anim .tl-row{opacity:1}
           <button data-acc="mint" style="--c:#6fd6b1" title="Мята"></button>
         </div>
       </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Прозрачность панелей</div><div class="sw-desc">Насколько плотны подложки блоков</div></div>
+        <div class="range-in"><input type="range" id="s-panelop" min="50" max="100" step="2"><span class="rng-val" id="v-panelop"></span></div>
+      </div>
+      <div class="sw-row">
+        <div><div class="sw-name">Скругление карточек</div><div class="sw-desc">Радиус углов обложек и плиток</div></div>
+        <div class="range-in"><input type="range" id="s-radius" min="0" max="20" step="1"><span class="rng-val" id="v-radius"></span></div>
+      </div>
     </div>
 
     <div class="set-sec">
       <h3>Расчёт затраченного времени</h3>
       <div class="num-row">
         <div><div class="sw-name">Длительность серии</div><div class="sw-desc">Стандартная длина эпизода, если не задана у тайтла</div></div>
-        <div class="num-in"><input type="number" id="s-epmin" min="1" max="600"><span>мин</span></div>
+        <div class="num-in"><input type="number" id="s-epmin" min="1" max="600" autocomplete="off"><span>мин</span></div>
       </div>
       <div class="num-row">
         <div><div class="sw-name">Длительность фильма</div><div class="sw-desc">Средняя длина анимационного фильма</div></div>
-        <div class="num-in"><input type="number" id="s-filmmin" min="1" max="600"><span>мин</span></div>
+        <div class="num-in"><input type="number" id="s-filmmin" min="1" max="600" autocomplete="off"><span>мин</span></div>
       </div>
     </div>
 
@@ -855,7 +1022,7 @@ body.no-anim .tl-row{opacity:1}
   <div class="modal modal-form">
     <button class="modal-x" data-close><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <h2 id="form-title">Новый тайтл</h2>
-    <form id="title-form" novalidate>
+    <form id="title-form" novalidate autocomplete="off">
       <div class="form-top">
         <div class="f-cover">
           <img id="f-preview" alt="Обложка">
@@ -868,12 +1035,12 @@ body.no-anim .tl-row{opacity:1}
         <div class="f-main">
           <div class="field" id="w-name">
             <label>Название</label>
-            <input id="f-name" placeholder="Полное название тайтла" autocomplete="off">
+            <input id="f-name" name="an-name" placeholder="Полное название тайтла" autocomplete="off" spellcheck="false">
             <div class="err-t">Название обязательно</div>
           </div>
           <div class="field">
             <label>Ссылка на обложку</label>
-            <input id="f-cover-url" placeholder="https://… (можно оставить пустым)" autocomplete="off">
+            <input id="f-cover-url" name="an-cover" placeholder="https://… (можно оставить пустым)" autocomplete="off" spellcheck="false">
             <div class="hint">Без ссылки будет сгенерирована обложка-заглушка</div>
           </div>
           <div class="field">
@@ -891,12 +1058,12 @@ body.no-anim .tl-row{opacity:1}
         <label>Жанры</label>
         <div class="gp-search" style="margin-bottom:10px">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>
-          <input id="f-genre-search" placeholder="Найти жанр…" autocomplete="off">
+          <input id="f-genre-search" name="an-genre-q" placeholder="Найти жанр…" autocomplete="off" spellcheck="false">
         </div>
         <div class="f-genres-selected" id="f-genres-selected"></div>
         <div class="gchips" id="f-genres"></div>
         <div class="genre-add">
-          <input id="f-genre-new" placeholder="Свой жанр…" autocomplete="off">
+          <input id="f-genre-new" name="an-genre-new" placeholder="Свой жанр…" autocomplete="off" spellcheck="false">
           <button type="button" id="f-genre-add">Добавить</button>
         </div>
       </div>
@@ -916,23 +1083,23 @@ body.no-anim .tl-row{opacity:1}
 
       <div class="field hidden" id="w-episodes">
         <label id="l-episodes">Эпизоды</label>
-        <input type="number" id="f-episodes" min="0" max="5000" placeholder="0">
+        <input type="number" id="f-episodes" name="an-eps" min="0" max="5000" placeholder="0" autocomplete="off">
       </div>
       <div class="field" id="w-minutes2">
         <label id="l-minutes">Длительность эпизода</label>
-        <input type="number" id="f-minutes" min="1" max="600" placeholder="по умолчанию">
+        <input type="number" id="f-minutes" name="an-min" min="1" max="600" placeholder="по умолчанию" autocomplete="off">
         <div class="hint">минут — только если не стандарт</div>
       </div>
       <div class="f-estimate" id="f-estimate"></div>
 
       <div class="field hidden" id="w-date">
         <label>Дата просмотра</label>
-        <input id="f-date" placeholder="12.08.2023 · 08.2023 · 2023" autocomplete="off">
+        <input id="f-date" name="an-date" placeholder="12.08.2023 · 08.2023 · 2023" autocomplete="off" spellcheck="false">
       </div>
 
       <div class="field">
         <label>Заметка</label>
-        <textarea id="f-notes" placeholder="Впечатления, цитаты, что угодно…"></textarea>
+        <textarea id="f-notes" name="an-notes" placeholder="Впечатления, цитаты, что угодно…" autocomplete="off" spellcheck="false"></textarea>
       </div>
 
       <div class="form-foot">
@@ -962,7 +1129,7 @@ body.no-anim .tl-row{opacity:1}
     <div id="lk-rw">
       <div class="field">
         <label>Токен доступа</label>
-        <input type="password" id="lk-token" placeholder="github_pat_… или ghp_…" autocomplete="off">
+        <input type="password" id="lk-token" name="an-token" placeholder="github_pat_… или ghp_…" autocomplete="new-password">
       </div>
       <button type="button" class="btn" id="lk-check">Проверить токен</button>
       <div class="lk-user hidden" id="lk-user"></div>
@@ -984,10 +1151,10 @@ body.no-anim .tl-row{opacity:1}
     <div id="lk-ro" class="hidden">
       <div class="lk-hint">Режим чтения: укажите публичный репозиторий владельца — каталог будет автоматически подтягиваться оттуда, без токена.</div>
       <div class="lk-row">
-        <div class="field"><label>Владелец</label><input id="ro-owner" placeholder="github-логин" autocomplete="off"></div>
-        <div class="field"><label>Репозиторий</label><input id="ro-repo" placeholder="имя репозитория" autocomplete="off"></div>
+        <div class="field"><label>Владелец</label><input id="ro-owner" name="an-ro-owner" placeholder="github-логин" autocomplete="off" spellcheck="false"></div>
+        <div class="field"><label>Репозиторий</label><input id="ro-repo" name="an-ro-repo" placeholder="имя репозитория" autocomplete="off" spellcheck="false"></div>
       </div>
-      <div class="field"><label>Ветка</label><input id="ro-branch" value="main" autocomplete="off"></div>
+      <div class="field"><label>Ветка</label><input id="ro-branch" name="an-ro-branch" value="main" autocomplete="off" spellcheck="false"></div>
       <div class="lk-status" id="ro-status"></div>
       <div class="login-foot">
         <button type="button" class="btn" data-close>Отмена</button>
@@ -1021,8 +1188,41 @@ const GENRES = ['Альтернативная история','Альтерна�
 const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MON_S = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 const ACCENTS = {sakura:'#ff7aa2', flame:'#ff6b4a', violet:'#b18cff', mint:'#6fd6b1'};
-const DATA_PATH = 'anime-data.json';   /* внутренний путь к файлу данных, в интерфейсе не показывается */
+const DATA_PATH = 'anime-data.json';
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- пресеты частиц (20 стилей) ---- */
+const PRESETS = {
+  sakura:     {label:'Сакура · лепестки',        shape:'petal', colors:['#ffdce8','#ffc6d9','#ffb0cb','#ff9dc4','#fff0f5'], size:[4.5,11], vy:[.5,1.5],  sway:[.6,2.0], alpha:[.55,.95]},
+  hanami:     {label:'Ханами · крупные бело-розовые', shape:'petal', colors:['#ffeaf2','#ffd6e4','#fff5f8','#ffcfe0'], size:[6,14], vy:[.4,1.1], sway:[.8,2.4], alpha:[.6,1]},
+  white:      {label:'Белые лепестки',           shape:'petal', colors:['#ffffff','#fff7fa','#ffeef4'], size:[4.5,11], vy:[.5,1.4], sway:[.6,1.8], alpha:[.5,.9]},
+  rose:       {label:'Розы · красные лепестки',  shape:'petal', colors:['#ff8fa3','#ff5c8a','#ffb3c1','#ff7aa2'], size:[4.5,10], vy:[.5,1.3], sway:[.6,1.9], alpha:[.6,.95]},
+  lavender:   {label:'Лаванда · сиреневые',      shape:'petal', colors:['#d9c2ff','#c7a8ff','#e8dbff','#b18cff'], size:[4.5,10], vy:[.5,1.3], sway:[.6,1.9], alpha:[.55,.95]},
+  sky:        {label:'Небо · голубые лепестки',  shape:'petal', colors:['#bfe3ff','#9fd0ff','#d8ecff','#8fc3ff'], size:[4.5,10], vy:[.5,1.3], sway:[.6,1.8], alpha:[.55,.95]},
+  night:      {label:'Ночная сакура · неон',     shape:'petal', colors:['#ff7aa2','#b18cff','#7ad0ff','#ff9dc4'], size:[4,9], vy:[.4,1.1], sway:[.6,1.8], alpha:[.4,.85], glow:true},
+  mono:       {label:'Монохром',                 shape:'petal', colors:['#ffffff','#e8e8ee','#dcdce4'], size:[4.5,10], vy:[.5,1.3], sway:[.6,1.8], alpha:[.5,.9]},
+  sakurasnow: {label:'Сакура + снег',            shape:['petal','flake'], colors:['#ffdce8','#ffc6d9','#ffffff','#ffb0cb','#f2f7ff'], size:[3,9], vy:[.45,1.2], sway:[.5,1.6], alpha:[.55,.95]},
+  snow:       {label:'Зима · снег',              shape:'flake', colors:['#ffffff','#f2f7ff','#e8f1ff'], size:[2.5,6.5], vy:[.4,1.1], sway:[.4,1.2], alpha:[.6,1]},
+  softsnow:   {label:'Мягкий мелкий снег',       shape:'flake', colors:['#ffffff','#f4f8ff'], size:[1.5,4], vy:[.25,.7], sway:[.3,1], alpha:[.45,.8]},
+  blizzard:   {label:'Метель',                   shape:'flake', colors:['#ffffff','#eaf3ff'], size:[2,6], vy:[1.8,3.4], sway:[.3,.9], alpha:[.5,.95]},
+  crystal:    {label:'Кристаллы · голубые',      shape:'flake', colors:['#cfe8ff','#a8d8ff','#e8f4ff'], size:[2.5,6], vy:[.35,1], sway:[.4,1.2], alpha:[.5,.95], glow:true},
+  autumn:     {label:'Осень · листья',           shape:'leaf', colors:['#ffb347','#ff8c42','#e2574c','#d96c3f','#c9452f'], size:[5,10], vy:[.6,1.4], sway:[1,2.6], alpha:[.6,.95]},
+  maple:      {label:'Клён · красные листья',    shape:'leaf', colors:['#e63946','#d62828','#ff5a5f','#b8232f'], size:[5,10], vy:[.6,1.4], sway:[1,2.4], alpha:[.6,.95]},
+  green:      {label:'Весна · зелёные листики',  shape:'leaf', colors:['#8fd6a4','#6fd6b1','#a8e6b0','#57c489'], size:[4.5,9], vy:[.5,1.2], sway:[.8,2], alpha:[.55,.9]},
+  fireflies:  {label:'Лето · светлячки',         shape:'glow', colors:['#ffe28a','#c3ff8a','#9affc3','#ffd76e'], size:[2,4.5], vy:[-.15,.35], sway:[.5,1.5], alpha:[.35,.9], twinkle:true, glow:true},
+  stars:      {label:'Ночь · звёздочки',         shape:'star', colors:['#ffffff','#ffd76e','#cfe8ff','#ffe9b0'], size:[1.5,3.5], vy:[.05,.25], sway:[.2,.8], alpha:[.3,.9], twinkle:true},
+  gold:       {label:'Золотая пыль',             shape:'glow', colors:['#ffd76e','#ffbe5c','#ffe9a0'], size:[1.5,3.5], vy:[.3,.9], sway:[.4,1.4], alpha:[.3,.8], twinkle:true, glow:true},
+  rain:       {label:'Дождь',                    shape:'drop', colors:['#9fd0ff','#7ab8ff','#c4e2ff'], size:[2,3.5], vy:[3,5], sway:[.05,.2], alpha:[.35,.7]}
+};
+/* ---- стили ветвей (6) ---- */
+const BRANCH_STYLES = {
+  sakura:   {label:'Сакура',       wood:['#4b3341','#6b4d55'], flowers:['#ffdce8','#ffcad9','#ffb6cf','#ffa5c6','#fdeef5'], buds:'#e86a97', petals:5, leaves:null, snow:false, halo:false},
+  winter:   {label:'Зимняя',       wood:['#3a2d3f','#574353'], flowers:null, buds:null, leaves:null, snow:true, halo:false},
+  maple:    {label:'Клён',         wood:['#4d3226','#6b4a38'], flowers:null, buds:'#a83226', leaves:['#e2574c','#d96c3f','#ffb347','#c9452f'], snow:false, halo:false},
+  magnolia: {label:'Магнолия',     wood:['#4b3341','#6b4d55'], flowers:['#fff6ea','#fdeedc','#f7e3c8','#ffffff'], buds:'#e8c9a0', petals:6, leaves:null, snow:false, halo:false},
+  night:    {label:'Ночная сакура',wood:['#241b2e','#3d2c49'], flowers:['#8f4b6b','#7a3d5e','#a05a7e','#5d3550'], buds:'#4a2a56', petals:5, leaves:null, snow:false, halo:true},
+  spring:   {label:'Весенняя',     wood:['#4b3341','#6b4d55'], flowers:['#ffe9f0','#ffd6e3','#fff5f8'], buds:'#ef8bb0', petals:5, leaves:['#9fd6a8','#7cc489'], snow:false, halo:false}
+};
 
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
@@ -1038,9 +1238,18 @@ const mulberry32 = a => () => { a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15
 /* ================= хранилище ================= */
 const LS_KEY = 'anime.v3', LS_BG = 'anime.bg', LS_SYNC = 'anime.sync';
 const OLD_KEYS = ['anime.v2','tsundoku.v1'];
-const DEFAULT_SETTINGS = {anim:true, tilt:true, glow:true, shine:true, counters:true, recent:true,
-  light:false, petals:true, petalDensity:45, wind:100, branches:true, sway:true, ambient:true,
-  bgDim:55, accent:'sakura', epMin:24, filmMin:110};
+const DEFAULT_SETTINGS = {
+  anim:true, tempo:'normal', rowAnim:true, cascade:true, modalPop:true, toastAnim:true, pillGlow:true,
+  tierWobble:true, tierWobbleSpeed:6, tierGrad:true, sssGlow:true, tierBg:true,
+  tilt:true, tiltPower:8, cardLift:true, glow:true, shine:true,
+  counters:true, counterSpeed:800, recent:true,
+  light:false, panelOp:88, radius:11, accent:'sakura',
+  particles:true, particleStyle:'sakura', petalDensity:45, fallSpeed:100,
+  particleSize:100, particleOpacity:100, particleSpin:true, twinkle:true, wind:100,
+  branches:true, branchStyle:'sakura', sway:true, parallax:30, branchAlpha:90,
+  ambient:true, moon:true, grain:true, grainOp:45, bgDim:55,
+  epMin:24, filmMin:110
+};
 
 function normDate(d){ return (d && +d.y) ? {d:+d.d||null, m:+d.m||null, y:+d.y} : null; }
 
@@ -1149,7 +1358,7 @@ function applyLocalRemote(){
 if (bc) bc.onmessage = e => { if (e.data && e.data.updatedAt > (state.updatedAt||0)) applyLocalRemote(); };
 window.addEventListener('storage', e => { if (e.key === LS_KEY && e.newValue) applyLocalRemote(); });
 
-/* ================= расчёты по units ================= */
+/* ================= расчёты ================= */
 function titleEpisodes(t){
   if (t.units && t.units.length) return t.units.reduce((s,u) => u.kind !== 'film' ? s + (+u.episodes||0) : s, 0);
   if (t.type === 'film') return 0;
@@ -1239,16 +1448,19 @@ document.addEventListener('error', e => {
   }
 }, true);
 
-/* ================= лепестки ================= */
-const Petals = (() => {
+/* ================================================================
+   ДВИЖОК ЧАСТИЦ (лепестки / снег / листья / светлячки / звёзды)
+================================================================ */
+const Particles = (() => {
   const cv = $('#petals'), ctx = cv.getContext('2d');
-  let W=0, H=0, petals=[], bursts=[], running=false, frame=0, last=performance.now();
+  let W=0, H=0, parts=[], bursts=[], running=false, frame=0, last=performance.now();
   const mouse = {x:-9e3, y:-9e3, vx:0, vy:0};
   let gust=0, gustTarget=0, gustUntil=0, nextGust=140;
-  const pal = () => document.body.classList.contains('light')
-    ? ['#f79bc0','#ef7aa6','#ffb3ca','#f98bb6','#ffc9da']
-    : ['#ffdce8','#ffc6d9','#ffb0cb','#ff9dc4','#fff0f5'];
+
+  const preset = () => PRESETS[state.settings.particleStyle] || PRESETS.sakura;
   const pick = a => a[Math.floor(Math.random()*a.length)];
+  const rnd = (a,b) => a + Math.random()*(b-a);
+
   function resize(){
     const dpr = Math.min(devicePixelRatio||1, 2);
     W = innerWidth; H = innerHeight;
@@ -1256,16 +1468,35 @@ const Petals = (() => {
     ctx.setTransform(dpr,0,0,dpr,0,0);
   }
   function spawn(anywhere){
-    return { x: Math.random()*(W+160)-80, y: anywhere ? Math.random()*H : -20 - Math.random()*H*0.25,
-      s: 4.5 + Math.random()*6.5, vy: 0.5 + Math.random()*1.1,
-      phase: Math.random()*Math.PI*2, swaySpeed: 0.015 + Math.random()*0.03, swayAmp: 0.6 + Math.random()*1.4,
-      rot: Math.random()*Math.PI*2, rotV: (Math.random()-.5)*0.03,
+    const p = preset();
+    const shape = Array.isArray(p.shape) ? pick(p.shape) : p.shape;
+    const sm = state.settings.particleSize/100, fm = state.settings.fallSpeed/100, am = state.settings.particleOpacity/100;
+    return {
+      shape, color: pick(p.colors),
+      x: Math.random()*(W+160)-80,
+      y: anywhere ? Math.random()*H : -20 - Math.random()*H*0.25,
+      s: rnd(p.size[0], p.size[1]) * sm,
+      vy: rnd(p.vy[0], p.vy[1]) * fm,
+      phase: Math.random()*Math.PI*2,
+      swaySpeed: 0.015 + Math.random()*0.03,
+      swayAmp: rnd(p.sway[0], p.sway[1]),
+      rot: Math.random()*Math.PI*2, rotV: (Math.random()-.5)*0.05,
       flip: Math.random()*Math.PI*2, flipV: 0.02 + Math.random()*0.05,
-      alpha: 0.55 + Math.random()*0.4, wf: 0.5 + Math.random()*0.9, color: pick(pal()) };
+      alpha: rnd(p.alpha[0], p.alpha[1]) * am,
+      wf: 0.5 + Math.random()*0.9,
+      twk: p.twinkle ? Math.random()*Math.PI*2 : 0,
+      glow: !!p.glow
+    };
   }
-  function target(){ if (!state.settings.petals || REDUCED) return 0; return Math.round(W*H/16000 * (0.25 + (state.settings.petalDensity/100)*1.25)); }
-  function wind(){ const s = state.settings.wind/100, t = frame;
-    return (Math.sin(t*0.004)*0.6 + Math.sin(t*0.0017+2)*0.4 + Math.sin(t*0.0009+5)*0.3) * s * 1.5 + gust; }
+  function target(){
+    if (!state.settings.particles || REDUCED) return 0;
+    return Math.round(W*H/16000 * (0.25 + (state.settings.petalDensity/100)*1.25));
+  }
+  function wind(){
+    const s = state.settings.wind/100, t = frame;
+    return (Math.sin(t*0.004)*0.6 + Math.sin(t*0.0017+2)*0.4 + Math.sin(t*0.0009+5)*0.3) * s * 1.5 + gust;
+  }
+  /* --- формы --- */
   function petalPath(c, s){
     c.beginPath(); c.moveTo(0, s);
     c.bezierCurveTo(s*0.85, s*0.45, s*0.95, -s*0.35, s*0.28, -s*0.82);
@@ -1274,11 +1505,58 @@ const Petals = (() => {
     c.bezierCurveTo(-s*0.95, -s*0.35, -s*0.85, s*0.45, 0, s);
     c.closePath();
   }
-  function draw(p, alpha){
+  function drawFlake(c, s, color, alpha){
+    c.strokeStyle = color; c.fillStyle = color; c.globalAlpha = alpha;
+    if (s < 2.2){ c.beginPath(); c.arc(0,0,s,0,6.283); c.fill(); return; }
+    c.lineWidth = Math.max(.8, s*.22); c.lineCap = 'round';
+    c.beginPath();
+    for (let i = 0; i < 6; i++){
+      const a = i*Math.PI/3;
+      c.moveTo(0,0); c.lineTo(Math.cos(a)*s, Math.sin(a)*s);
+      const mx = Math.cos(a)*s*.55, my = Math.sin(a)*s*.55;
+      c.moveTo(mx, my); c.lineTo(mx + Math.cos(a+2.1)*s*.3, my + Math.sin(a+2.1)*s*.3);
+      c.moveTo(mx, my); c.lineTo(mx + Math.cos(a-2.1)*s*.3, my + Math.sin(a-2.1)*s*.3);
+    }
+    c.stroke();
+  }
+  function drawLeaf(c, s, color, alpha){
+    c.fillStyle = color; c.globalAlpha = alpha;
+    c.beginPath(); c.moveTo(0, s);
+    c.quadraticCurveTo(s*1.05, s*.1, 0, -s);
+    c.quadraticCurveTo(-s*1.05, s*.1, 0, s);
+    c.closePath(); c.fill();
+    c.globalAlpha = alpha*.45; c.strokeStyle = color; c.lineWidth = Math.max(.6, s*.09);
+    c.beginPath(); c.moveTo(0, s*.75); c.lineTo(0, -s*.75); c.stroke();
+  }
+  function drawGlow(c, s, color, alpha){
+    c.globalAlpha = alpha; c.fillStyle = color;
+    c.shadowColor = color; c.shadowBlur = s*2.6;
+    c.beginPath(); c.arc(0, 0, s*.55, 0, 6.283); c.fill();
+    c.fill();
+    c.shadowBlur = 0;
+  }
+  function drawStar(c, s, color, alpha){
+    c.strokeStyle = color; c.globalAlpha = alpha; c.lineWidth = Math.max(.7, s*.3); c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(-s,0); c.lineTo(s,0); c.moveTo(0,-s); c.lineTo(0,s);
+    c.moveTo(-s*.45,-s*.45); c.lineTo(s*.45,s*.45); c.moveTo(s*.45,-s*.45); c.lineTo(-s*.45,s*.45);
+    c.stroke();
+  }
+  function drawDrop(c, s, color, alpha){
+    c.strokeStyle = color; c.globalAlpha = alpha; c.lineWidth = s*.5; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(0, -s*1.6); c.lineTo(0, s*1.2); c.stroke();
+  }
+  function draw(p, alphaMul){
     ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-    ctx.scale(0.35 + 0.65*Math.abs(Math.cos(p.flip)), 1);
-    ctx.globalAlpha = alpha; ctx.fillStyle = p.color;
-    petalPath(ctx, p.s); ctx.fill(); ctx.restore();
+    if (p.shape === 'petal' || p.shape === 'leaf') ctx.scale(0.35 + 0.65*Math.abs(Math.cos(p.flip)), 1);
+    const a = Math.max(0, Math.min(1, p.alpha * alphaMul * (p.twk !== undefined && state.settings.twinkle ? .45 + .55*Math.abs(Math.sin(p.twk)) : 1)));
+    if (p.shape === 'petal'){ ctx.globalAlpha = a; ctx.fillStyle = p.color; petalPath(ctx, p.s); ctx.fill(); }
+    else if (p.shape === 'flake') drawFlake(ctx, p.s, p.color, a);
+    else if (p.shape === 'leaf') drawLeaf(ctx, p.s, p.color, a);
+    else if (p.shape === 'glow') drawGlow(ctx, p.s, p.color, a);
+    else if (p.shape === 'star') drawStar(ctx, p.s, p.color, a);
+    else if (p.shape === 'drop') drawDrop(ctx, p.s, p.color, a);
+    ctx.restore();
   }
   function step(now){
     const dt = Math.min(48, now - last); last = now; const k = dt/16.7; frame++;
@@ -1289,25 +1567,31 @@ const Petals = (() => {
     mouse.vx *= Math.pow(0.88, k); mouse.vy *= Math.pow(0.88, k);
     ctx.clearRect(0,0,W,H);
     const tg = target();
-    if (petals.length < tg && frame % 3 === 0) petals.push(spawn(false));
-    if (petals.length > tg) petals.length = Math.max(tg, petals.length - 2);
-    for (const p of petals){
-      p.phase += p.swaySpeed*k; p.flip += p.flipV*k; p.rot += p.rotV*k + wv*0.002*k;
+    if (parts.length < tg && frame % 3 === 0) parts.push(spawn(false));
+    if (parts.length > tg) parts.length = Math.max(tg, parts.length - 2);
+    const spinOn = state.settings.particleSpin;
+    for (const p of parts){
+      p.phase += p.swaySpeed*k;
+      if (p.twk !== undefined) p.twk += 0.05*k;
+      p.flip += p.flipV*k;
+      if (spinOn){ p.rot += p.rotV*k + wv*0.002*k; }
       p.x += (Math.sin(p.phase)*p.swayAmp*0.35 + wv*p.wf)*k;
       p.y += p.vy*k*(0.75 + 0.35*Math.abs(Math.cos(p.phase)));
       const dx = p.x-mouse.x, dy = p.y-mouse.y, d2 = dx*dx+dy*dy;
       if (d2 < 22500){ const f = 1 - Math.sqrt(d2)/150; p.x += mouse.vx*f*0.2*k; p.y += mouse.vy*f*0.12*k; }
-      if (p.y > H+24 || p.x < -100 || p.x > W+100) Object.assign(p, spawn(false));
-      draw(p, Math.min(1, p.alpha));
+      if (p.y > H+24 || p.y < -60 || p.x < -120 || p.x > W+120) Object.assign(p, spawn(false));
+      draw(p, 1);
     }
     for (let i = bursts.length-1; i >= 0; i--){
       const b = bursts[i];
       b.vy += 0.1*k; b.vx *= Math.pow(0.985, k);
-      b.x += b.vx*k; b.y += b.vy*k; b.rot += b.rv*k; b.flip += 0.12*k; b.life -= k;
+      b.x += b.vx*k; b.y += b.vy*k;
+      if (spinOn){ b.rot += b.rv*k; }
+      b.flip += 0.12*k; b.life -= k;
       if (b.life <= 0 || b.y > H+30){ bursts.splice(i,1); continue; }
       draw(b, Math.max(0, Math.min(1, b.life/b.max*1.3)));
     }
-    if (petals.length || bursts.length || target() > 0) requestAnimationFrame(step);
+    if (parts.length || bursts.length || target() > 0) requestAnimationFrame(step);
     else { running = false; ctx.clearRect(0,0,W,H); }
   }
   function start(){ if (running) return; running = true; last = performance.now(); requestAnimationFrame(step); }
@@ -1318,24 +1602,42 @@ const Petals = (() => {
     mouse.x = e.clientX; mouse.y = e.clientY;
   }, {passive:true});
   return {
-    init(){ resize(); for (let i=0;i<target();i++) petals.push(spawn(true)); start(); },
-    refresh(){ const P = pal(); petals.forEach(p => p.color = pick(P)); if (target() > 0 || bursts.length) start(); },
-    burst(x, y, n=18){ if (REDUCED) return;
-      const P = pal();
+    init(){ resize(); for (let i=0;i<target();i++) parts.push(spawn(true)); start(); },
+    refresh(){ if (target() > 0 || bursts.length) start(); },
+    restyle(){ parts = []; start(); },
+    burst(x, y, n=18){
+      if (REDUCED) return;
+      const pr = preset();
       for (let i=0;i<n;i++){
         const a = Math.random()*Math.PI*2, sp = 1.5 + Math.random()*4.2;
-        bursts.push({x, y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp - 1.6,
-          s:3.5+Math.random()*5, rot:Math.random()*6.28, rv:(Math.random()-.5)*.22,
-          flip:Math.random()*6.28, life:55+Math.random()*45, max:100, color:P[i%P.length]});
+        bursts.push({shape: Array.isArray(pr.shape)?pr.shape[i%pr.shape.length]:pr.shape,
+          x, y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp - 1.6,
+          s: rnd(pr.size[0], pr.size[1])*(state.settings.particleSize/100),
+          rot:Math.random()*6.28, rv:(Math.random()-.5)*.22,
+          flip:Math.random()*6.28, life:55+Math.random()*45, max:100,
+          color: pr.colors[i%pr.colors.length],
+          alpha: rnd(pr.alpha[0], pr.alpha[1])*(state.settings.particleOpacity/100),
+          glow: !!pr.glow, twk: undefined, wf: .7});
       }
-      start(); }
+      start();
+    }
   };
 })();
 
-/* ================= генеративные ветви ================= */
-function sakuraBranch(seed, W=700, H=560, mirror=false){
+/* ================================================================
+   ГЕНЕРАТИВНЫЕ ВЕТВИ (сакура, зима, клён, магнолия, ночь, весна)
+================================================================ */
+const B_SEEDS = [Math.floor(Math.random()*1e6), Math.floor(Math.random()*1e6)];
+function renderBranches(){
+  const style = BRANCH_STYLES[state.settings.branchStyle] ? state.settings.branchStyle : 'sakura';
+  $('#branch-tr').innerHTML = sakuraBranch(B_SEEDS[0], style, 700, 560, false);
+  $('#branch-bl').innerHTML = sakuraBranch(B_SEEDS[1], style, 700, 560, true);
+}
+function sakuraBranch(seed, styleKey, W=700, H=560, mirror=false){
+  const st = BRANCH_STYLES[styleKey] || BRANCH_STYLES.sakura;
   const R = mulberry32(seed);
   const rnd = (a,b) => a + R()*(b-a);
+  const pickF = () => st.flowers[Math.floor(R()*st.flowers.length)];
   const sx = mirror ? 1 : -1, sy = mirror ? -1 : 1;
   const base = { x: mirror ? 8 : W-8, y: mirror ? H-26 : 20 };
   const tip  = { x: mirror ? W*0.80 : W*0.20, y: mirror ? H*0.12 : H*0.88 };
@@ -1343,10 +1645,17 @@ function sakuraBranch(seed, W=700, H=560, mirror=false){
   const c2 = { x: tip.x - sx*W*0.12, y: tip.y - sy*H*0.28 };
   const cub = (a,b,c,d,t) => { const u=1-t; return { x: u*u*u*a.x + 3*u*u*t*b.x + 3*u*t*t*c.x + t*t*t*d.x, y: u*u*u*a.y + 3*u*u*t*b.y + 3*u*t*t*c.y + t*t*t*d.y }; };
   const quad = (p,c,e,t) => { const u=1-t; return { x: u*u*p.x + 2*u*t*c.x + t*t*e.x, y: u*u*p.y + 2*u*t*c.y + t*t*e.y }; };
-  const WOOD = '#4b3341';
-  const PCOL = ['#ffdce8','#ffcad9','#ffb6cf','#ffa5c6','#fdeef5','#f98bb0'];
+
   const id = 'bl' + seed;
-  let twigs = '', blossoms = '', buds = '';
+  const woodDark = st.wood[0], woodLight = st.wood[1];
+  const woodPath = `M${base.x},${base.y} C${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${tip.x.toFixed(1)},${tip.y.toFixed(1)}`;
+  /* ветвь из трёх слоёв dasharray — толщина сужается к кончику */
+  const mainBranch = `
+    <path d="${woodPath}" fill="none" stroke="url(#g${id})" stroke-width="9" stroke-linecap="round" pathLength="100" stroke-dasharray="48 52"/>
+    <path d="${woodPath}" fill="none" stroke="url(#g${id})" stroke-width="6.2" stroke-linecap="round" pathLength="100" stroke-dasharray="34 66" stroke-dashoffset="-44"/>
+    <path d="${woodPath}" fill="none" stroke="url(#g${id})" stroke-width="3.6" stroke-linecap="round" pathLength="100" stroke-dasharray="30 70" stroke-dashoffset="-72"/>`;
+
+  let twigs = '', deco = '', snowDots = '';
   const nT = 4 + Math.floor(R()*3);
   for (let i = 0; i < nT; i++){
     const t = 0.2 + (i/(nT-1))*0.68 + rnd(-.05,.05);
@@ -1355,32 +1664,83 @@ function sakuraBranch(seed, W=700, H=560, mirror=false){
     const len = rnd(70,155);
     const E = { x: P.x + Math.cos(ang)*len, y: P.y + Math.sin(ang)*len };
     const C = { x: (P.x+E.x)/2 + rnd(-24,24), y: (P.y+E.y)/2 + rnd(-24,24) };
-    twigs += `<path d="M${P.x.toFixed(1)},${P.y.toFixed(1)} Q${C.x.toFixed(1)},${C.y.toFixed(1)} ${E.x.toFixed(1)},${E.y.toFixed(1)}" fill="none" stroke="${WOOD}" stroke-width="${rnd(2,3.4).toFixed(1)}" stroke-linecap="round"/>`;
+    const twigPath = `M${P.x.toFixed(1)},${P.y.toFixed(1)} Q${C.x.toFixed(1)},${C.y.toFixed(1)} ${E.x.toFixed(1)},${E.y.toFixed(1)}`;
+    const w1 = rnd(2.2,3.4);
+    let twigDeco = '';
+    /* украшения на веточке: цветы кластерами / листья / снег */
     const nB = 3 + Math.floor(R()*4);
     for (let j = 0; j < nB; j++){
       const bt = 0.25 + (j/(nB-1))*0.75;
       const bp = quad(P, C, E, bt);
-      blossoms += `<g transform="translate(${(bp.x+rnd(-10,10)).toFixed(1)},${(bp.y+rnd(-10,10)).toFixed(1)}) rotate(${rnd(0,360).toFixed(0)}) scale(${rnd(0.8,1.5).toFixed(2)})"><use href="#${id}" fill="${PCOL[Math.floor(R()*PCOL.length)]}"/></g>`;
+      if (st.flowers){
+        const scale = rnd(0.75,1.35) * (st.petals === 6 ? 1.25 : 1);
+        twigDeco += `<g transform="translate(${(bp.x+rnd(-8,8)).toFixed(1)},${(bp.y+rnd(-8,8)).toFixed(1)})">
+          ${st.halo ? `<circle r="${(11*scale).toFixed(1)}" fill="${pickF()}" opacity=".16"/>` : ''}
+          <g transform="rotate(${(R()*360).toFixed(0)}) scale(${scale.toFixed(2)})"><use href="#f${st.petals}${id}" fill="${pickF()}"/></g>
+          ${R()<.75 ? `<g transform="translate(${rnd(-8,8).toFixed(1)},${rnd(-8,8).toFixed(1)}) rotate(${(R()*360).toFixed(0)}) scale(${(scale*rnd(.5,.72)).toFixed(2)})"><use href="#f${st.petals}${id}" fill="${pickF()}" opacity=".9"/></g>` : ''}
+          ${st.buds && R()<.6 ? `<g transform="translate(${rnd(-11,11).toFixed(1)},${rnd(-11,11).toFixed(1)}) rotate(${(R()*70-35).toFixed(0)})"><ellipse rx="2.1" ry="3.1" fill="${st.buds}"/><ellipse cx="1" cy="-1.1" rx=".9" ry="1.5" fill="#ffffff" opacity=".35"/></g>` : ''}
+        </g>`;
+      }
+      if (st.leaves){
+        twigDeco += `<g transform="translate(${(bp.x+rnd(-10,10)).toFixed(1)},${(bp.y+rnd(-10,10)).toFixed(1)}) rotate(${(R()*360).toFixed(0)}) scale(${rnd(0.8,1.5).toFixed(2)})"><use href="#lf${id}" fill="${st.leaves[Math.floor(R()*st.leaves.length)]}"/></g>`;
+      }
     }
-    buds += `<circle cx="${(E.x+rnd(-8,8)).toFixed(1)}" cy="${(E.y+rnd(-8,8)).toFixed(1)}" r="${rnd(1.6,2.6).toFixed(1)}" fill="#e86a97" opacity=".9"/>`;
-    if (R() < .5) buds += `<circle cx="${(E.x+rnd(-16,16)).toFixed(1)}" cy="${(E.y+rnd(-16,16)).toFixed(1)}" r="${rnd(1.2,2).toFixed(1)}" fill="#d95584" opacity=".8"/>`;
+    if (st.snow){
+      for (let j = 0; j < 5; j++){
+        const bt = rnd(0.15, 1);
+        const sp = quad(P, C, E, bt);
+        snowDots += `<circle cx="${(sp.x+rnd(-6,6)).toFixed(1)}" cy="${(sp.y+rnd(-7,3)).toFixed(1)}" r="${rnd(1.8,3.4).toFixed(1)}" fill="#ffffff" opacity="${rnd(.7,.95).toFixed(2)}"/>`;
+      }
+      snowDots += `<circle cx="${(E.x+rnd(-4,4)).toFixed(1)}" cy="${(E.y-2).toFixed(1)}" r="${rnd(2.4,3.6).toFixed(1)}" fill="#ffffff" opacity=".9"/>`;
+    }
+    twigs += `<g class="twig" style="transform-origin:${P.x.toFixed(1)}px ${P.y.toFixed(1)}px;animation-duration:${rnd(4.5,8.5).toFixed(1)}s;animation-delay:-${rnd(0,6).toFixed(1)}s">
+      <path d="${twigPath}" fill="none" stroke="${woodLight}" stroke-width="${w1.toFixed(1)}" stroke-linecap="round" pathLength="100" stroke-dasharray="55 45"/>
+      <path d="${twigPath}" fill="none" stroke="${woodLight}" stroke-width="${(w1*0.55).toFixed(1)}" stroke-linecap="round" pathLength="100" stroke-dasharray="45 55" stroke-dashoffset="-55"/>
+    </g>`;
+    deco += twigDeco;
   }
+  /* цветы на главной ветви */
   const nM = 10 + Math.floor(R()*5);
   for (let i = 0; i < nM; i++){
     const t = rnd(0.12, 1);
     const p = cub(base, c1, c2, tip, t);
-    blossoms += `<g transform="translate(${(p.x+rnd(-16,16)).toFixed(1)},${(p.y+rnd(-16,16)).toFixed(1)}) rotate(${rnd(0,360).toFixed(0)}) scale(${rnd(0.7,1.4).toFixed(2)})"><use href="#${id}" fill="${PCOL[Math.floor(R()*PCOL.length)]}"/></g>`;
+    if (st.flowers){
+      const scale = rnd(0.7,1.4) * (st.petals === 6 ? 1.2 : 1);
+      deco += `<g transform="translate(${(p.x+rnd(-16,16)).toFixed(1)},${(p.y+rnd(-16,16)).toFixed(1)})">
+        ${st.halo ? `<circle r="${(11*scale).toFixed(1)}" fill="${pickF()}" opacity=".15"/>` : ''}
+        <g transform="rotate(${(R()*360).toFixed(0)}) scale(${scale.toFixed(2)})"><use href="#f${st.petals}${id}" fill="${pickF()}"/></g>
+        ${st.buds && R()<.5 ? `<g transform="translate(${rnd(-10,10).toFixed(1)},${rnd(-10,10).toFixed(1)})"><ellipse rx="2" ry="3" fill="${st.buds}"/></g>` : ''}
+      </g>`;
+    }
+    if (st.leaves && R() < .8){
+      deco += `<g transform="translate(${(p.x+rnd(-14,14)).toFixed(1)},${(p.y+rnd(-14,14)).toFixed(1)}) rotate(${(R()*360).toFixed(0)}) scale(${rnd(0.7,1.3).toFixed(2)})"><use href="#lf${id}" fill="${st.leaves[Math.floor(R()*st.leaves.length)]}"/></g>`;
+    }
+    if (st.snow && R() < .7){
+      snowDots += `<circle cx="${(p.x+rnd(-6,6)).toFixed(1)}" cy="${(p.y+rnd(-6,2)).toFixed(1)}" r="${rnd(1.6,3).toFixed(1)}" fill="#ffffff" opacity="${rnd(.65,.9).toFixed(2)}"/>`;
+    }
   }
-  const petal = 'M0 3 C 4.8 1, 5.6 -4.2, 1.8 -7.8 L 0 -6.2 L -1.8 -7.8 C -5.6 -4.2, -4.8 1, 0 3 Z';
+  const petal5 = 'M0 3 C 4.8 1, 5.6 -4.2, 1.8 -7.8 L 0 -6.2 L -1.8 -7.8 C -5.6 -4.2, -4.8 1, 0 3 Z';
+  const petal6 = 'M0 3.4 C 5.4 1.6, 6.2 -4.6, 2 -8.4 L 0 -6.6 L -2 -8.4 C -6.2 -4.6, -5.4 1.6, 0 3.4 Z';
+  const flowerSym = n => [ ...Array(n).keys() ].map(i =>
+    `<path transform="rotate(${(360/n*i).toFixed(0)})" d="${n===6?petal6:petal5}"/>`).join('')
+    + '<circle r="1.6" fill="#ffd76e" opacity=".9"/>'
+    + [0, 1, 2].map(i => `<circle cx="${(Math.cos(i*2.09)*3.4).toFixed(1)}" cy="${(Math.sin(i*2.09)*3.4).toFixed(1)}" r=".55" fill="#ffd76e" opacity=".8"/>`).join('');
+  const leafSym = `<path d="M0 6 C 5.2 4, 6 -2, 1.6 -6.4 L 0 -4.6 L -1.6 -6.4 C -6 -2, -5.2 4, 0 6 Z"/><path d="M0 4.6 L 0 -4.6" fill="none" stroke="rgba(20,10,10,.28)" stroke-width=".7"/>`;
+
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="${mirror?'xMinYMax':'xMaxYMin'} meet">
-  <defs><symbol id="${id}" overflow="visible">${[0,72,144,216,288].map(r => `<path transform="rotate(${r})" d="${petal}"/>`).join('')}<circle r="1.7" fill="#ffd76e"/><circle cx="0" cy="-4" r=".55" fill="#ffd76e"/><circle cx="3.4" cy="2.2" r=".55" fill="#ffd76e"/><circle cx="-3.4" cy="2.2" r=".55" fill="#ffd76e"/></symbol></defs>
+  <defs>
+    <linearGradient id="g${id}" gradientUnits="userSpaceOnUse" x1="${base.x.toFixed(0)}" y1="${base.y.toFixed(0)}" x2="${tip.x.toFixed(0)}" y2="${tip.y.toFixed(0)}">
+      <stop offset="0" stop-color="${woodDark}"/><stop offset="1" stop-color="${woodLight}"/>
+    </linearGradient>
+    <symbol id="f5${id}" overflow="visible">${flowerSym(5)}</symbol>
+    <symbol id="f6${id}" overflow="visible">${flowerSym(6)}</symbol>
+    <symbol id="lf${id}" overflow="visible">${leafSym}</symbol>
+  </defs>
   <g class="sway" style="transform-box:view-box;transform-origin:${base.x}px ${base.y}px">
-    <path d="M${base.x},${base.y} C${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${tip.x.toFixed(1)},${tip.y.toFixed(1)}" fill="none" stroke="${WOOD}" stroke-width="${rnd(6.5,9).toFixed(1)}" stroke-linecap="round"/>
-    ${twigs}${blossoms}${buds}
+    ${mainBranch}${twigs}${deco}${snowDots}
   </g></svg>`;
 }
- $('#branch-tr').innerHTML = sakuraBranch(Math.floor(Math.random()*1e6));
- $('#branch-bl').innerHTML = sakuraBranch(Math.floor(Math.random()*1e6), 700, 560, true);
+renderBranches();
 
 /* ================= тосты / модалки ================= */
 const PETAL_ICO = '<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 C 15.5 6.5, 20 8.5, 20 13.5 C 20 18, 15.5 21, 12 22 C 8.5 21, 4 18, 4 13.5 C 4 8.5, 8.5 6.5, 12 2 Z"/></svg>';
@@ -1405,7 +1765,7 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === '/' && !e.target.closest('input,textarea,select') && !topOv()){ e.preventDefault(); switchView('tier'); $('#search-input')?.focus(); }
 });
- $$('.overlay').forEach(ov => ov.addEventListener('mousedown', e => { if (e.target === ov) closeOv(ov.id); }));
+/* модалки закрываются только крестиком или Esc — клик по фону не закрывает */
 document.addEventListener('click', e => { if (e.target.closest('[data-close]')){ const ov = e.target.closest('.overlay'); if (ov) closeOv(ov.id); } });
 function openConfirm({title, text, okLabel='Подтвердить', danger=false, cancel=true, onOk}){
   const m = $('#m-confirm');
@@ -1419,7 +1779,8 @@ function openConfirm({title, text, okLabel='Подтвердить', danger=fals
   $('#cf-ok').onclick = () => { closeOv('ov-confirm'); onOk && onOk(); };
   openOv('ov-confirm');
 }
-function animNum(el, target, dur=800){
+function animNum(el, target, dur){
+  dur = dur || state.settings.counterSpeed || 800;
   if (!state.settings.counters){ el.textContent = fmtInt(target); return; }
   const t0 = performance.now();
   (function s(now){ const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3); el.textContent = fmtInt(target*e); if (p<1) requestAnimationFrame(s); })(t0);
@@ -1438,7 +1799,7 @@ function renderHero(){
     <div class="hst"><b data-num="${t.eps}">0</b><span>серий</span><em>вкл. спешлы, OVA/ONA</em></div>
     <div class="hst"><b data-num="${t.films}">0</b><span>фильмов</span><em>отдельных, связанных и частей</em></div>
     <div class="hst"><b data-num="${Math.round(t.hours)}">0</b><span>часов</span><em>≈ ${(t.hours/24).toLocaleString('ru-RU',{maximumFractionDigits:1})} суток</em></div>`;
-  $$('#hero-stats b').forEach(el => animNum(el, +el.dataset.num, 900));
+  $$('#hero-stats b').forEach(el => animNum(el, +el.dataset.num));
 }
 function cardHTML(t, mini=false, ci=0){
   const eps = titleEpisodes(t);
@@ -1472,7 +1833,7 @@ function renderRecent(){
   </div>`;
 }
 
-/* ---- фильтры + панель жанров ---- */
+/* ---- фильтры + жанры ---- */
 let filterQuery = '', filterGenres = new Set();
 let gpOpen = false, gpMode = 'my', gpQuery = '';
 function genreCounts(){
@@ -1488,7 +1849,10 @@ function renderFilters(){
   <div class="filters">
     <div class="searchbox">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>
-      <input id="search-input" placeholder="Поиск по названию… (нажмите /)" value="${esc(filterQuery)}" autocomplete="off">
+      <input id="search-input" name="anime-q-${uid()}" placeholder="Поиск по названию…" value="${esc(filterQuery)}" autocomplete="off" spellcheck="false">
+      <button class="sb-clear ${filterQuery?'':'hidden'}" id="sb-clear" title="Очистить поиск" aria-label="Очистить поиск">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
     </div>
     <button class="btn genre-toggle ${gpOpen?'on':''}" id="genre-toggle">${PETAL_ICO.replace('class="ic"','class="ic" width="15" height="15"')} Жанры${nSel ? ` <b>· ${nSel}</b>` : ''}</button>
     ${nSel ? `<div class="active-genres">${[...filterGenres].map(g => `<button class="chip on" data-unselect="${esc(g)}">${esc(g)} ×</button>`).join('')}</div>` : ''}
@@ -1498,7 +1862,7 @@ function renderFilters(){
     <div class="gp-top">
       <div class="gp-search">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.2-3.2"/></svg>
-        <input id="gp-q" placeholder="Найти жанр…" value="${esc(gpQuery)}" autocomplete="off">
+        <input id="gp-q" placeholder="Найти жанр…" value="${esc(gpQuery)}" autocomplete="off" spellcheck="false">
       </div>
       <div class="gp-tabs">
         <button data-m="my" class="${gpMode==='my'?'on':''}">В коллекции</button>
@@ -1508,7 +1872,17 @@ function renderFilters(){
     <div class="gp-grid" id="gp-grid"></div>
   </div>` : ''}
   <div class="filters" style="margin-top:6px"><span class="filter-info" id="filter-info"></span></div>`;
-  $('#search-input').addEventListener('input', e => { filterQuery = e.target.value; renderTierlist(false); });
+  const inp = $('#search-input');
+  inp.addEventListener('input', e => {
+    filterQuery = e.target.value;
+    $('#sb-clear').classList.toggle('hidden', !filterQuery);
+    renderTierlist(false);
+  });
+  $('#sb-clear').addEventListener('click', () => {
+    filterQuery = '';
+    renderFilters(); renderTierlist(false);
+    $('#search-input')?.focus();
+  });
   $('#genre-toggle').addEventListener('click', () => { gpOpen = !gpOpen; renderFilters(); });
   const q = $('#gp-q');
   if (q) q.addEventListener('input', e => { gpQuery = e.target.value; renderGpGrid(); });
@@ -1563,14 +1937,14 @@ function renderTierlist(animate){
     html += `
     <div class="tier-row" data-tier="${tier}" style="--tc:${TIER_COLOR[tier]};--i:${i}">
       <div class="tier-side">
-        <span class="tier-letter">${tier}</span>
+        <span class="tl-wrap" style="--i:${i}"><span class="tl-spin"><span class="tier-letter">${tier}</span></span></span>
         <span class="tier-count"><b class="tc-n" data-n="${items.length}">${items.length}</b> ${plural(items.length,'тайтл','тайтла','тайтлов')}</span>
       </div>
       <div class="tier-cards">${items.length ? items.map((t,ci) => cardHTML(t, false, ci)).join('') : '<span class="tier-empty">— пока пусто —</span>'}</div>
     </div>`;
   });
   box.innerHTML = html || '<p class="tier-empty" style="padding:50px 0">Ничего не найдено — измените запрос или жанры</p>';
-  if (animate) $$('#tierlist .tc-n').forEach(el => animNum(el, +el.dataset.n, 550));
+  if (animate) $$('#tierlist .tc-n').forEach(el => animNum(el, +el.dataset.n, Math.round((state.settings.counterSpeed||800)*.7)));
   const info = $('#filter-info');
   if (info) info.textContent = filtering ? `найдено: ${found} · скрыто: ${state.titles.length - found}` : '';
 }
@@ -1820,7 +2194,7 @@ function renderStats(){
       <p class="bar-note">Время считается так: сезоны, записи, спешлы и OVA/ONA-эпизоды × длительность серии, фильмы × длительность (свою можно указать у каждого фильма). Отдельно добавленные OVA и ONA идут в счёт серий.</p>
     </div>
   </div>`;
-  $$('#stats .sb-v').forEach(el => animNum(el, +el.dataset.num, 900));
+  $$('#stats .sb-v').forEach(el => animNum(el, +el.dataset.num));
   requestAnimationFrame(() => requestAnimationFrame(() => {
     $$('#stats .bar-fill').forEach(f => f.style.width = f.dataset.w + '%');
     $$('#stats .donut-seg').forEach(s => s.setAttribute('stroke-dasharray', s.dataset.dash));
@@ -1970,7 +2344,6 @@ function syncFormType(){
   renderUnitsAddButtons();
 }
 
-/* ---- жанры в форме ---- */
 function buildGenreChips(){
   const sel = $('#f-genres-selected');
   sel.innerHTML = [...formGenres].map(g => `<button type="button" class="chip on" data-frm-unselect="${esc(g)}">${esc(g)} ×</button>`).join('');
@@ -1999,7 +2372,6 @@ function addCustomGenre(){
  $('#f-genre-add').onclick = addCustomGenre;
  $('#f-genre-new').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addCustomGenre(); } });
 
-/* ---- структура / записи ---- */
 function renderUnitsAddButtons(){
   const box = $('#units-add');
   const tv = formType === 'tv';
@@ -2029,9 +2401,9 @@ function renderUnitRows(popIdx = -1){
     <div class="urow ${tv?'':'nosel'} ${r.err?'err':''} ${i===popIdx?'pop':''}" data-i="${i}" style="--uc:${k.color}">
       <span class="urow-badge" title="${esc(k.label)}">${k.badge}</span>
       ${typeSel}
-      <input type="text" placeholder="${phName}" value="${esc(r.name)}" data-k="name" maxlength="80" autocomplete="off">
-      <input type="number" min="0" max="5000" placeholder="${isFilm?'мин':'серий'}" value="${esc(r.count)}" data-k="count">
-      <input placeholder="ДД.ММ.ГГГГ" value="${esc(r.date)}" data-k="date" autocomplete="off">
+      <input type="text" placeholder="${phName}" value="${esc(r.name)}" data-k="name" maxlength="80" autocomplete="off" spellcheck="false">
+      <input type="number" min="0" max="5000" placeholder="${isFilm?'мин':'серий'}" value="${esc(r.count)}" data-k="count" autocomplete="off">
+      <input placeholder="ДД.ММ.ГГГГ" value="${esc(r.date)}" data-k="date" autocomplete="off" spellcheck="false">
       <button type="button" class="srow-del" data-del="${i}" title="Удалить">×</button>
     </div>`;
   }).join('');
@@ -2103,7 +2475,6 @@ function collectUnits(){
   return {units, bad};
 }
 
-/* ---- обложка / оценка ---- */
 function updatePreview(){ $('#f-preview').src = coverSrc({name: $('#f-name').value || '?', tier: formTier, cover: formCover}); }
 function updateEstimate(){
   let total = 0;
@@ -2136,7 +2507,6 @@ function updateEstimate(){
 });
  $('#f-cover-clear').onclick = () => { formCover = ''; $('#f-cover-url').value = ''; updatePreview(); };
 
-/* ---- сохранение ---- */
  $('#title-form').addEventListener('submit', e => {
   e.preventDefault();
   const name = $('#f-name').value.trim();
@@ -2174,27 +2544,45 @@ function updateEstimate(){
     toast('Тайтл добавлен');
   }
   const r = $('#f-submit').getBoundingClientRect();
-  Petals.burst(r.left + r.width/2, r.top + r.height/2, 18);
+  Particles.burst(r.left + r.width/2, r.top + r.height/2, 18);
   save();
   closeOv('ov-form');
   renderAll();
 });
 
 /* ================= настройки ================= */
+const TEMPO = {calm:1.5, normal:1, lively:.6, instant:.15};
 function applySettings(){
-  const s = state.settings, b = document.body;
+  const s = state.settings, b = document.body, root = document.documentElement;
   b.classList.toggle('light', !!s.light);
   b.classList.toggle('no-anim', !s.anim);
   b.classList.toggle('tilt-off', !s.tilt);
+  b.classList.toggle('no-lift', !s.cardLift);
   b.classList.toggle('glow', !!s.glow);
   b.classList.toggle('shine', !!s.shine);
   b.classList.toggle('ambient', !!s.ambient);
+  b.classList.toggle('no-moon', !s.moon);
   b.classList.toggle('no-sway', !s.sway);
   b.classList.toggle('no-branches', !s.branches);
-  document.documentElement.style.setProperty('--accent', ACCENTS[s.accent] || ACCENTS.sakura);
-  document.documentElement.style.setProperty('--bg-dim', (s.bgDim/100).toFixed(2));
+  b.classList.toggle('no-rowanim', !s.rowAnim);
+  b.classList.toggle('no-cascade', !s.cascade);
+  b.classList.toggle('no-tierwob', !s.tierWobble);
+  b.classList.toggle('no-tiergrad', !s.tierGrad);
+  b.classList.toggle('no-sssglow', !s.sssGlow);
+  b.classList.toggle('no-tierbg', !s.tierBg);
+  b.classList.toggle('no-modalpop', !s.modalPop);
+  b.classList.toggle('no-toastanim', !s.toastAnim);
+  b.classList.toggle('pill-glow', !!s.pillGlow);
+  root.style.setProperty('--accent', ACCENTS[s.accent] || ACCENTS.sakura);
+  root.style.setProperty('--bg-dim', (s.bgDim/100).toFixed(2));
+  root.style.setProperty('--sp', (TEMPO[s.tempo] || 1));
+  root.style.setProperty('--tws', s.tierWobbleSpeed + 's');
+  root.style.setProperty('--pa', s.panelOp + '%');
+  root.style.setProperty('--rad', s.radius + 'px');
+  root.style.setProperty('--grain-op', s.grain ? (s.grainOp/100).toFixed(3) : '0');
+  root.style.setProperty('--branch-alpha', (s.branchAlpha/100).toFixed(2));
   applyUserBg();
-  Petals.refresh();
+  Particles.refresh();
 }
 function applyUserBg(){
   let bg = null;
@@ -2217,10 +2605,42 @@ function applyUserBg(){
 });
  $('#bg-remove').onclick = () => { try{ localStorage.removeItem(LS_BG); }catch(e){} applyUserBg(); toast('Фоновая картина убрана'); };
 
+/* параллакс ветвей от курсора */
+window.addEventListener('pointermove', e => {
+  const k = (state.settings.parallax || 0)/100 * 14;
+  if (!k || !state.settings.branches) return;
+  const mx = e.clientX/innerWidth - .5, my = e.clientY/innerHeight - .5;
+  const tr = $('#branch-tr'), bl = $('#branch-bl');
+  if (tr) tr.style.transform = `translate(${(-mx*k).toFixed(1)}px,${(-my*k*.6).toFixed(1)}px)`;
+  if (bl) bl.style.transform = `translate(${(mx*k*.7).toFixed(1)}px,${(my*k*.5).toFixed(1)}px)`;
+}, {passive:true});
+
 function bindSettings(){
-  const map = {anim:'s-anim', tilt:'s-tilt', glow:'s-glow', shine:'s-shine',
-               counters:'s-counters', recent:'s-recent', light:'s-light',
-               petals:'s-petals', sway:'s-sway', ambient:'s-ambient', branches:'s-branches'};
+  /* селекты стилей */
+  $('#sel-pstyle').innerHTML = Object.entries(PRESETS).map(([k,p]) => `<option value="${k}">${esc(p.label)}</option>`).join('');
+  $('#sel-bstyle').innerHTML = Object.entries(BRANCH_STYLES).map(([k,b]) => `<option value="${k}">${esc(b.label)}</option>`).join('');
+  $('#sel-tempo').value = state.settings.tempo;
+  $('#sel-pstyle').value = PRESETS[state.settings.particleStyle] ? state.settings.particleStyle : 'sakura';
+  $('#sel-bstyle').value = BRANCH_STYLES[state.settings.branchStyle] ? state.settings.branchStyle : 'sakura';
+  $('#sel-pstyle').addEventListener('change', e => {
+    state.settings.particleStyle = e.target.value;
+    save(); Particles.restyle();
+  });
+  $('#sel-bstyle').addEventListener('change', e => {
+    state.settings.branchStyle = e.target.value;
+    save(); renderBranches();
+  });
+  $('#sel-tempo').addEventListener('change', e => {
+    state.settings.tempo = e.target.value;
+    save(); applySettings();
+  });
+
+  const map = {anim:'s-anim', rowAnim:'s-rowanim', cascade:'s-cascade', modalPop:'s-modalpop', toastAnim:'s-toastanim',
+    pillGlow:'s-pillglow', tierWobble:'s-tierwob', tierGrad:'s-tiergrad', sssGlow:'s-sssglow', tierBg:'s-tierbg',
+    tilt:'s-tilt', cardLift:'s-lift', glow:'s-glow', shine:'s-shine',
+    counters:'s-counters', recent:'s-recent', light:'s-light',
+    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle',
+    branches:'s-branches', sway:'s-sway', ambient:'s-ambient', moon:'s-moon', grain:'s-grain'};
   for (const [key, id] of Object.entries(map)){
     $('#'+id).checked = !!state.settings[key];
     $('#'+id).addEventListener('change', e => {
@@ -2228,19 +2648,31 @@ function bindSettings(){
       save(); applySettings(); renderAll();
     });
   }
-  const range = (rid, vid, key, fmt) => {
+  const range = (rid, vid, key, fmt, after) => {
     const r = $('#'+rid);
     r.value = state.settings[key];
     $('#'+vid).textContent = fmt(state.settings[key]);
     r.addEventListener('input', () => {
       state.settings[key] = +r.value;
       $('#'+vid).textContent = fmt(+r.value);
-      Petals.refresh(); persist();
+      if (after) after();
+      Particles.refresh(); persist();
     });
   };
   range('s-density', 'v-density', 'petalDensity', v => v + '%');
+  range('s-fall', 'v-fall', 'fallSpeed', v => v + '%');
+  range('s-psize', 'v-psize', 'particleSize', v => v + '%');
+  range('s-palpha', 'v-palpha', 'particleOpacity', v => v + '%');
   range('s-wind', 'v-wind', 'wind', v => (v/100).toFixed(1) + '×');
+  range('s-parallax', 'v-parallax', 'parallax', v => v + '%');
+  range('s-balpha', 'v-balpha', 'branchAlpha', v => v + '%', applySettings);
+  range('s-grainop', 'v-grainop', 'grainOp', v => (v/10).toFixed(1), applySettings);
   range('s-bgdim', 'v-bgdim', 'bgDim', v => v + '%');
+  range('s-tierwobspd', 'v-tierwobspd', 'tierWobbleSpeed', v => v + ' с', applySettings);
+  range('s-tiltpow', 'v-tiltpow', 'tiltPower', v => '±' + v + '°');
+  range('s-cntspd', 'v-cntspd', 'counterSpeed', v => v + ' мс');
+  range('s-panelop', 'v-panelop', 'panelOp', v => v + '%', applySettings);
+  range('s-radius', 'v-radius', 'radius', v => v + ' px', applySettings);
   $$('#acc-pick button').forEach(b => {
     b.classList.toggle('on', state.settings.accent === b.dataset.acc);
     b.onclick = () => {
@@ -2261,13 +2693,31 @@ function bindSettings(){
   numHandler('s-epmin','epMin'); numHandler('s-filmmin','filmMin');
 }
 function bindSettingsValues(){
-  const map = {anim:'s-anim', tilt:'s-tilt', glow:'s-glow', shine:'s-shine',
-               counters:'s-counters', recent:'s-recent', light:'s-light',
-               petals:'s-petals', sway:'s-sway', ambient:'s-ambient', branches:'s-branches'};
+  const map = {anim:'s-anim', rowAnim:'s-rowanim', cascade:'s-cascade', modalPop:'s-modalpop', toastAnim:'s-toastanim',
+    pillGlow:'s-pillglow', tierWobble:'s-tierwob', tierGrad:'s-tiergrad', sssGlow:'s-sssglow', tierBg:'s-tierbg',
+    tilt:'s-tilt', cardLift:'s-lift', glow:'s-glow', shine:'s-shine',
+    counters:'s-counters', recent:'s-recent', light:'s-light',
+    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle',
+    branches:'s-branches', sway:'s-sway', ambient:'s-ambient', moon:'s-moon', grain:'s-grain'};
   for (const [k, id] of Object.entries(map)) $('#'+id).checked = !!state.settings[k];
-  $('#s-density').value = state.settings.petalDensity; $('#v-density').textContent = state.settings.petalDensity + '%';
-  $('#s-wind').value = state.settings.wind; $('#v-wind').textContent = (state.settings.wind/100).toFixed(1) + '×';
-  $('#s-bgdim').value = state.settings.bgDim; $('#v-bgdim').textContent = state.settings.bgDim + '%';
+  const rv = (rid, vid, key, fmt) => { $('#'+rid).value = state.settings[key]; $('#'+vid).textContent = fmt(state.settings[key]); };
+  rv('s-density','v-density','petalDensity', v => v + '%');
+  rv('s-fall','v-fall','fallSpeed', v => v + '%');
+  rv('s-psize','v-psize','particleSize', v => v + '%');
+  rv('s-palpha','v-palpha','particleOpacity', v => v + '%');
+  rv('s-wind','v-wind','wind', v => (v/100).toFixed(1) + '×');
+  rv('s-parallax','v-parallax','parallax', v => v + '%');
+  rv('s-balpha','v-balpha','branchAlpha', v => v + '%');
+  rv('s-grainop','v-grainop','grainOp', v => (v/10).toFixed(1));
+  rv('s-bgdim','v-bgdim','bgDim', v => v + '%');
+  rv('s-tierwobspd','v-tierwobspd','tierWobbleSpeed', v => v + ' с');
+  rv('s-tiltpow','v-tiltpow','tiltPower', v => '±' + v + '°');
+  rv('s-cntspd','v-cntspd','counterSpeed', v => v + ' мс');
+  rv('s-panelop','v-panelop','panelOp', v => v + '%');
+  rv('s-radius','v-radius','radius', v => v + ' px');
+  $('#sel-tempo').value = state.settings.tempo;
+  $('#sel-pstyle').value = PRESETS[state.settings.particleStyle] ? state.settings.particleStyle : 'sakura';
+  $('#sel-bstyle').value = BRANCH_STYLES[state.settings.branchStyle] ? state.settings.branchStyle : 'sakura';
   $$('#acc-pick button').forEach(b => b.classList.toggle('on', state.settings.accent === b.dataset.acc));
   $('#s-epmin').value = state.settings.epMin;
   $('#s-filmmin').value = state.settings.filmMin;
@@ -2319,7 +2769,7 @@ function bindSettingsValues(){
   onOk(){
     localStorage.removeItem(LS_KEY); localStorage.removeItem('anime.v2'); localStorage.removeItem('tsundoku.v1');
     state = { titles: [], settings: {...DEFAULT_SETTINGS}, updatedAt: 0 };
-    applySettings(); bindSettingsValues(); save(); renderAll(); toast('Каталог очищен');
+    applySettings(); bindSettingsValues(); renderBranches(); save(); renderAll(); toast('Каталог очищен');
   }
 });
 
@@ -2331,9 +2781,7 @@ try{ sync = JSON.parse(localStorage.getItem(LS_SYNC)) || null; }catch(e){}
 let syncStatus = 'off', lastSyncAt = 0, pushTimer = null, pullTimer = null;
 const b64encode = str => { const b = new TextEncoder().encode(str); let s=''; b.forEach(x => s += String.fromCharCode(x)); return btoa(s); };
 
-/* редактирование доступно только владельцу, вошедшему по токену */
 function canEdit(){ return !!(sync && sync.mode === 'rw'); }
-
 function saveSync(){ if (sync) localStorage.setItem(LS_SYNC, JSON.stringify(sync)); else localStorage.removeItem(LS_SYNC); }
 function rawURL(){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`; }
 async function gh(path, token, opts = {}){
@@ -2384,7 +2832,6 @@ function updateSyncUI(){
     if (sync.avatar){ av.src = sync.avatar; av.classList.remove('hidden'); mini.classList.add('hidden'); }
     else { av.classList.add('hidden'); mini.classList.remove('hidden'); }
   }
-  /* кнопки добавления — только владельцу с токеном */
   const editable = canEdit();
   $('#btn-add').classList.toggle('hidden', !editable);
   $$('[data-act="add"]').forEach(b => b.classList.toggle('hidden', !editable));
@@ -2565,7 +3012,7 @@ async function loadBranches(){
   }
 };
 
-/* ---- ссылка-приглашение: ?repo=owner/name&branch=main ---- */
+/* ---- ссылка-приглашение ---- */
 (function(){
   const qp = new URLSearchParams(location.search);
   const repo = qp.get('repo');
@@ -2622,7 +3069,7 @@ document.addEventListener('click', e => {
  $('#cal-mode-grid').onclick = () => { calMode = 'grid'; renderCalendar(); };
  $('#cal-mode-list').onclick = () => { calMode = 'list'; renderCalendar(); };
 
-/* объёмный наклон карточек */
+/* объёмный наклон карточек (сила и подъём — из настроек) */
 let tiltEl = null;
 document.addEventListener('pointermove', e => {
   if (!state.settings.tilt || REDUCED || e.pointerType !== 'mouse' || matchMedia('(hover:none)').matches) return;
@@ -2633,7 +3080,9 @@ document.addEventListener('pointermove', e => {
   const r = card.getBoundingClientRect();
   const dx = (e.clientX - r.left) / r.width - .5;
   const dy = (e.clientY - r.top) / r.height - .5;
-  card.style.transform = `translateY(-5px) perspective(700px) rotateX(${(-dy*8).toFixed(2)}deg) rotateY(${(dx*8).toFixed(2)}deg)`;
+  const amp = state.settings.tiltPower || 8;
+  const lift = state.settings.cardLift ? 5 : 0;
+  card.style.transform = `translateY(-${lift}px) perspective(700px) rotateX(${(-dy*amp).toFixed(2)}deg) rotateY(${(dx*amp).toFixed(2)}deg)`;
 });
 document.addEventListener('pointerleave', e => {
   if (tiltEl && e.target.closest && e.target.closest('.card') === tiltEl){ tiltEl.style.transform = ''; tiltEl = null; }
@@ -2643,7 +3092,7 @@ window.addEventListener('resize', movePill);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(movePill);
 
 /* ================= старт ================= */
-Petals.init();
+Particles.init();
 applySettings();
 bindSettings();
 bindSettingsValues();
