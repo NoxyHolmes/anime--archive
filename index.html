@@ -140,6 +140,7 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease
   border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadow);padding:8px}
 .sm-head{padding:8px 10px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:6px;line-height:1.5}
 .sm-head b{color:var(--text)}
+.sm-role{margin-top:6px;font-size:9px;opacity:.6}
 .sync-menu button{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:9px;font-size:13.5px;transition:.15s}
 .sync-menu button:hover{background:var(--panel2)}
 .sm-logout{color:var(--warn)!important}
@@ -1318,7 +1319,13 @@ function compressImage(file,maxW,quality){
   });
 }
 
-/* ================= хранилище ================= */
+/* ================================================================
+   ХРАНИЛИЩЕ — GitHub истина, localStorage кэш
+   КРИТИЧНО для сохранения входа:
+   1. sync читается из localStorage ПЕРВЫМ (до любых persist)
+   2. saveSync() — единственное место записи токена; под защитой
+   3. persist() НЕ трогает LS_SYNC вообще — только кэш каталога
+================================================================ */
 const LS_KEY='anime.v3',LS_SET='anime.settings',LS_BG='anime.bg',LS_SYNC='anime.sync';
 const OLD_KEYS=['anime.v2','tsundoku.v1'];
 const DEFAULT_SETTINGS={
@@ -1334,6 +1341,30 @@ const DEFAULT_SETTINGS={
   ambient:true,moon:true,bgDim:55,
   epMin:24,filmMin:110
 };
+
+/* --- 1. ВХОД ЧИТАЕТСЯ ПЕРВЫМ, до любых функций сохранения --- */
+let sync=null;
+try{sync=JSON.parse(localStorage.getItem(LS_SYNC))||null;}catch(e){}
+
+/* --- 2. saveSync: запись ТОКЕНА, единственная точка --- */
+function saveSync(){
+  try{
+    if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
+    else localStorage.removeItem(LS_SYNC);
+    return true;
+  }catch(e){
+    /* квота переполнена — чистим НЕкритичное и пробуем снова */
+    try{localStorage.removeItem(LS_KEY);}catch(e2){}
+    try{localStorage.removeItem(LS_BG);}catch(e2){}
+    try{
+      if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
+      return true;
+    }catch(e3){
+      toast('Не удалось запомнить вход: хранилище полностью заблокировано','warn');
+      return false;
+    }
+  }
+}
 
 function normDate(d){return(d&&+d.y)?{d:+d.d||null,m:+d.m||null,y:+d.y}:null;}
 function unitName(t,u,i){
@@ -1396,64 +1427,20 @@ let state=loadTitles();
 let settings=loadSettings();
 let sortMode='added';
 
-/* ---- СИНХРОНИЗАЦИЯ: состояние (объявлено рано — нужно persist) ---- */
-let sync=null;
-try{sync=JSON.parse(localStorage.getItem(LS_SYNC))||null;}catch(e){}
-let syncStatus='off',lastSyncAt=0,pushTimer=null,pollTimer=null;
-let lastSeenSha=null,lastApiCheck=0,apiFailStreak=0;
-const POLL_MS=5000,API_MS=70000;
-const b64encode=str=>{const b=new TextEncoder().encode(str);let s='';b.forEach(x=>s+=String.fromCharCode(x));return btoa(s);};
-function canEdit(){return!!(sync&&sync.mode==='rw');}
-
-/* ================================================================
-   ГЛАВНОЕ ИСПРАВЛЕНИЕ: токен пишется первым и под защитой.
-   Было: saveSync без try/catch — при переполненной квоте молча
-   падал, токен не запоминался, F5 выкидывал из входа.
-   Теперь: при нехватке места жертвуем кэшем каталога и фоном —
-   они восстановятся из GitHub, а вход сохранится.
-================================================================ */
+/* --- 3. persist: НЕ ТРОГАЕТ LS_SYNC — только кэш --- */
 let quotaWarned=false;
-function saveSync(){
-  try{
-    if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
-    else localStorage.removeItem(LS_SYNC);
-    return true;
-  }catch(e){
-    /* квота переполнена — освобождаем место */
-    try{localStorage.removeItem(LS_KEY);}catch(e2){}
-    try{localStorage.removeItem(LS_BG);}catch(e2){}
-    try{
-      if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
-      toast('Кэш каталога выгружен из браузера — данные остались в GitHub','warn');
-      return true;
-    }catch(e3){
-      toast('Не удалось запомнить вход: хранилище браузера полностью заблокировано','warn');
-      return false;
-    }
-  }
-}
-
 function persist(){
-  /* порядок важен: токен и настройки — маленькие и критичные, пишем первыми */
-  saveSync();
-  persistSettings();
-  if(sync&&sync.mode==='rw'){
-    /* владелец: локальная копия каталога — просто кэш, истина в GitHub */
-    try{localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles}));}
-    catch(e){/* кэш не влез — не страшно */}
-    return;
-  }
-  /* читатель/без входа: пробуем сохранить, при переполнении — обложки вон */
   try{localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles}));}
   catch(e){
     try{
       const light=state.titles.map(t=>(t.cover&&t.cover.startsWith('data:'))?{...t,cover:''}:t);
       localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:0,titles:light}));
-      if(!quotaWarned){
-        quotaWarned=true;
-        toast('Локальный кэш переполнен — обложки временно выгружены; полная версия хранится в GitHub','warn');
-      }
-    }catch(e2){}
+      if(!quotaWarned){quotaWarned=true;toast('Локальный кэш переполнен — полная версия хранится в GitHub','warn');}
+    }catch(e2){
+      /* совсем нет места: чистим ТОЛЬКО кэш, НЕ трогая LS_SYNC и LS_SET */
+      try{localStorage.removeItem(LS_KEY);}catch(e3){}
+      if(!quotaWarned){quotaWarned=true;toast('Кэш каталога не сохраняется локально — работаем из GitHub','warn');}
+    }
   }
 }
 function persistSettings(){try{localStorage.setItem(LS_SET,JSON.stringify(settings));}catch(e){}}
@@ -2675,8 +2662,14 @@ function bindSettings(){
 });
 
 /* ================================================================
-   СИНХРОНИЗАЦИЯ
+   СИНХРОНИЗАЦИЯ — вход сохраняется до ручного выхода
 ================================================================ */
+let syncStatus='off',lastSyncAt=0,pushTimer=null,pollTimer=null;
+let lastSeenSha=null,lastApiCheck=0,apiFailStreak=0;
+const POLL_MS=5000,API_MS=70000;
+const b64encode=str=>{const b=new TextEncoder().encode(str);let s='';b.forEach(x=>s+=String.fromCharCode(x));return btoa(s);};
+function canEdit(){return!!(sync&&sync.mode==='rw');}
+
 function rawURL(){return`https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`;}
 function shaURL(sha){return`https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sha}/${DATA_PATH}`;}
 async function gh(path,token,opts={}){
@@ -2697,7 +2690,8 @@ function renderSyncMenu(){
   if(!sync){m.classList.add('hidden');return;}
   const mode=sync.mode==='rw'?'владелец':'чтение';
   m.innerHTML=`
-    <div class="sm-head"><b>${esc(sync.login||sync.owner)}</b><br>${esc(sync.owner)}/${esc(sync.repo)} · ${mode}</div>
+    <div class="sm-head"><b>${esc(sync.login||sync.owner)}</b><br>${esc(sync.owner)}/${esc(sync.repo)} · ${mode}
+    <div class="sm-role">вход сохранён — до ручного выхода</div></div>
     <button id="sm-sync">Синхронизировать</button>
     <button id="sm-settings">Настройки</button>
     <button id="sm-logout" class="sm-logout">Отключиться</button>
@@ -2706,9 +2700,10 @@ function renderSyncMenu(){
     if(sync.mode==='rw'){await push();await pull(false);}else await pull(false);};
   $('#sm-settings').onclick=()=>{m.classList.add('hidden');openLogin(sync.mode);};
   $('#sm-logout').onclick=()=>{
-    sync=null;saveSync();          /* здесь saveSync удалит запись — тоже под защитой */
+    sync=null;
+    saveSync(); /* удалит запись — тоже под защитой */
     clearInterval(pollTimer);pollTimer=null;
-    setSyncStatus('off');updateSyncUI();toast('Вы вышли');
+    setSyncStatus('off');updateSyncUI();toast('Вы вышли из профиля');
   };
 }
 function updateSyncUI(){
@@ -2725,6 +2720,25 @@ function updateSyncUI(){
 }
  $('#sync-user').addEventListener('click',e=>{e.stopPropagation();$('#sync-menu').classList.toggle('hidden');});
 document.addEventListener('click',e=>{if(!e.target.closest('.sync-wrap'))$('#sync-menu').classList.add('hidden');});
+
+/* --- проверка живого токена при автологине --- */
+async function verifyToken(){
+  if(!sync||sync.mode!=='rw'||!sync.token)return true;
+  try{
+    await gh('/user',sync.token);
+    return true;
+  }catch(e){
+    if(e.status===401){
+      /* токен отозван/истёк — честно разлогиниваем */
+      sync=null;
+      try{localStorage.removeItem(LS_SYNC);}catch(e2){}
+      updateSyncUI();
+      toast('Токен доступа недействителен — войдите заново','warn');
+      return false;
+    }
+    return true; /* сеть/лимит — считаем валидным */
+  }
+}
 
 async function pull(silent=true){
   if(!sync)return;
@@ -2757,7 +2771,9 @@ async function pull(silent=true){
       const before=state.titles.length;
       state.titles=remote.titles.map(normalizeTitle);
       state.updatedAt=remote.updatedAt;
-      persist();broadcastLocal();renderAll();
+      persist();
+      broadcastLocal();
+      renderAll();
       toast(`Каталог обновлён${remote.titles.length!==before?` · ${remote.titles.length} ${plural(remote.titles.length,'тайтл','тайтла','тайтлов')}`:''}`);
     }
     setSyncStatus('ok');
@@ -2797,13 +2813,17 @@ function schedulePush(){
 }
 async function connectAndSync(){
   updateSyncUI();
-  if(sync&&sync.login)toast('С возвращением, '+sync.login);   /* приветствие при автологине */
+  if(!sync)return;
+  if(await verifyToken()===false)return; /* токен живой? нет — уже разлогинило */
+  toast('С возвращением, '+(sync.login||sync.owner));
   lastSyncAt=0;
   await pull(true);
   if(sync.mode==='rw'&&syncStatus==='err'){await push();await pull(true);}
   if(syncStatus==='ok'&&!lastSyncAt)toast('Подключено');
   clearInterval(pollTimer);
-  pollTimer=setInterval(()=>{if(sync&&document.visibilityState==='visible')pull(true);},POLL_MS);
+  pollTimer=setInterval(()=>{
+    if(sync&&document.visibilityState==='visible')pull(true);
+  },POLL_MS);
 }
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'&&sync){
@@ -2872,7 +2892,7 @@ async function loadBranches(){
   const full=$('#lk-repo').value;
   const[owner,repo]=full.split('/');
   sync={mode:'rw',token:checkedToken,owner,repo,branch:$('#lk-branch').value||'main',login:checkedUser.login,avatar:checkedUser.avatar_url};
-  saveSync();       /* токен закреплён в localStorage немедленно */
+  saveSync(); /* токен закреплён в localStorage немедленно, под защитой */
   closeOv('ov-login');
   connectAndSync();
 };
@@ -2955,7 +2975,7 @@ document.addEventListener('click',e=>{
  $('#cal-next').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalGrid();};
  $('#cal-today').onclick=()=>{const n=new Date();calY=n.getFullYear();calM=n.getMonth();renderCalGrid();};
  $('#cal-sel-m').addEventListener('change',e=>{calM=+e.target.value;renderCalGrid();});
- $('#cal-sel-y').addEventListener('change',e=>{calY=+e.target.value;renderCalGrid();});
+ $('#cal-sel-y').addEventListener('change',e=>{calY=+e.target.value;renderCalGrid();};
  $('#cal-mode-grid').onclick=()=>{calMode='grid';renderCalendar();};
  $('#cal-mode-list').onclick=()=>{calMode='list';renderCalendar();};
 
@@ -2990,7 +3010,7 @@ renderAll();
 movePill();
 updateSyncUI();
 setTimeout(movePill,400);
-if(sync)connectAndSync();   /* сохранённый вход подхватывается при загрузке страницы */
+if(sync)connectAndSync(); /* сохранённый вход подхватывается при загрузке */
 </script>
 </body>
 </html>
