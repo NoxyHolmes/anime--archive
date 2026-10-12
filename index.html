@@ -16,11 +16,10 @@
   --accent:#ff7aa2; --accent2:#ffd76e;
   --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
   --ok:#8fd6a4; --warn:#ff6b6b;
-  /* у каждого тира — свой уникальный оттенок */
   --t-sss:#ffd76e; --t-s:#ff4d6d; --t-a:#a78bfa; --t-b:#38bdf8;
   --t-c:#34d399; --t-d:#fb923c; --t-e:#94a3b8;
   --shadow:0 20px 46px -18px rgba(0,0,0,.65);
-  --cover-w:120px;
+  --cover-w:148px;
   --sp:1; --tes:6s; --pa:88%; --rad:11px; --branch-alpha:.95;
 }
 body.light{
@@ -54,7 +53,6 @@ img{display:block}
 .ic{flex:none;vertical-align:-3px}
 .hidden{display:none!important}
 
-/* ---- фоновые слои (лепестки позади контента) ---- */
 #user-bg,#user-dim{position:fixed;inset:0;z-index:0;pointer-events:none;display:none}
 body.has-bg #user-bg{display:block;background-image:var(--user-img);background-size:cover;background-position:center}
 body.has-bg #user-dim{display:block;background:var(--bg);opacity:var(--bg-dim,.55)}
@@ -87,7 +85,6 @@ body.no-sway .sway,body.no-sway .crown,body.no-anim .sway,body.no-anim .crown{an
 #petals{position:fixed;inset:0;z-index:0;pointer-events:none}
 body.pets-front #petals{z-index:80}
 
-/* ---- шапка ---- */
 .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;
   padding:13px 28px;border-bottom:1px solid var(--line);
   background:color-mix(in srgb,var(--bg) 78%,transparent);
@@ -125,7 +122,6 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease
 .btn-danger{border-color:color-mix(in srgb,var(--warn) 50%,var(--line));color:var(--warn)}
 .btn-danger:hover{background:var(--warn);border-color:var(--warn);color:#fff}
 
-/* ---- синхронизация ---- */
 .sync-wrap{position:relative;flex:none}
 .sync-user{display:flex;align-items:center;gap:8px;padding:5px 8px 5px 6px;border:1px solid var(--line);border-radius:11px;cursor:pointer;transition:.2s}
 .sync-user:hover{border-color:var(--muted)}
@@ -136,7 +132,7 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease
 .sync-dot.sync{background:var(--accent2);animation:dotPulse 1s ease-in-out infinite}
 .sync-dot.err{background:var(--warn)}
 @keyframes dotPulse{50%{opacity:.35}}
-.sync-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:70;min-width:250px;background:var(--panel);
+.sync-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:70;min-width:280px;background:var(--panel);
   border:1px solid var(--line2);border-radius:14px;box-shadow:var(--shadow);padding:8px}
 .sm-head{padding:8px 10px;font-size:12.5px;color:var(--muted);border-bottom:1px solid var(--line);margin-bottom:6px;line-height:1.5}
 .sm-head b{color:var(--text)}
@@ -145,7 +141,6 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease
 .sm-logout{color:var(--warn)!important}
 .sm-last{padding:8px 10px 4px;font-family:'JetBrains Mono';font-size:10.5px;color:var(--faint);border-top:1px solid var(--line);margin-top:5px}
 
-/* ---- каркас ---- */
 main{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:28px 28px 80px}
 @keyframes viewIn{from{opacity:0;transform:translateY(16px) scale(.99);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
 body:not(.no-anim) .view{animation:viewIn calc(.45s*var(--sp)) cubic-bezier(.2,.9,.3,1) both}
@@ -154,7 +149,6 @@ body.no-modalpop .view{animation:none}
 .page-title{font-family:'Unbounded';font-weight:600;font-size:24px}
 .page-sub{color:var(--muted);font-size:13px;margin-top:6px}
 
-/* ---- герой ---- */
 .hero{display:flex;align-items:center;justify-content:space-between;gap:26px;flex-wrap:wrap;
   margin-bottom:24px;padding:30px 34px;border:1px solid var(--line);border-radius:22px;
   background:linear-gradient(115deg,color-mix(in srgb,var(--panel) var(--pa),transparent),color-mix(in srgb,var(--panel) calc(var(--pa)*.45),transparent) 62%,transparent);
@@ -175,7 +169,6 @@ body.no-modalpop .view{animation:none}
 .hst span{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .hst em{display:block;font-style:normal;font-family:'JetBrains Mono';font-size:10px;color:var(--faint);margin-top:3px}
 
-/* ---- сводка тиров ---- */
 .tier-total{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
 .tt-item{display:flex;align-items:center;gap:8px;padding:7px 13px;border:1px solid var(--line);border-radius:11px;
   background:color-mix(in srgb,var(--panel) var(--pa),transparent);cursor:pointer;transition:.2s}
@@ -185,17 +178,15 @@ body.no-modalpop .view{animation:none}
 .tt-n{font-family:'JetBrains Mono';font-size:12px;color:var(--text);font-weight:600}
 .tt-e{font-size:10px;color:var(--faint)}
 
-/* ---- лента недавних ---- */
 .recent{margin-bottom:24px}
 .recent-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
 .recent-head h2{font-family:'Unbounded';font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase}
 .recent-head span{font-family:'JetBrains Mono';font-size:11px;color:var(--faint)}
 .recent-strip{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 10px}
-.card.mini{--cover-w:96px}
-.card.mini .card-title{font-size:11.5px;-webkit-line-clamp:1;line-clamp:1}
+.card.mini{--cover-w:118px}
+.card.mini .card-title{font-size:12px;-webkit-line-clamp:1;line-clamp:1}
 body:not(.no-anim):not(.no-cascade) .recent .card{animation:cardIn calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*50ms*var(--sp))}
 
-/* ---- фильтры + жанры ---- */
 .filters{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
 .searchbox{display:flex;align-items:center;gap:9px;flex:1;min-width:220px;max-width:400px;
   background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px 13px;transition:border-color .25s,box-shadow .25s}
@@ -230,59 +221,68 @@ body:not(.no-anim):not(.no-cascade) .recent .card{animation:cardIn calc(.5s*var(
 .gp-grid{display:flex;flex-wrap:wrap;gap:8px;max-height:218px;overflow-y:auto;padding-right:4px}
 .gp-empty{color:var(--faint);font-size:12.5px;padding:8px 2px}
 
-/* ---- тир-лист ---- */
 .tier-row{--i:0;display:flex;gap:24px;padding:20px 0 30px;border-top:1px solid var(--line);position:relative;scroll-margin-top:80px}
-.tier-row::before{content:'';position:absolute;left:0;top:20px;bottom:30px;width:240px;
+.tier-row::before{content:'';position:absolute;left:0;top:20px;bottom:30px;width:260px;
   background:linear-gradient(90deg,color-mix(in srgb,var(--tc) 8%,transparent),transparent);pointer-events:none;border-radius:10px}
 body.no-tierbg .tier-row::before{display:none}
 #tierlist.anim-in .tier-row{animation:rowIn calc(.55s*var(--sp)) cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*85ms*var(--sp))}
 body.no-rowanim #tierlist.anim-in .tier-row{animation:none}
 @keyframes rowIn{from{opacity:0;transform:translateX(-34px);filter:blur(5px)}}
-.tier-side{flex:none;width:122px;border-left:3px solid var(--tc);padding-left:16px;
+.tier-side{flex:none;width:132px;border-left:3px solid var(--tc);padding-left:16px;
   display:flex;flex-direction:column;gap:4px;padding-top:2px}
 
 /* ================================================================
-   3D-ЭМБЛЕМЫ: объёмные многослойные кристаллы (preserve-3d)
+   3D-ЭМБЛЕМЫ: современные стеклянные кристаллы
 ================================================================ */
-.emb{position:relative;width:84px;height:84px;margin:6px 0 10px;flex:none;perspective:860px}
-.emb-aura{position:absolute;inset:-18px;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle, color-mix(in srgb,var(--tc) 45%,transparent), transparent 66%);
-  animation:embAura 3.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.6s)}
-@keyframes embAura{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
-.emb-ring{position:absolute;inset:-6px;border-radius:50%;pointer-events:none;
-  border:1.5px dashed color-mix(in srgb,var(--tc) 55%,transparent);
+.emb{position:relative;width:92px;height:92px;margin:8px 0 16px;flex:none;perspective:1000px}
+.emb-aura{position:absolute;inset:-24px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--tc) 55%,transparent), transparent 62%);
+  filter:blur(6px);
+  animation:embAura 3.8s ease-in-out infinite;animation-delay:calc(var(--i)*-.65s)}
+@keyframes embAura{0%,100%{opacity:.45;transform:scale(.96)}50%{opacity:.95;transform:scale(1.15)}}
+.emb-ring{position:absolute;inset:-11px;border-radius:50%;pointer-events:none;
+  border:1.5px dashed color-mix(in srgb,var(--tc) 42%,transparent);
   animation:embRing calc(var(--tes)*2.4) linear infinite}
+.emb-ring::before{content:'';position:absolute;top:-3px;left:50%;width:6px;height:6px;border-radius:50%;
+  background:var(--tc);transform:translateX(-50%);
+  box-shadow:0 0 12px var(--tc), 0 0 3px #fff inset}
 @keyframes embRing{to{transform:rotate(360deg)}}
 .emb-rot{position:absolute;inset:0;transform-style:preserve-3d}
-.emb-layer{position:absolute;inset:5px;transform:translateZ(var(--z,0px));
-  opacity:var(--lo,1);filter:brightness(var(--lb,1)) drop-shadow(0 10px 14px color-mix(in srgb,var(--tc) 28%,transparent))}
+.emb-layer{position:absolute;inset:7px;
+  transform:translateZ(var(--z,0px)) rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));
+  opacity:var(--lo,1);
+  filter:brightness(var(--lb,1)) drop-shadow(0 8px 14px color-mix(in srgb,var(--tc) 30%,transparent));
+  transition:filter .3s}
 .emb-layer svg{width:100%;height:100%;overflow:visible;display:block}
-body.tier-glow .emb-layer:last-child{filter:brightness(1.3) drop-shadow(0 0 12px color-mix(in srgb,var(--tc) 60%,transparent))}
-.emb-letter{position:absolute;inset:0;display:grid;place-items:center;transform:translateZ(30px);
-  font-family:'Unbounded';font-weight:800;line-height:1;color:#fff;z-index:2;
-  text-shadow:0 1px 0 color-mix(in srgb,var(--tc) 60%,#000),
-    0 2px 0 color-mix(in srgb,var(--tc) 42%,#000),
-    0 3px 0 color-mix(in srgb,var(--tc) 26%,#000),
-    0 7px 18px rgba(0,0,0,.55)}
-.emb[data-tier="SSS"] .emb-letter{font-size:13px}
-.emb[data-tier="S"] .emb-letter{font-size:19px}
+body.tier-glow .emb-layer:last-child{filter:brightness(1.45) drop-shadow(0 0 16px color-mix(in srgb,var(--tc) 75%,transparent))}
+.emb-letter{position:absolute;inset:0;display:grid;place-items:center;transform:translateZ(32px);
+  font-family:'Unbounded';font-weight:800;line-height:1;color:#fff;z-index:2;letter-spacing:-.02em;
+  text-shadow:0 1px 0 color-mix(in srgb,var(--tc) 55%,#000),
+    0 2px 0 color-mix(in srgb,var(--tc) 38%,#000),
+    0 3px 0 color-mix(in srgb,var(--tc) 22%,#000),
+    0 5px 10px rgba(0,0,0,.6),
+    0 0 20px color-mix(in srgb,var(--tc) 55%,transparent)}
+.emb[data-tier="SSS"] .emb-letter{font-size:12px;letter-spacing:.02em}
+.emb[data-tier="S"] .emb-letter{font-size:20px}
 .emb[data-tier="A"] .emb-letter,.emb[data-tier="B"] .emb-letter,.emb[data-tier="C"] .emb-letter,
-.emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:20px}
-.emb-shadow{position:absolute;left:12%;right:12%;bottom:-10px;height:10px;border-radius:50%;
-  background:radial-gradient(ellipse, color-mix(in srgb,var(--tc) 45%,transparent), transparent 70%);
-  animation:embShadow 3.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.6s)}
-@keyframes embShadow{0%,100%{transform:scaleX(1);opacity:.7}50%{transform:scaleX(.72);opacity:.45}}
-.emb-crown{position:absolute;top:-17px;left:50%;transform:translateX(-50%);width:26px;z-index:3;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));pointer-events:none}
+.emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:22px}
+.emb-shadow{position:absolute;left:14%;right:14%;bottom:-12px;height:10px;border-radius:50%;
+  background:radial-gradient(ellipse, color-mix(in srgb,var(--tc) 50%,transparent), transparent 70%);
+  filter:blur(2px);
+  animation:embShadow 3.8s ease-in-out infinite;animation-delay:calc(var(--i)*-.65s)}
+@keyframes embShadow{0%,100%{transform:scaleX(1);opacity:.75}50%{transform:scaleX(.68);opacity:.4}}
+.emb-crown{position:absolute;top:-20px;left:50%;transform:translateX(-50%);width:28px;z-index:3;
+  filter:drop-shadow(0 2px 5px rgba(0,0,0,.55));pointer-events:none;
+  animation:crownBob 3.5s ease-in-out infinite}
+@keyframes crownBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-3px)}}
 
-/* индивидуальные анимации тиров */
-.emb[data-tier="SSS"] .emb-rot{animation:embSpinY var(--tes) linear infinite}                 /* звезда: полный оборот */
-.emb[data-tier="S"] .emb-rot{animation:embFlipX calc(var(--tes)*1.25) cubic-bezier(.6,.05,.4,.95) infinite} /* лотос: монетка */
-.emb[data-tier="A"] .emb-rot{animation:embPendY var(--tes) ease-in-out infinite alternate}     /* алмаз: маятник по Y */
-.emb[data-tier="B"] .emb-rot{animation:embBob 7s ease-in-out infinite}                        /* кристалл: парение */
-.emb[data-tier="C"] .emb-rot{animation:embOrbitZ calc(var(--tes)*1.6) linear infinite}        /* кольцо: орбита */
-.emb[data-tier="D"] .emb-rot{animation:embSwing 4.8s ease-in-out infinite alternate;transform-origin:50% -16%} /* щит: качание */
-.emb[data-tier="E"] .emb-rot{animation:embSpinY calc(var(--tes)*2.6) linear infinite reverse} /* куб: медленный реверс */
+.emb[data-tier="SSS"] .emb-rot{animation:embSpinY var(--tes) linear infinite}
+.emb[data-tier="S"] .emb-rot{animation:embFlipX calc(var(--tes)*1.25) cubic-bezier(.6,.05,.4,.95) infinite}
+.emb[data-tier="A"] .emb-rot{animation:embPendY var(--tes) ease-in-out infinite alternate}
+.emb[data-tier="B"] .emb-rot{animation:embBob 7s ease-in-out infinite}
+.emb[data-tier="C"] .emb-rot{animation:embOrbitZ calc(var(--tes)*1.6) linear infinite}
+.emb[data-tier="D"] .emb-rot{animation:embSwing 4.8s ease-in-out infinite alternate;transform-origin:50% -16%}
+.emb[data-tier="E"] .emb-rot{animation:embSpinY calc(var(--tes)*2.6) linear infinite reverse}
 @keyframes embSpinY{from{transform:rotateY(0deg) rotateX(12deg)}50%{transform:rotateY(180deg) rotateX(-12deg)}to{transform:rotateY(360deg) rotateX(12deg)}}
 @keyframes embFlipX{from{transform:rotateX(0deg) rotateY(14deg)}to{transform:rotateX(360deg) rotateY(14deg)}}
 @keyframes embPendY{from{transform:rotateY(-58deg) rotateZ(-4deg)}to{transform:rotateY(58deg) rotateZ(4deg)}}
@@ -291,7 +291,6 @@ body.tier-glow .emb-layer:last-child{filter:brightness(1.3) drop-shadow(0 0 12px
 @keyframes embSwing{from{transform:rotate(13deg)}to{transform:rotate(-13deg)}}
 @keyframes embGentle{0%,100%{transform:translateY(0) rotateY(-7deg)}50%{transform:translateY(-6px) rotateY(7deg)}}
 
-/* режимы анимации эмблем */
 body[data-embanim="off"] .emb-rot,
 body[data-embanim="off"] .emb-aura,
 body[data-embanim="off"] .emb-ring,
@@ -303,17 +302,16 @@ body[data-embanim="float"] .emb-ring{animation:none!important}
 .tier-epithet{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tier-count{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);white-space:nowrap}
 .tier-count b{color:var(--text);font-weight:600}
-.tier-cards{display:flex;flex-wrap:wrap;gap:13px;align-content:flex-start;flex:1;min-width:0}
+.tier-cards{display:flex;flex-wrap:wrap;gap:15px;align-content:flex-start;flex:1;min-width:0}
 .tier-empty{color:var(--faint);font-size:13px;padding:38px 0;letter-spacing:.06em}
 
-/* ---- карточка-постер ---- */
 .card{width:var(--cover-w);flex:none;cursor:pointer;--ci:0;position:relative;transition:transform .25s cubic-bezier(.2,.9,.3,1.2)}
 #tierlist.anim-in .card{animation:cardIn calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*45ms*var(--sp))}
 body.no-cascade #tierlist.anim-in .card{animation:none}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}}
 body.tilt-off .card:hover{transform:translateY(-6px)}
 body.tilt-off.no-lift .card:hover{transform:none}
-.card-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:27px;z-index:4;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));pointer-events:none}
+.card-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:30px;z-index:4;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));pointer-events:none}
 .cover{position:relative;aspect-ratio:2/3;border-radius:var(--rad);overflow:hidden;background:var(--panel2);border:1px solid var(--line)}
 .cover img{width:100%;height:100%;object-fit:cover;transition:transform calc(.4s*var(--sp)) cubic-bezier(.2,.9,.3,1)}
 .card:hover .cover img{transform:scale(1.08)}
@@ -323,45 +321,42 @@ body.glow .card:hover .cover{border-color:var(--tc);box-shadow:0 16px 38px -14px
   transform:translateX(-135%) skewX(-12deg)}
 body.shine .card:hover .cover::after{animation:sweep calc(.85s*var(--sp)) ease}
 @keyframes sweep{to{transform:translateX(135%) skewX(-12deg)}}
-.cover .type-tag{position:absolute;top:7px;left:7px;z-index:3;padding:2px 7px;border-radius:5px;
+.cover .type-tag{position:absolute;top:7px;left:7px;z-index:3;padding:3px 8px;border-radius:6px;
   background:color-mix(in srgb,var(--bg) 74%,transparent);backdrop-filter:blur(4px);
-  font-family:'JetBrains Mono';font-size:9.5px;font-weight:600;letter-spacing:.08em}
-.tier-badge{position:absolute;top:7px;right:7px;z-index:3;min-width:22px;height:22px;padding:0 5px;border-radius:6px;
-  background:var(--tc);color:#1b1420;display:grid;place-items:center;font-family:'Unbounded';font-weight:800;font-size:10px}
-.cover-meta{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:24px 9px 8px;
+  font-family:'JetBrains Mono';font-size:10px;font-weight:600;letter-spacing:.08em}
+.tier-badge{position:absolute;top:7px;right:7px;z-index:3;min-width:24px;height:24px;padding:0 6px;border-radius:7px;
+  background:var(--tc);color:#1b1420;display:grid;place-items:center;font-family:'Unbounded';font-weight:800;font-size:10.5px}
+.cover-meta{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 10px 9px;
   background:linear-gradient(transparent,rgba(10,7,14,.9));color:#fff;
-  font-family:'JetBrains Mono';font-size:10.5px;line-height:1.7;opacity:0;transform:translateY(8px);transition:.28s}
+  font-family:'JetBrains Mono';font-size:11px;line-height:1.7;opacity:0;transform:translateY(8px);transition:.28s}
 .card:hover .cover-meta{opacity:1;transform:none}
-.card-title{margin-top:9px;font-size:12.5px;font-weight:500;line-height:1.35;
+.card-title{margin-top:10px;font-size:13px;font-weight:500;line-height:1.35;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;transition:color .2s}
 .card:hover .card-title{color:var(--accent)}
 
-/* ---- вид: чипы ---- */
 .tier-cards.view-chips{gap:9px}
 .chipcard{display:inline-flex;align-items:center;gap:9px;padding:5px 13px 5px 5px;border:1px solid var(--line);border-radius:999px;
   cursor:pointer;background:color-mix(in srgb,var(--panel) var(--pa),transparent);transition:.18s;max-width:100%}
 .chipcard:hover{border-color:var(--tc);transform:translateY(-2px);background:var(--panel)}
-.chipcard img{width:27px;height:38px;border-radius:6px;object-fit:cover;flex:none}
+.chipcard img{width:30px;height:42px;border-radius:6px;object-fit:cover;flex:none}
 .cc-body{display:flex;flex-direction:column;min-width:0;text-align:left}
 .cc-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:230px}
 .cc-name svg{display:inline-block;width:13px;height:9px;vertical-align:-1px;margin-right:4px}
 .cc-meta{font-family:'JetBrains Mono';font-size:10px;color:var(--muted);white-space:nowrap}
 .cc-tier{font-family:'Unbounded';font-weight:800;font-size:9.5px;color:var(--tc);flex:none;margin-left:2px}
 
-/* ---- вид: список ---- */
 .tier-cards.view-list{flex-direction:column;gap:6px}
 .listcard{display:flex;align-items:center;gap:15px;padding:8px 12px;border:1px solid transparent;border-bottom:1px solid var(--line);
   border-radius:10px;cursor:pointer;transition:.18s;width:100%}
 .listcard:hover{background:var(--panel);border-color:var(--line2);border-bottom-color:var(--line2);transform:translateX(4px)}
-.listcard img{width:42px;height:60px;border-radius:7px;object-fit:cover;flex:none}
+.listcard img{width:46px;height:66px;border-radius:7px;object-fit:cover;flex:none}
 .lc-body{min-width:0;flex:1}
 .lc-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lc-name svg{display:inline-block;width:15px;height="10" height='10' vertical-align:-1px;margin-right:5px}
+.lc-name svg{display:inline-block;width:15px;height:10px;vertical-align:-1px;margin-right:5px}
 .lc-sub{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);margin-top:2px}
 .lc-date{font-family:'JetBrains Mono';font-size:12px;color:var(--accent);white-space:nowrap;flex:none}
 .lc-tier{font-family:'Unbounded';font-weight:800;font-size:10px;color:var(--tc);border:1px solid var(--tc);border-radius:6px;padding:3px 7px;flex:none}
 
-/* ---- пустое состояние ---- */
 .empty-state{text-align:center;padding:80px 20px}
 .empty-word{font-family:'Unbounded';font-weight:800;font-size:clamp(34px,7vw,56px);letter-spacing:.3em;margin-bottom:24px;margin-right:-.3em;
   background:linear-gradient(110deg,var(--text) 30%,var(--accent) 50%,var(--text) 70%);background-size:200% 100%;
@@ -370,7 +365,6 @@ body.shine .card:hover .cover::after{animation:sweep calc(.85s*var(--sp)) ease}
 .empty-state p{color:var(--muted);margin-bottom:26px}
 .empty-state .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
-/* ---- хронология ---- */
 .tl-year{position:sticky;top:70px;z-index:5;display:flex;align-items:baseline;gap:14px;margin:30px 0 10px;padding:10px 6px;border-radius:9px;
   background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
 .tl-year b{font-family:'Unbounded';font-weight:800;font-size:21px}
@@ -381,12 +375,11 @@ body.shine .card:hover .cover::after{animation:sweep calc(.85s*var(--sp)) ease}
 @keyframes rowIn2{from{opacity:0;transform:translateY(14px)}}
 body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .tl-row:hover{background:var(--panel);border-color:var(--line2);border-bottom-color:var(--line2);transform:translateX(4px)}
-.tl-row img{width:44px;height:63px;object-fit:cover;border-radius:7px;flex:none}
+.tl-row img{width:46px;height:66px;object-fit:cover;border-radius:7px;flex:none}
 .tl-name{font-weight:600;font-size:14.5px}
 .tl-sub{color:var(--muted);font-size:12px;font-family:'JetBrains Mono';margin-top:3px}
 .tl-date{margin-left:auto;font-family:'JetBrains Mono';font-size:12.5px;color:var(--accent);white-space:nowrap}
 
-/* ---- календарь ---- */
 .cal-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
 .cal-mode{display:flex;padding:3px;background:var(--panel);border:1px solid var(--line);border-radius:11px}
 .cal-mode button{padding:7px 15px;border-radius:8px;font-weight:600;font-size:13px;color:var(--muted);transition:.2s}
@@ -420,7 +413,7 @@ body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .cl-row{display:flex;align-items:center;gap:16px;padding:10px 12px;border-radius:12px;cursor:pointer;
   border:1px solid transparent;border-bottom-color:var(--line);transition:.18s}
 .cl-row:hover{background:var(--panel);border-color:var(--line2);border-bottom-color:var(--line2);transform:translateX(4px)}
-.cl-row img{width:42px;height:60px;object-fit:cover;border-radius:7px;flex:none}
+.cl-row img{width:46px;height:66px;object-fit:cover;border-radius:7px;flex:none}
 .cl-date{flex:none;width:58px;text-align:center;font-family:'JetBrains Mono'}
 .cl-date b{display:block;font-size:20px;font-weight:600;color:var(--accent)}
 .cl-date b.mid{font-size:13px;letter-spacing:.06em}
@@ -430,7 +423,6 @@ body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .cl-tier{margin-left:auto;font-family:'Unbounded';font-weight:800;font-size:11px;color:var(--tc);
   border:1px solid var(--tc);border-radius:7px;padding:4px 8px;white-space:nowrap;opacity:.9}
 
-/* ---- статистика ---- */
 .stats-grid{display:grid;grid-template-columns:1fr 1.35fr;gap:40px;align-items:start}
 .stat-big{display:flex;flex-direction:column;gap:24px}
 .sb-item .sb-v{font-family:'Unbounded';font-weight:800;font-size:44px;line-height:1}
@@ -488,7 +480,6 @@ body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .rec-v{font-weight:700;font-size:14px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rec-s{font-family:'JetBrains Mono';font-size:11px;color:var(--faint);margin-top:2px}
 
-/* ---- панель настроек ---- */
 #drawer{position:fixed;top:62px;right:0;bottom:0;width:min(500px,100vw);z-index:90;
   background:var(--panel);border-left:1px solid var(--line2);box-shadow:var(--shadow);
   transform:translateX(105%);transition:transform calc(.45s*var(--sp)) cubic-bezier(.25,.9,.3,1);
@@ -536,7 +527,6 @@ body.no-anim #drawer{transition:none}
 .num-in span{color:var(--muted);font-size:13px}
 .set-actions{display:flex;gap:12px;flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--line)}
 
-/* ---- модалки ---- */
 .overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;
   background:rgba(10,7,14,.66);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 body.light .overlay{background:rgba(58,40,52,.4)}
@@ -574,7 +564,6 @@ body.no-modalpop .modal{animation:none}
 .dt-notes{margin-top:18px;padding:14px 16px;border-left:3px solid var(--accent);background:var(--bg2);border-radius:0 10px 10px 0;color:var(--muted);font-size:13.5px;white-space:pre-wrap}
 .dt-actions{display:flex;gap:10px;margin-top:26px;justify-content:flex-end;flex-wrap:wrap}
 
-/* ---- форма ---- */
 .modal-form{max-width:680px;padding:34px}
 .modal-form h2{font-family:'Unbounded';font-weight:600;font-size:18px;margin-bottom:22px;padding-right:36px}
 .form-top{display:flex;gap:20px;margin-bottom:22px}
@@ -610,7 +599,6 @@ body.no-modalpop .modal{animation:none}
 .genre-add button:hover{color:var(--accent);border-color:var(--accent)}
 .form-foot{display:flex;justify-content:flex-end;gap:12px;margin-top:26px;padding-top:20px;border-top:1px solid var(--line)}
 
-/* ---- структура просмотра ---- */
 .units-box{border:1px solid var(--line);border-radius:13px;background:var(--bg2);padding:13px}
 .units-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px}
 .units-sum{font-family:'JetBrains Mono';font-size:12px;color:var(--accent)}
@@ -651,25 +639,16 @@ body.no-modalpop .modal{animation:none}
 .modal-confirm p{color:var(--muted);font-size:14px;margin-bottom:22px;line-height:1.7}
 .modal-confirm .form-foot{margin-top:0;padding-top:0;border:none;flex-wrap:wrap}
 
-/* ---- модалка входа ---- */
-.modal-login{max-width:500px;padding:28px}
-.modal-login h2{font-family:'Unbounded';font-weight:600;font-size:17px;margin-bottom:18px;padding-right:36px}
-.login-tabs{display:flex;gap:6px;background:var(--panel2);padding:4px;border-radius:12px;margin-bottom:18px}
-.login-tabs button{flex:1;padding:9px;border-radius:9px;font-weight:600;font-size:13px;color:var(--muted);transition:.2s}
-.login-tabs button.on{background:var(--accent);color:#241a28}
-.lk-hint{font-size:12.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-bottom:16px;line-height:1.6}
-.lk-user{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;margin:12px 0}
-.lk-user img{width:32px;height:32px;border-radius:9px}
-.lk-user .lku-name{font-weight:600;font-size:14px}
-.lk-user .lku-sub{font-size:11.5px;color:var(--muted);font-family:'JetBrains Mono'}
-.lk-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.lk-status{margin:10px 0 0;font-size:12.5px;color:var(--muted);min-height:18px;font-family:'JetBrains Mono'}
-.modal-login .field{margin-bottom:14px}
-.modal-login select{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:14px;outline:none;cursor:pointer}
-.modal-login select:focus{border-color:var(--accent)}
-.login-foot{display:flex;gap:12px;justify-content:flex-end;margin-top:18px}
+/* минималистичная модалка входа: только токен */
+.modal-login{max-width:440px;padding:30px}
+.modal-login h2{font-family:'Unbounded';font-weight:600;font-size:18px;margin-bottom:8px;padding-right:36px}
+.modal-login .lk-sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;line-height:1.55}
+.modal-login .field input{font-family:'JetBrains Mono';letter-spacing:.02em}
+.lk-status{margin-top:12px;font-size:12.5px;color:var(--muted);min-height:18px;font-family:'JetBrains Mono'}
+.lk-status.err{color:var(--warn)}
+.lk-status.ok{color:var(--ok)}
+.login-foot{display:flex;justify-content:flex-end;margin-top:18px}
 
-/* ---- тосты / наверх ---- */
 .toasts{position:fixed;bottom:22px;right:22px;z-index:300;display:flex;flex-direction:column;gap:10px}
 @keyframes toastIn{from{opacity:0;transform:translateX(24px) scale(.95)}to{opacity:1;transform:none}}
 .toast{display:flex;align-items:center;gap:11px;padding:13px 18px;border-radius:12px;
@@ -689,7 +668,6 @@ body.no-toastanim .toast{animation:none}
 footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px 28px;color:var(--faint);
   font-size:12px;font-family:'JetBrains Mono';display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
 
-/* ---- адаптив ---- */
 @media (max-width:960px){
   .stats-grid{grid-template-columns:1fr}
   .dt-grid{grid-template-columns:1fr}
@@ -698,13 +676,15 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px
   .topbar{padding:12px 16px;gap:12px}
   main{padding:22px 16px 70px}
   #drawer{top:54px}
-  .tier-side{width:98px}
-  .emb{width:66px;height:66px;perspective:680px}
-  .emb[data-tier="SSS"] .emb-letter{font-size:10px}
+  .tier-side{width:104px}
+  :root{--cover-w:118px}
+  .card.mini{--cover-w:96px}
+  .emb{width:70px;height:70px;perspective:720px}
+  .emb[data-tier="SSS"] .emb-letter{font-size:9px}
   .emb[data-tier="S"] .emb-letter{font-size:15px}
   .emb[data-tier="A"] .emb-letter,.emb[data-tier="B"] .emb-letter,.emb[data-tier="C"] .emb-letter,
-  .emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:16px}
-  .emb-crown{width:21px;top:-14px}
+  .emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:17px}
+  .emb-crown{width:22px;top:-15px}
   .tier-row::before{display:none}
   .hst{min-width:92px;padding:12px 16px}
   .add-label,.login-label{display:none}
@@ -726,7 +706,6 @@ body.no-anim .tl-row{opacity:1}
 </head>
 <body class="ambient pill-glow tier-glow" data-embanim="full">
 
-<!-- фоновые слои: лепестки позади контента -->
 <div id="user-bg" aria-hidden="true"></div>
 <div id="user-dim" aria-hidden="true"></div>
 <div class="bg-moon" aria-hidden="true"></div>
@@ -749,7 +728,7 @@ body.no-anim .tl-row{opacity:1}
     <button class="nav-btn" data-view="settings">Настройки</button>
   </nav>
   <div class="sync-wrap" id="sync-wrap">
-    <button class="btn" id="btn-login" title="Вход">
+    <button class="btn" id="btn-login" title="Вход владельца">
       <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
       <span class="login-label">Вход</span>
     </button>
@@ -768,7 +747,6 @@ body.no-anim .tl-row{opacity:1}
 
 <main>
 
-  <!-- ======== ТИР-ЛИСТ ======== -->
   <section class="view" id="view-tier">
     <div class="hero" id="hero">
       <div class="hero-main">
@@ -796,14 +774,13 @@ body.no-anim .tl-row{opacity:1}
     <div id="empty-state" class="empty-state" style="display:none">
       <div class="empty-word">ANIME</div>
       <h2>Каталог пока пуст</h2>
-      <p>Войдите по токену доступа — и наполняйте коллекцию.</p>
+      <p>Владелец ещё не наполнил коллекцию — заходите позже.</p>
       <div class="row">
         <button class="btn btn-accent hidden" data-act="add">Добавить тайтл</button>
       </div>
     </div>
   </section>
 
-  <!-- ======== ХРОНОЛОГИЯ ======== -->
   <section class="view hidden" id="view-timeline">
     <div class="page-head">
       <div>
@@ -814,7 +791,6 @@ body.no-anim .tl-row{opacity:1}
     <div id="timeline"></div>
   </section>
 
-  <!-- ======== КАЛЕНДАРЬ ======== -->
   <section class="view hidden" id="view-calendar">
     <div class="page-head">
       <div>
@@ -845,7 +821,6 @@ body.no-anim .tl-row{opacity:1}
     </div>
   </section>
 
-  <!-- ======== СТАТИСТИКА ======== -->
   <section class="view hidden" id="view-stats">
     <div class="page-head">
       <div>
@@ -858,7 +833,6 @@ body.no-anim .tl-row{opacity:1}
 
 </main>
 
-<!-- ======== панель настроек ======== -->
 <aside id="drawer" aria-label="Настройки">
   <div class="drawer-head">
     <h2>Настройки</h2>
@@ -1133,10 +1107,8 @@ body.no-anim .tl-row{opacity:1}
   <span>/ — поиск · ? — подсказка · Esc — закрыть</span>
 </footer>
 
-<!-- ======== детали тайтла ======== -->
 <div class="overlay hidden" id="ov-title"><div class="modal modal-title" id="m-title"></div></div>
 
-<!-- ======== форма ======== -->
 <div class="overlay hidden" id="ov-form">
   <div class="modal modal-form">
     <button class="modal-x" data-close><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -1229,54 +1201,22 @@ body.no-anim .tl-row{opacity:1}
   </div>
 </div>
 
-<!-- ======== день календаря ======== -->
 <div class="overlay hidden" id="ov-day"><div class="modal modal-day" id="m-day"></div></div>
 
-<!-- ======== подтверждение / подсказка ======== -->
 <div class="overlay hidden" id="ov-confirm"><div class="modal modal-confirm" id="m-confirm"></div></div>
 
-<!-- ======== вход ======== -->
 <div class="overlay hidden" id="ov-login">
   <div class="modal modal-login">
     <button class="modal-x" data-close><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <h2>Вход</h2>
-    <div class="login-tabs">
-      <button data-tab="rw" class="on">Владелец · чтение и запись</button>
-      <button data-tab="ro">Чтение</button>
+    <h2>Вход владельца</h2>
+    <p class="lk-sub">Вставьте токен GitHub с правом записи. Репозиторий и ветка определятся автоматически.</p>
+    <div class="field">
+      <label>Токен доступа</label>
+      <input type="password" id="lk-token" placeholder="github_pat_… или ghp_…" autocomplete="new-password" spellcheck="false">
     </div>
-    <div id="lk-rw">
-      <div class="field">
-        <label>Токен доступа</label>
-        <input type="password" id="lk-token" name="an-token" placeholder="github_pat_… или ghp_…" autocomplete="new-password">
-      </div>
-      <button type="button" class="btn" id="lk-check">Проверить токен</button>
-      <div class="lk-user hidden" id="lk-user"></div>
-      <div class="field hidden" id="lk-repo-w">
-        <label>Репозиторий</label>
-        <select id="lk-repo"></select>
-      </div>
-      <div class="field hidden" id="lk-branch-w">
-        <label>Ветка</label>
-        <select id="lk-branch"></select>
-      </div>
-      <div class="lk-status" id="lk-status"></div>
-      <div class="login-foot">
-        <button type="button" class="btn" data-close>Отмена</button>
-        <button type="button" class="btn btn-accent" id="lk-connect" disabled>Подключить</button>
-      </div>
-    </div>
-    <div id="lk-ro" class="hidden">
-      <div class="lk-hint">Режим чтения: укажите публичный репозиторий владельца — каталог подтянется без токена. Все правки владельца появляются здесь автоматически в течение секунд.</div>
-      <div class="lk-row">
-        <div class="field"><label>Владелец</label><input id="ro-owner" name="an-ro-owner" placeholder="github-логин" autocomplete="off" spellcheck="false"></div>
-        <div class="field"><label>Репозиторий</label><input id="ro-repo" name="an-ro-repo" placeholder="имя репозитория" autocomplete="off" spellcheck="false"></div>
-      </div>
-      <div class="field"><label>Ветка</label><input id="ro-branch" name="an-ro-branch" value="main" autocomplete="off" spellcheck="false"></div>
-      <div class="lk-status" id="ro-status"></div>
-      <div class="login-foot">
-        <button type="button" class="btn" data-close>Отмена</button>
-        <button type="button" class="btn btn-accent" id="ro-connect">Подключиться</button>
-      </div>
+    <div class="lk-status" id="lk-status"></div>
+    <div class="login-foot">
+      <button type="button" class="btn btn-accent" id="lk-connect">Подключить</button>
     </div>
   </div>
 </div>
@@ -1289,7 +1229,6 @@ body.no-anim .tl-row{opacity:1}
 
 /* ================= константы ================= */
 const TIERS = ['SSS','S','A','B','C','D','E'];
-/* у каждого тира уникальный, непохожий оттенок */
 const TIER_COLOR = {SSS:'#ffd76e',S:'#ff4d6d',A:'#a78bfa',B:'#38bdf8',C:'#34d399',D:'#fb923c',E:'#94a3b8'};
 const TIER_EPITHET = {SSS:'Шедевры',S:'Элита',A:'Отличные',B:'Хорошие',C:'Средние',D:'Слабые',E:'Провал'};
 const TIER_SCORE = {SSS:7,S:6,A:5,B:4,C:3,D:2,E:1};
@@ -1313,7 +1252,6 @@ const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const CROWN = `<svg viewBox="0 0 24 14" width="100%"><path d="M2 12 L3 4 L7 8 L12 2 L17 8 L21 4 L22 12 Z" fill="#ffd76e" stroke="#c9932a" stroke-width="1" stroke-linejoin="round"/><circle cx="12" cy="2" r="1.4" fill="#fff3c4"/><circle cx="3" cy="4" r="1" fill="#fff3c4"/><circle cx="21" cy="4" r="1" fill="#fff3c4"/></svg>`;
 const CROWN_MINI = `<svg viewBox="0 0 24 14" width="13" height="9"><path d="M2 12 L3 4 L7 8 L12 2 L17 8 L21 4 L22 12 Z" fill="#ffd76e" stroke="#c9932a" stroke-width="1"/></svg>`;
 
-/* ---- пресеты частиц (20 стилей) ---- */
 const PRESETS = {
   sakura:     {label:'Сакура · лепестки',        shape:'petal', colors:['#ffdce8','#ffc6d9','#ffb0cb','#ff9dc4','#fff0f5'], size:[4.5,11], vy:[.5,1.5],  sway:[.6,2.0], alpha:[.55,.95]},
   hanami:     {label:'Ханами · крупные бело-розовые', shape:'petal', colors:['#ffeaf2','#ffd6e4','#fff5f8','#ffcfe0'], size:[6,14], vy:[.4,1.1], sway:[.8,2.4], alpha:[.6,1]},
@@ -1337,7 +1275,6 @@ const PRESETS = {
   rain:       {label:'Дождь',                    shape:'drop', colors:['#9fd0ff','#7ab8ff','#c4e2ff'], size:[2,3.5], vy:[3,5], sway:[.05,.2], alpha:[.35,.7]}
 };
 
-/* ---- породы деревьев (13) ---- */
 const TREE_STYLES = {
   sakura:  {label:'Сакура цветущая',   shape:'broad',  trunk:['#3a2531','#6b4a55'], bark:'#2a1a24',
             leaf:['#7e2f52','#c94f7c','#ffd9e6'], blooms:['#ffdce8','#ffcad9','#ffb6cf','#ffa5c6','#fdeef5'], bloomRate:.75},
@@ -1387,7 +1324,6 @@ function lighten(hex, f){
   const mix = v => Math.round(v + (255-v)*f);
   return '#' + ((1<<24)+(mix((n>>16)&255)<<16)+(mix((n>>8)&255)<<8)+mix(n&255)).toString(16).slice(1);
 }
-/* сжатие картинки в компактный dataURL (webp→jpeg) — экономит хранилище в разы */
 function compressImage(file, maxW, quality){
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -1408,7 +1344,7 @@ function compressImage(file, maxW, quality){
   });
 }
 
-/* ================= хранилище: GitHub — истина, localStorage — кэш ================= */
+/* ================= хранилище ================= */
 const LS_KEY = 'anime.v3', LS_SET = 'anime.settings', LS_BG = 'anime.bg', LS_SYNC = 'anime.sync';
 const OLD_KEYS = ['anime.v2','tsundoku.v1'];
 const DEFAULT_SETTINGS = {
@@ -1524,19 +1460,17 @@ let sortMode = 'added';
 
 let quotaWarned = false;
 function persist(){
-  /* localStorage — только кэш; при переполнении выгружаем обложки (они живут в GitHub) */
   try{
     localStorage.setItem(LS_KEY, JSON.stringify({v:3, updatedAt: state.updatedAt, titles: state.titles}));
   }catch(e){
     try{
       const light = state.titles.map(t => (t.cover && t.cover.startsWith('data:')) ? {...t, cover: ''} : t);
-      /* updatedAt:0 — при следующей загрузке каталог целиком подтянется из GitHub вместе с обложками */
       localStorage.setItem(LS_KEY, JSON.stringify({v:3, updatedAt: 0, titles: light}));
       if (!quotaWarned){
         quotaWarned = true;
         toast('Локальный кэш переполнен — обложки временно выгружены из кэша. Полная версия хранится в GitHub и подтянется автоматически', 'warn');
       }
-    }catch(e2){ /* совсем нет места — работаем только в памяти + GitHub */ }
+    }catch(e2){}
   }
 }
 function persistSettings(){
@@ -2044,56 +1978,107 @@ function renderTrees(){
 renderTrees();
 
 /* ================================================================
-   3D-ЭМБЛЕМЫ — объёмные кристаллы из слоёв на разной глубине
+   3D-ЭМБЛЕМЫ — современные стеклянные кристаллы
 ================================================================ */
 function emblemShape(tier){
-  const c = TIER_COLOR[tier];
-  const lt = lighten(c, .55);
-  const dk = shadeColor(c, .42);
+  const c  = TIER_COLOR[tier];
+  const lt = lighten(c, .72);
+  const lt2= lighten(c, .42);
+  const dk = shadeColor(c, .3);
+  const dk2= shadeColor(c, .58);
   const id = 'es' + tier;
+
   const defs = `<defs>
-    <linearGradient id="${id}" x1="0" y1="0" x2=".25" y2="1">
-      <stop offset="0" stop-color="${lt}"/><stop offset=".5" stop-color="${c}"/><stop offset="1" stop-color="${dk}"/>
+    <linearGradient id="${id}m" x1="0.05" y1="0.05" x2="0.35" y2="1">
+      <stop offset="0" stop-color="${lt}"/>
+      <stop offset="0.28" stop-color="${lt2}"/>
+      <stop offset="0.62" stop-color="${c}"/>
+      <stop offset="1" stop-color="${dk}"/>
     </linearGradient>
-    <radialGradient id="${id}g" cx=".34" cy=".26" r=".95">
-      <stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/>
+    <linearGradient id="${id}s" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="0.35" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="0.65" stop-color="#000000" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.45"/>
+    </linearGradient>
+    <radialGradient id="${id}h" cx="0.32" cy="0.24" r="0.72">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="0.45" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="${id}r" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${lt}" stop-opacity="0.9"/>
+      <stop offset="0.5" stop-color="${c}" stop-opacity="0"/>
+      <stop offset="1" stop-color="${dk2}" stop-opacity="0.55"/>
+    </linearGradient>
   </defs>`;
-  const petal = a => `<ellipse rx="10" ry="24" cy="-24" transform="rotate(${a})" fill="url(#${id})" stroke="${lt}" stroke-width="1.2" opacity=".95"/>`;
-  const shapes = {
-    SSS: `<polygon points="50,3 61.8,36.5 96,37.5 68.5,58.5 78.5,92.5 50,72 21.5,92.5 31.5,58.5 4,37.5 38.2,36.5" fill="url(#${id})" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M50 50 L50 3 M50 50 L96 37.5 M50 50 L78.5 92.5 M50 50 L21.5 92.5 M50 50 L4 37.5" stroke="rgba(60,40,0,.4)" stroke-width=".8"/>
-      <polygon points="50,3 61.8,36.5 38.2,36.5" fill="url(#${id}g)" opacity=".85"/>`,
-    S: `<g transform="translate(50,52)">${[0,60,120,180,240,300].map(petal).join('')}</g>
-      <circle cx="50" cy="52" r="16" fill="url(#${id})" stroke="${lt}" stroke-width="1.4"/>
-      <path d="M41 46 Q50 38 59 46" stroke="rgba(255,255,255,.55)" stroke-width="1.6" fill="none" stroke-linecap="round"/>`,
-    A: `<polygon points="50,4 83,40 50,96 17,40" fill="url(#${id})" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M17 40 H83 M50 4 L36 40 L50 96 M50 4 L64 40 L50 96" stroke="rgba(30,10,60,.38)" stroke-width=".9" fill="none"/>
-      <polygon points="50,4 64,40 50,40" fill="url(#${id}g)" opacity=".8"/>`,
-    B: `<polygon points="50,3 77,25 77,75 50,97 23,75 23,25" fill="url(#${id})" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M50 3 V97 M23 25 L50 44 L77 25 M23 75 L50 56 L77 75" stroke="rgba(10,30,60,.35)" stroke-width=".9" fill="none"/>
-      <polygon points="50,3 77,25 50,44" fill="url(#${id}g)" opacity=".75"/>`,
-    C: `<circle cx="50" cy="50" r="34" fill="none" stroke="url(#${id})" stroke-width="11"/>
-      <circle cx="50" cy="50" r="34" fill="none" stroke="${lt}" stroke-width="1" opacity=".7"/>
-      <circle cx="50" cy="50" r="19" fill="url(#${id})" stroke="${lt}" stroke-width="1.3"/>
-      <circle cx="50" cy="16" r="6" fill="${lt}" stroke="${dk}" stroke-width="1.4"/>`,
-    D: `<path d="M50 4 L85 17 V52 C85 74 69 88 50 96 C31 88 15 74 15 52 V17 Z" fill="url(#${id})" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M50 4 L85 17 V52 H15 V17 Z" fill="url(#${id}g)" opacity=".4"/>
-      <path d="M50 22 L67 33 V54 C67 66 58 74 50 78 C42 74 33 66 33 54 V33 Z" fill="none" stroke="rgba(40,20,0,.35)" stroke-width="1.1"/>`,
-    E: `<rect x="16" y="16" width="68" height="68" rx="14" fill="url(#${id})" stroke="${lt}" stroke-width="1.5"/>
-      <rect x="27" y="27" width="46" height="46" rx="9" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="1.3"/>
-      <path d="M23 33 Q50 21 77 33" stroke="rgba(255,255,255,.4)" stroke-width="1.7" fill="none" stroke-linecap="round"/>`
-  };
-  return `<svg viewBox="0 0 100 100">${defs}${shapes[tier]}</svg>`;
+
+  const shape = (() => {
+    switch (tier){
+      case 'SSS': return `
+        <polygon points="50,3 61.8,36.5 96,37.5 68.5,58.5 78.5,92.5 50,72 21.5,92.5 31.5,58.5 4,37.5 38.2,36.5" fill="url(#${id}m)"/>
+        <polygon points="50,3 61.8,36.5 96,37.5 68.5,58.5 78.5,92.5 50,72 21.5,92.5 31.5,58.5 4,37.5 38.2,36.5" fill="url(#${id}s)"/>
+        <polygon points="50,3 61.8,36.5 50,50 38.2,36.5" fill="url(#${id}h)"/>
+        <path d="M50 50 L50 3 M50 50 L96 37.5 M50 50 L78.5 92.5 M50 50 L21.5 92.5 M50 50 L4 37.5 M50 50 L61.8 36.5 M50 50 L38.2 36.5" stroke="rgba(80,40,0,0.35)" stroke-width="0.7" fill="none"/>
+        <polygon points="50,3 61.8,36.5 96,37.5 68.5,58.5 78.5,92.5 50,72 21.5,92.5 31.5,58.5 4,37.5 38.2,36.5" fill="none" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round" opacity=".9"/>`;
+      case 'S': return `
+        <g transform="translate(50,52)">
+          ${[0,60,120,180,240,300].map(a => `<ellipse rx="10.5" ry="24" cy="-24" transform="rotate(${a})" fill="url(#${id}m)" stroke="${lt}" stroke-width="1.1"/>`).join('')}
+        </g>
+        <g transform="translate(50,52)">
+          ${[0,60,120,180,240,300].map(a => `<ellipse rx="10.5" ry="24" cy="-24" transform="rotate(${a})" fill="url(#${id}s)" opacity=".55"/>`).join('')}
+        </g>
+        <circle cx="50" cy="52" r="16.5" fill="url(#${id}m)" stroke="${lt}" stroke-width="1.4"/>
+        <circle cx="50" cy="52" r="16.5" fill="url(#${id}s)"/>
+        <path d="M41 44 Q50 36 59 44" stroke="rgba(255,255,255,0.65)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <circle cx="50" cy="52" r="6" fill="url(#${id}h)"/>`;
+      case 'A': return `
+        <polygon points="50,4 83,40 50,96 17,40" fill="url(#${id}m)"/>
+        <polygon points="50,4 83,40 50,96 17,40" fill="url(#${id}s)"/>
+        <polygon points="50,4 83,40 50,40" fill="url(#${id}h)"/>
+        <path d="M17 40 H83 M50 4 L36 40 L50 96 M50 4 L64 40 L50 96 M36 40 L64 40" stroke="rgba(40,10,70,0.35)" stroke-width="0.85" fill="none"/>
+        <polygon points="50,4 83,40 50,96 17,40" fill="none" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round" opacity=".9"/>`;
+      case 'B': return `
+        <polygon points="50,3 77,25 77,75 50,97 23,75 23,25" fill="url(#${id}m)"/>
+        <polygon points="50,3 77,25 77,75 50,97 23,75 23,25" fill="url(#${id}s)"/>
+        <polygon points="50,3 77,25 50,44 23,25" fill="url(#${id}h)"/>
+        <path d="M50 3 V97 M23 25 L50 44 L77 25 M23 75 L50 56 L77 75" stroke="rgba(10,40,70,0.32)" stroke-width="0.85" fill="none"/>
+        <polygon points="50,3 77,25 77,75 50,97 23,75 23,25" fill="none" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round" opacity=".9"/>`;
+      case 'C': return `
+        <circle cx="50" cy="50" r="34" fill="none" stroke="url(#${id}m)" stroke-width="11"/>
+        <circle cx="50" cy="50" r="34" fill="none" stroke="url(#${id}s)" stroke-width="11" opacity=".55"/>
+        <circle cx="50" cy="50" r="34" fill="none" stroke="${lt}" stroke-width="1" opacity=".8"/>
+        <circle cx="50" cy="50" r="19" fill="url(#${id}m)" stroke="${lt}" stroke-width="1.2"/>
+        <circle cx="50" cy="50" r="19" fill="url(#${id}s)" opacity=".7"/>
+        <circle cx="45" cy="43" r="5" fill="url(#${id}h)"/>
+        <circle cx="50" cy="16" r="6" fill="${lt}" stroke="${dk}" stroke-width="1.3"/>
+        <circle cx="50" cy="16" r="2.2" fill="#fff" opacity=".85"/>`;
+      case 'D': return `
+        <path d="M50 4 L85 17 V52 C85 74 69 88 50 96 C31 88 15 74 15 52 V17 Z" fill="url(#${id}m)"/>
+        <path d="M50 4 L85 17 V52 C85 74 69 88 50 96 C31 88 15 74 15 52 V17 Z" fill="url(#${id}s)"/>
+        <path d="M50 4 L85 17 V52 H15 V17 Z" fill="url(#${id}h)" opacity=".45"/>
+        <path d="M50 22 L67 33 V54 C67 66 58 74 50 78 C42 74 33 66 33 54 V33 Z" fill="none" stroke="rgba(60,25,0,0.4)" stroke-width="1.1"/>
+        <path d="M50 4 L85 17 V52 C85 74 69 88 50 96 C31 88 15 74 15 52 V17 Z" fill="none" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round" opacity=".9"/>`;
+      default: return `
+        <rect x="16" y="16" width="68" height="68" rx="15" fill="url(#${id}m)"/>
+        <rect x="16" y="16" width="68" height="68" rx="15" fill="url(#${id}s)"/>
+        <path d="M26 34 Q50 20 74 34" stroke="rgba(255,255,255,0.55)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <rect x="27" y="27" width="46" height="46" rx="9" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.2"/>
+        <rect x="16" y="16" width="68" height="68" rx="15" fill="none" stroke="${lt}" stroke-width="1.2" opacity=".85"/>`;
+    }
+  })();
+
+  return `<svg viewBox="0 0 100 100">${defs}${shape}</svg>`;
 }
 function emblemHTML(tier, i){
-  /* четыре слоя на разной глубине создают реальный объём при вращении */
+  /* 5 слоёв на разной глубине + лёгкие повороты — объём и грани как у стекла */
   const layers = [
-    {z:-12, o:.22, b:.45},
-    {z:-6,  o:.55, b:.68},
-    {z:0,   o:1,   b:1},
-    {z:7,   o:.4,  b:1.3}
-  ].map(L => `<div class="emb-layer" style="--z:${L.z}px;--lo:${L.o};--lb:${L.b}">${emblemShape(tier)}</div>`).join('');
+    {z:-18, ry:-12, rx:6,  o:.14, b:.40},
+    {z:-9,  ry:-6,  rx:3,  o:.38, b:.62},
+    {z:0,   ry:0,   rx:0,  o:1,   b:1.00},
+    {z:9,   ry:6,   rx:-3, o:.42, b:1.22},
+    {z:16,  ry:0,   rx:0,  o:.22, b:1.55}
+  ].map(L => `<div class="emb-layer" style="--z:${L.z}px;--ry:${L.ry}deg;--rx:${L.rx}deg;--lo:${L.o};--lb:${L.b}">${emblemShape(tier)}</div>`).join('');
   return `
   <div class="emb" data-tier="${tier}" style="--tc:${TIER_COLOR[tier]};--i:${i}">
     <span class="emb-aura"></span>
@@ -2147,7 +2132,7 @@ function openConfirm({title, text, okLabel='Подтвердить', danger=fals
 function showHelp(){
   openConfirm({
     title:'Горячие клавиши и приёмы',
-    text:`· <b>/</b> — фокус на поиск<br>· <b>?</b> — эта подсказка<br>· <b>Esc</b> — закрыть окно или панель настроек<br>· клик по тиру в сводке сверху — переход к строке<br>· «Случайный тайтл» — рулетка из каталога<br>· «Ссылка» в карточке — поделиться конкретным тайтлом`,
+    text:`· <b>/</b> — фокус на поиск<br>· <b>?</b> — эта подсказка<br>· <b>Esc</b> — закрыть окно или панель настроек<br>· клик по тиру в сводке сверху — переход к строке<br>· «Случайный тайтл» — рулетка из каталога<br>· «Ссылка» в карточке — поделиться тайтлом`,
     okLabel:'Понятно', cancel:false
   });
 }
@@ -2233,7 +2218,6 @@ function renderRecent(){
   </div>`;
 }
 
-/* ---- фильтры + жанры + сортировка ---- */
 let filterQuery = '', filterGenres = new Set();
 let gpOpen = false, gpMode = 'my', gpQuery = '';
 function genreCounts(){
@@ -2330,7 +2314,6 @@ function matchesFilters(t){
   return true;
 }
 
-/* ---- сводка тиров ---- */
 function renderTierTotal(counts){
   const bar = $('#tier-total');
   if (!state.titles.length){ bar.innerHTML = ''; return; }
@@ -2341,7 +2324,7 @@ function renderTierTotal(counts){
   });
   bar.innerHTML = html;
 }
- $('#tier-total').addEventListener('click', e => {
+$('#tier-total').addEventListener('click', e => {
   const it = e.target.closest('.tt-item'); if (!it) return;
   if (it.dataset.goto){
     const row = document.querySelector(`.tier-row[data-tier="${it.dataset.goto}"]`);
@@ -2349,7 +2332,6 @@ function renderTierTotal(counts){
   } else window.scrollTo({top:0, behavior:'smooth'});
 });
 
-/* ---- тир-лист ---- */
 const SORTS = {
   added:    (a,b) => b.createdAt - a.createdAt,
   name:     (a,b) => a.name.localeCompare(b.name, 'ru'),
@@ -2390,7 +2372,6 @@ function renderTierlist(animate){
   if (info) info.textContent = filtering ? `найдено: ${found} · скрыто: ${state.titles.length - found}` : '';
 }
 
-/* ---- хронология ---- */
 let io = null;
 function renderTimeline(){
   const box = $('#timeline');
@@ -2425,7 +2406,6 @@ function renderTimeline(){
   $$('#timeline .tl-row').forEach(r => io.observe(r));
 }
 
-/* ---- календарь ---- */
 let calY, calM, calMode = 'grid', calListYear = null;
 (function(){ const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); })();
 function yearPool(){
@@ -2562,7 +2542,6 @@ function openDay(y, m, d){
   openOv('ov-day');
 }
 
-/* ---- статистика ---- */
 function renderStats(){
   const box = $('#stats');
   if (!state.titles.length){ box.innerHTML = '<p class="tier-empty" style="padding:40px 0">Статистика появится, как только в каталоге появятся тайтлы</p>'; return; }
@@ -2688,7 +2667,6 @@ function renderStats(){
   }));
 }
 
-/* ================= детали тайтла ================= */
 function openTitle(id){
   const t = findTitle(id);
   if (!t) return;
@@ -2761,7 +2739,11 @@ function openTitle(id){
     </div>`;
   $('#dt-edit').onclick = () => { closeOv('ov-title'); openForm(t.id); };
   $('#dt-share').onclick = () => {
-    const url = location.origin + location.pathname + '?title=' + t.id;
+    const base = location.origin + location.pathname;
+    const params = new URLSearchParams();
+    params.set('title', t.id);
+    if (sync) params.set('repo', `${sync.owner}/${sync.repo}`);
+    const url = base + '?' + params.toString();
     (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject())
       .then(() => toast('Ссылка на тайтл скопирована'))
       .catch(() => { prompt('Скопируйте ссылку:', url); });
@@ -2774,7 +2756,6 @@ function openTitle(id){
   openOv('ov-title');
 }
 
-/* ================= форма ================= */
 let editId = null, formCover = '', formType = 'tv', formTier = 'A';
 let formGenres = new Set(), extraChips = [], fGenreQuery = '';
 let formUnits = [];
@@ -2856,7 +2837,7 @@ function buildGenreChips(){
   });
   $$('[data-frm-unselect]').forEach(b => b.onclick = () => { formGenres.delete(b.dataset.frmUnselect); buildGenreChips(); });
 }
- $('#f-genre-search').addEventListener('input', e => { fGenreQuery = e.target.value; buildGenreChips(); });
+$('#f-genre-search').addEventListener('input', e => { fGenreQuery = e.target.value; buildGenreChips(); });
 function addCustomGenre(){
   const v = $('#f-genre-new').value.trim();
   if (!v) return;
@@ -2865,8 +2846,8 @@ function addCustomGenre(){
   $('#f-genre-new').value = '';
   buildGenreChips();
 }
- $('#f-genre-add').onclick = addCustomGenre;
- $('#f-genre-new').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addCustomGenre(); } });
+$('#f-genre-add').onclick = addCustomGenre;
+$('#f-genre-new').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); addCustomGenre(); } });
 
 function renderUnitsAddButtons(){
   const box = $('#units-add');
@@ -2935,7 +2916,7 @@ function updateUnitsSummary(){
   parts.push(`${eps} ${plural(eps,'серия','серии','серий')}`);
   $('#units-sum').textContent = parts.join(' · ');
 }
- $('#units-list').addEventListener('input', e => {
+$('#units-list').addEventListener('input', e => {
   const row = e.target.closest('.urow'); if (!row) return;
   const r = formUnits[+row.dataset.i];
   if (e.target.dataset.k === 'name') r.name = e.target.value;
@@ -2944,14 +2925,14 @@ function updateUnitsSummary(){
   if (e.target.dataset.k === 'count') updateUnitsSummary();
   updateEstimate();
 });
- $('#units-list').addEventListener('change', e => {
+$('#units-list').addEventListener('change', e => {
   if (e.target.classList.contains('urow-type')){
     const row = e.target.closest('.urow');
     formUnits[+row.dataset.i].kind = e.target.value;
     renderUnitRows(); updateEstimate();
   }
 });
- $('#units-list').addEventListener('click', e => {
+$('#units-list').addEventListener('click', e => {
   const del = e.target.closest('[data-del]');
   if (!del) return;
   formUnits.splice(+del.dataset.del, 1);
@@ -2989,11 +2970,10 @@ function updateEstimate(){
   }
   $('#f-estimate').textContent = total > 0 ? `≈ ${fmtDur(total)} просмотра попадёт в статистику` : '';
 }
- $('#f-name').addEventListener('input', updatePreview);
- $('#f-cover-url').addEventListener('input', e => { formCover = e.target.value.trim(); updatePreview(); });
+$('#f-name').addEventListener('input', updatePreview);
+$('#f-cover-url').addEventListener('input', e => { formCover = e.target.value.trim(); updatePreview(); });
 ['#f-episodes','#f-minutes'].forEach(s => $(s).addEventListener('input', updateEstimate));
-/* обложка: сжимаем в webp — в разы меньше места */
- $('#f-cover-file').addEventListener('change', async e => {
+$('#f-cover-file').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
   try{
@@ -3004,9 +2984,9 @@ function updateEstimate(){
   }catch(err){ toast('Не удалось прочитать файл изображения', 'warn'); }
   e.target.value = '';
 });
- $('#f-cover-clear').onclick = () => { formCover = ''; $('#f-cover-url').value = ''; updatePreview(); };
+$('#f-cover-clear').onclick = () => { formCover = ''; $('#f-cover-url').value = ''; updatePreview(); };
 
- $('#title-form').addEventListener('submit', e => {
+$('#title-form').addEventListener('submit', e => {
   e.preventDefault();
   const name = $('#f-name').value.trim();
   $('#w-name').classList.toggle('error', !name);
@@ -3086,8 +3066,7 @@ function applyUserBg(){
   document.body.classList.toggle('has-bg', !!bg);
   if (bg) document.documentElement.style.setProperty('--user-img', `url("${bg}")`);
 }
-/* фоновая картина тоже сжимается */
- $('#bg-file').addEventListener('change', async e => {
+$('#bg-file').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
   try{
@@ -3098,7 +3077,7 @@ function applyUserBg(){
   }catch(err){ toast('Не удалось прочитать файл изображения', 'warn'); }
   e.target.value = '';
 });
- $('#bg-remove').onclick = () => { try{ localStorage.removeItem(LS_BG); }catch(e){} applyUserBg(); toast('Фоновая картина убрана'); };
+$('#bg-remove').onclick = () => { try{ localStorage.removeItem(LS_BG); }catch(e){} applyUserBg(); toast('Фоновая картина убрана'); };
 
 window.addEventListener('pointermove', e => {
   const k = (settings.parallax || 0)/100 * 16;
@@ -3211,7 +3190,7 @@ function bindSettingsValues(){
   $('#s-filmmin').value = settings.filmMin;
 }
 
- $('#btn-reset-set').onclick = () => openConfirm({
+$('#btn-reset-set').onclick = () => openConfirm({
   title:'Вернуть стандартные настройки?',
   text:'Оформление, эффекты и атмосфера сбросятся к исходным — только в вашем браузере. Каталог и вход не затрагиваются.',
   okLabel:'Сбросить',
@@ -3225,7 +3204,7 @@ function bindSettingsValues(){
   }
 });
 
- $('#btn-export').onclick = () => {
+$('#btn-export').onclick = () => {
   const blob = new Blob([JSON.stringify({v:3, updatedAt: state.updatedAt, titles: state.titles, settings}, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -3233,8 +3212,8 @@ function bindSettingsValues(){
   a.click(); URL.revokeObjectURL(a.href);
   toast('Экспорт готов');
 };
- $('#btn-import').onclick = () => $('#file-import').click();
- $('#file-import').addEventListener('change', e => {
+$('#btn-import').onclick = () => $('#file-import').click();
+$('#file-import').addEventListener('change', e => {
   const f = e.target.files[0];
   if (!f) return;
   const r = new FileReader();
@@ -3267,22 +3246,27 @@ function bindSettingsValues(){
 
 /* ================================================================
    СИНХРОНИЗАЦИЯ: GitHub — источник истины
-   · опрос raw каждые 5 секунд (мгновенные правки для читателей)
-   · раз в ~70с авторитетная проверка SHA коммита через API
-     и загрузка по SHA-пинненому URL (обходит CDN-кэш наверняка)
+   · короткий цикл опроса raw (3 с) — почти мгновенные правки у читателей
+   · авторитетная проверка SHA коммита через API раз в 30 с
    · возврат во вкладку — немедленный опрос
+   · автоматическое подключение читателей по ссылке ?repo=owner/repo
 ================================================================ */
 let sync = null;
 try{ sync = JSON.parse(localStorage.getItem(LS_SYNC)) || null; }catch(e){}
 let syncStatus = 'off', lastSyncAt = 0, pushTimer = null, pollTimer = null;
 let lastSeenSha = null, lastApiCheck = 0, apiFailStreak = 0;
-const POLL_MS = 5000, API_MS = 70000;
+const POLL_MS = 3000, API_MS = 30000;
 const b64encode = str => { const b = new TextEncoder().encode(str); let s=''; b.forEach(x => s += String.fromCharCode(x)); return btoa(s); };
 
 function canEdit(){ return !!(sync && sync.mode === 'rw'); }
 function saveSync(){ if (sync) localStorage.setItem(LS_SYNC, JSON.stringify(sync)); else localStorage.removeItem(LS_SYNC); }
 function rawURL(){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`; }
 function shaURL(sha){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sha}/${DATA_PATH}`; }
+function shareURL(){
+  if (!sync) return location.origin + location.pathname;
+  return location.origin + location.pathname + '?repo=' + encodeURIComponent(sync.owner + '/' + sync.repo) +
+         (sync.branch && sync.branch !== 'main' ? '&branch=' + encodeURIComponent(sync.branch) : '');
+}
 async function gh(path, token, opts = {}){
   const h = {'Accept':'application/vnd.github+json', ...opts.headers};
   if (token) h.Authorization = 'Bearer ' + token;
@@ -3307,7 +3291,8 @@ function renderSyncMenu(){
   m.innerHTML = `
     <div class="sm-head"><b>${esc(sync.login || sync.owner)}</b><br>${esc(sync.owner)}/${esc(sync.repo)} · ${mode}</div>
     <button id="sm-sync">Синхронизировать сейчас</button>
-    <button id="sm-settings">Настройки подключения</button>
+    ${sync.mode === 'rw' ? '<button id="sm-share">Скопировать публичную ссылку</button>' : ''}
+    <button id="sm-settings">${sync.mode === 'rw' ? 'Сменить токен' : 'Сменить подключение'}</button>
     <button id="sm-logout" class="sm-logout">Отключиться</button>
     <div class="sm-last">${lastSyncAt ? 'обновлено: ' + new Date(lastSyncAt).toLocaleTimeString('ru-RU') : 'ещё не синхронизировалось'}</div>`;
   $('#sm-sync').onclick = async () => {
@@ -3316,7 +3301,15 @@ function renderSyncMenu(){
     if (sync.mode === 'rw'){ await push(); await pull(false); }
     else await pull(false);
   };
-  $('#sm-settings').onclick = () => { m.classList.add('hidden'); openLogin(sync.mode); };
+  const sh = $('#sm-share');
+  if (sh) sh.onclick = () => {
+    const url = shareURL();
+    m.classList.add('hidden');
+    (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject())
+      .then(() => toast('Публичная ссылка скопирована — делитесь ею с читателями'))
+      .catch(() => prompt('Скопируйте ссылку:', url));
+  };
+  $('#sm-settings').onclick = () => { m.classList.add('hidden'); openLogin(); };
   $('#sm-logout').onclick = () => {
     sync = null; saveSync();
     clearInterval(pollTimer); pollTimer = null;
@@ -3337,7 +3330,7 @@ function updateSyncUI(){
   $$('[data-act="add"]').forEach(b => b.classList.toggle('hidden', !editable));
   setSyncStatus(sync ? syncStatus : 'off');
 }
- $('#sync-user').addEventListener('click', e => {
+$('#sync-user').addEventListener('click', e => {
   e.stopPropagation();
   $('#sync-menu').classList.toggle('hidden');
 });
@@ -3350,7 +3343,6 @@ async function pull(silent = true){
   setSyncStatus('sync');
   try{
     let url = rawURL(), gotSha = null;
-    /* периодическая авторитетная проверка через API (CDN не участвует) */
     const due = Date.now() - lastApiCheck > API_MS * Math.max(1, apiFailStreak * 2);
     if (due){
       lastApiCheck = Date.now();
@@ -3359,15 +3351,15 @@ async function pull(silent = true){
         if (Array.isArray(cs) && cs.length){
           const sha = cs[0].sha;
           gotSha = sha;
-          if (sha === lastSeenSha){          /* новых коммитов нет */
+          if (sha === lastSeenSha){
             lastSyncAt = Date.now();
             setSyncStatus('ok');
             return;
           }
-          url = shaURL(sha);                 /* пиннинг по SHA — содержимое коммита неизменно */
+          url = shaURL(sha);
         }
       }catch(e){
-        if (e.status === 403 || e.status === 429) apiFailStreak++;   /* лимит API — реже */
+        if (e.status === 403 || e.status === 429) apiFailStreak++;
         else apiFailStreak = Math.max(0, apiFailStreak - 1);
       }
     }
@@ -3412,7 +3404,7 @@ async function push(){
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({message: 'ANIME: обновление каталога', content, sha, branch: sync.branch})
     });
-    if (res && res.commit && res.commit.sha) lastSeenSha = res.commit.sha;   /* наш свежий коммит известен */
+    if (res && res.commit && res.commit.sha) lastSeenSha = res.commit.sha;
     lastSyncAt = Date.now();
     setSyncStatus('ok');
   }catch(err){
@@ -3433,121 +3425,78 @@ async function connectAndSync(){
     await push();
     await pull(true);
   }
-  if (syncStatus === 'ok') toast('Подключено');
+  if (syncStatus === 'ok') toast(sync.mode === 'rw' ? 'Подключено' : 'Каталог загружен · обновляется автоматически');
   clearInterval(pollTimer);
   pollTimer = setInterval(() => {
     if (sync && document.visibilityState === 'visible') pull(true);
   }, POLL_MS);
 }
-/* вернулись во вкладку — сразу проверяем обновления */
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && sync){
-    if (Date.now() - lastSyncAt > 60000) lastApiCheck = 0;
+    if (Date.now() - lastSyncAt > 30000) lastApiCheck = 0;
     pull(true);
   }
 });
 
-/* ---- модалка входа ---- */
-let loginTab = 'rw', checkedToken = '', checkedUser = null;
-function openLogin(tab){
-  loginTab = tab || 'rw';
-  checkedToken = ''; checkedUser = null;
+/* ---- модалка входа: только токен ---- */
+function openLogin(){
   $('#lk-token').value = '';
-  $('#lk-user').classList.add('hidden');
-  $('#lk-repo-w').classList.add('hidden');
-  $('#lk-branch-w').classList.add('hidden');
-  $('#lk-connect').disabled = true;
   $('#lk-status').textContent = '';
-  $('#ro-status').textContent = '';
-  $$('.login-tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === loginTab));
-  $('#lk-rw').classList.toggle('hidden', loginTab !== 'rw');
-  $('#lk-ro').classList.toggle('hidden', loginTab !== 'ro');
+  $('#lk-status').className = 'lk-status';
+  $('#lk-connect').disabled = false;
   openOv('ov-login');
+  setTimeout(() => $('#lk-token').focus(), 80);
 }
- $$('.login-tabs button').forEach(b => b.addEventListener('click', () => openLogin(b.dataset.tab)));
- $('#btn-login').onclick = () => openLogin('rw');
+$('#btn-login').onclick = () => openLogin();
 
- $('#lk-check').onclick = async () => {
+async function findOwnerRepo(token, user){
+  /* ищем среди репозиториев с правом записи тот, где уже лежит anime-data.json */
+  let repos = [];
+  try{ repos = await gh('/user/repos?per_page=100&sort=pushed&affiliation=owner,collaborator,organization_member', token); }catch(e){}
+  const pushable = (repos||[]).filter(r => r.permissions && r.permissions.push);
+  if (!pushable.length) throw {message:'нет репозиториев с правом записи'};
+  for (const r of pushable){
+    try{
+      const c = await gh(`/repos/${r.full_name}/contents/${DATA_PATH}?ref=${r.default_branch||'main'}`, token);
+      if (c && (c.sha || Array.isArray(c))) return r;
+    }catch(e){ /* нет файла — идём дальше */ }
+  }
+  return pushable[0];
+}
+
+$('#lk-connect').onclick = async () => {
   const token = $('#lk-token').value.trim();
-  if (!token){ $('#lk-status').textContent = 'введите токен'; return; }
-  $('#lk-status').textContent = 'проверяю…';
+  const st = $('#lk-status');
+  if (!token){ st.className = 'lk-status err'; st.textContent = 'введите токен'; return; }
+  st.className = 'lk-status'; st.textContent = 'проверяю…';
+  $('#lk-connect').disabled = true;
   try{
     const user = await gh('/user', token);
-    checkedToken = token;
-    checkedUser = user;
-    $('#lk-user').innerHTML = `
-      <img src="${esc(user.avatar_url)}" alt="">
-      <div><div class="lku-name">${esc(user.login)}</div><div class="lku-sub">${esc(user.name || '')}</div></div>`;
-    $('#lk-user').classList.remove('hidden');
-    const repos = await gh('/user/repos?per_page=100&sort=pushed&affiliation=owner', token);
-    const pushable = repos.filter(r => r.permissions && r.permissions.push);
-    if (!pushable.length){ $('#lk-status').textContent = 'не найдено репозиториев с правом записи'; return; }
-    $('#lk-repo').innerHTML = pushable.map(r => `<option value="${esc(r.full_name)}">${esc(r.full_name)}</option>`).join('');
-    $('#lk-repo-w').classList.remove('hidden');
-    $('#lk-repo').onchange = loadBranches;
-    await loadBranches();
-    $('#lk-connect').disabled = false;
-    $('#lk-status').textContent = 'готово — выберите репозиторий и подключите';
-  }catch(err){
-    checkedToken = ''; checkedUser = null;
-    $('#lk-user').classList.add('hidden');
-    $('#lk-repo-w').classList.add('hidden');
-    $('#lk-branch-w').classList.add('hidden');
-    $('#lk-connect').disabled = true;
-    $('#lk-status').textContent = 'ошибка: ' + (err.message || err.status);
-  }
-};
-async function loadBranches(){
-  const full = $('#lk-repo').value;
-  if (!full) return;
-  try{
-    const bs = await gh(`/repos/${full}/branches?per_page=100`, checkedToken);
-    $('#lk-branch').innerHTML = bs.map(b => `<option value="${esc(b.name)}" ${b.name==='main'||b.name==='master'?'selected':''}>${esc(b.name)}</option>`).join('');
-    $('#lk-branch-w').classList.remove('hidden');
-  }catch(e){ $('#lk-branch').innerHTML = '<option value="main">main</option>'; $('#lk-branch-w').classList.remove('hidden'); }
-}
- $('#lk-connect').onclick = () => {
-  if (!checkedUser) return;
-  const full = $('#lk-repo').value;
-  const [owner, repo] = full.split('/');
-  sync = { mode:'rw', token: checkedToken, owner, repo,
-           branch: $('#lk-branch').value || 'main',
-           login: checkedUser.login, avatar: checkedUser.avatar_url };
-  saveSync();
-  closeOv('ov-login');
-  connectAndSync();
-};
- $('#ro-connect').onclick = async () => {
-  const owner = $('#ro-owner').value.trim(), repo = $('#ro-repo').value.trim();
-  if (!owner || !repo){ $('#ro-status').textContent = 'укажите владельца и репозиторий'; return; }
-  const cfg = { mode:'ro', token:'', owner, repo,
-    branch: $('#ro-branch').value.trim() || 'main',
-    login: owner, avatar:'' };
-  $('#ro-status').textContent = 'проверяю доступ…';
-  try{
-    const r = await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${cfg.branch}/${DATA_PATH}?t=${Date.now()}`, {cache:'no-store'});
-    if (r.status === 404){ $('#ro-status').textContent = 'данные не найдены — проверьте адрес'; return; }
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    sync = cfg; saveSync();
+    const repo = await findOwnerRepo(token, user);
+    const [owner, name] = repo.full_name.split('/');
+    sync = { mode:'rw', token, owner, repo: name,
+             branch: repo.default_branch || 'main',
+             login: user.login, avatar: user.avatar_url };
+    saveSync();
     closeOv('ov-login');
     connectAndSync();
   }catch(err){
-    $('#ro-status').textContent = 'не удалось подключиться: ' + (err.message || 'репозиторий приватный?');
+    st.className = 'lk-status err';
+    st.textContent = 'ошибка: ' + (err.message || err.status || err);
+    $('#lk-connect').disabled = false;
   }
 };
+$('#lk-token').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('#lk-connect').click(); } });
 
-/* ---- ссылка-приглашение ---- */
+/* ---- авто-подключение читателей по ссылке ?repo=owner/repo ---- */
 (function(){
   const qp = new URLSearchParams(location.search);
   const repo = qp.get('repo');
-  if (repo && repo.includes('/')){
+  if (repo && repo.includes('/') && !sync){
     const [o, r] = repo.split('/');
-    setTimeout(() => {
-      openLogin('ro');
-      $('#ro-owner').value = o;
-      $('#ro-repo').value = r;
-      if (qp.get('branch')) $('#ro-branch').value = qp.get('branch');
-    }, 600);
+    const branch = qp.get('branch') || 'main';
+    sync = {mode:'ro', token:'', owner:o, repo:r, branch, login:o, avatar:''};
+    saveSync();
   }
 })();
 
@@ -3586,13 +3535,13 @@ function closeDrawer(){
   $$('.nav-btn').forEach(x => x.classList.toggle('active', x.dataset.view === currentView));
   movePill();
 }
- $('#drawer-x').addEventListener('click', closeDrawer);
- $('#nav').addEventListener('click', e => {
+$('#drawer-x').addEventListener('click', closeDrawer);
+$('#nav').addEventListener('click', e => {
   const b = e.target.closest('[data-view]');
   if (b) switchView(b.dataset.view);
 });
- $$('[data-act="add"]').forEach(b => b.addEventListener('click', () => { if (canEdit()) openForm(); }));
- $('#btn-random').onclick = () => {
+$$('[data-act="add"]').forEach(b => b.addEventListener('click', () => { if (canEdit()) openForm(); }));
+$('#btn-random').onclick = () => {
   if (!state.titles.length){ toast('Каталог пуст', 'warn'); return; }
   openTitle(state.titles[Math.floor(Math.random()*state.titles.length)].id);
 };
@@ -3602,20 +3551,19 @@ document.addEventListener('click', e => {
   if (e.target.closest('#ov-day')){ closeOv('ov-day'); setTimeout(() => openTitle(c.dataset.id), 60); }
   else openTitle(c.dataset.id);
 });
- $('#cal-prev').onclick = () => { calM--; if (calM < 0){ calM = 11; calY--; } renderCalGrid(); };
- $('#cal-next').onclick = () => { calM++; if (calM > 11){ calM = 0; calY++; } renderCalGrid(); };
- $('#cal-today').onclick = () => { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCalGrid(); };
- $('#cal-sel-m').addEventListener('change', e => { calM = +e.target.value; renderCalGrid(); });
- $('#cal-sel-y').addEventListener('change', e => { calY = +e.target.value; renderCalGrid(); });
- $('#cal-mode-grid').onclick = () => { calMode = 'grid'; renderCalendar(); };
- $('#cal-mode-list').onclick = () => { calMode = 'list'; renderCalendar(); };
+$('#cal-prev').onclick = () => { calM--; if (calM < 0){ calM = 11; calY--; } renderCalGrid(); };
+$('#cal-next').onclick = () => { calM++; if (calM > 11){ calM = 0; calY++; } renderCalGrid(); };
+$('#cal-today').onclick = () => { const n = new Date(); calY = n.getFullYear(); calM = n.getMonth(); renderCalGrid(); };
+$('#cal-sel-m').addEventListener('change', e => { calM = +e.target.value; renderCalGrid(); });
+$('#cal-sel-y').addEventListener('change', e => { calY = +e.target.value; renderCalGrid(); });
+$('#cal-mode-grid').onclick = () => { calMode = 'grid'; renderCalendar(); };
+$('#cal-mode-list').onclick = () => { calMode = 'list'; renderCalendar(); };
 
 window.addEventListener('scroll', () => {
   $('#to-top').classList.toggle('show', scrollY > 500);
 }, {passive:true});
- $('#to-top').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+$('#to-top').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
 
-/* объёмный наклон карточек */
 let tiltEl = null;
 document.addEventListener('pointermove', e => {
   if (!settings.tilt || REDUCED || e.pointerType !== 'mouse' || matchMedia('(hover:none)').matches) return;
