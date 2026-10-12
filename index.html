@@ -176,7 +176,7 @@ body.no-modalpop .view{animation:none}
 .hst em{display:block;font-style:normal;font-family:'JetBrains Mono';font-size:10px;color:var(--faint);margin-top:3px}
 
 /* ================================================================
-   ТИР-КАРТОЧКИ сверху (голографические панели)
+   ТИР-КАРТОЧКИ сверху
 ================================================================ */
 .tiers-banner{margin-bottom:24px;position:relative}
 .tiers-banner-head{display:flex;align-items:baseline;gap:16px;margin-bottom:14px;padding-left:4px}
@@ -313,7 +313,7 @@ body:not(.no-anim):not(.no-cascade) .recent .card{animation:cardIn calc(.5s*var(
 .gp-empty{color:var(--faint);font-size:12.5px;padding:8px 2px}
 
 /* ================================================================
-   СТРОКИ ТИР-ЛИСТА + 3D-ЭМБЛЕМЫ СБОКУ (где основной список)
+   СТРОКИ ТИР-ЛИСТА + 3D-ЭМБЛЕМЫ СБОКУ
 ================================================================ */
 .tier-row{--i:0;display:flex;gap:20px;padding:18px 0 28px;border-top:1px solid var(--line);position:relative;scroll-margin-top:80px}
 .tier-row::before{content:'';position:absolute;left:0;top:18px;bottom:28px;width:250px;
@@ -325,7 +325,7 @@ body.no-rowanim #tierlist.anim-in .tier-row{animation:none}
 .tier-side{flex:none;width:132px;border-left:3px solid var(--tc);padding-left:16px;
   display:flex;flex-direction:column;gap:5px;padding-top:4px}
 
-/* --- 3D-эмблема: 4 слоя кристалла на разной глубине --- */
+/* --- 3D-эмблема: слои кристалла --- */
 .emb{position:relative;width:92px;height:92px;margin:4px 0 8px;flex:none;perspective:900px}
 .emb-aura{position:absolute;inset:-18px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle, color-mix(in srgb,var(--tc) 45%,transparent), transparent 66%);
@@ -369,7 +369,7 @@ body.tier-glow .emb-layer:nth-child(3){filter:brightness(1.4) drop-shadow(0 0 16
   animation:embCrown 3.6s ease-in-out infinite}
 @keyframes embCrown{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
 
-/* --- индивидуальные анимации эмблем по тирам --- */
+/* --- индивидуальные анимации по тирам --- */
 .emb[data-tier="SSS"] .emb-rot{animation:embSpinY calc(var(--tes)*1.2) linear infinite}
 .emb[data-tier="S"]   .emb-rot{animation:embTilt  calc(var(--tes)*1.4) ease-in-out infinite alternate}
 .emb[data-tier="A"]   .emb-rot{animation:embSpinY calc(var(--tes)*1.6) linear infinite}
@@ -383,7 +383,7 @@ body.tier-glow .emb-layer:nth-child(3){filter:brightness(1.4) drop-shadow(0 0 16
 @keyframes embSwing{from{transform:rotateZ(-14deg) rotateY(-12deg)}to{transform:rotateZ(14deg) rotateY(12deg)}}
 @keyframes embIso{0%{transform:rotateX(-18deg) rotateY(0deg)}100%{transform:rotateX(-18deg) rotateY(360deg)}}
 
-/* режимы анимации (действуют и на карточки сверху, и на эмблемы сбоку) */
+/* режимы анимации */
 body[data-embanim="off"] .emb-rot,
 body[data-embanim="off"] .emb-aura,
 body[data-embanim="off"] .emb-ring,
@@ -415,7 +415,6 @@ body[data-embanim="float"] .tc-ring{animation:none!important}
 body.no-cascade #tierlist.anim-in .card{animation:none}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}}
 body.tilt-off .card:hover{transform:translateY(-6px)}
-body.tilt-off.no-lift .card:hover{transform:none}
 .card-crown{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:30px;z-index:4;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));pointer-events:none}
 .cover{position:relative;aspect-ratio:2/3;border-radius:var(--rad);overflow:hidden;background:var(--panel2);border:1px solid var(--line)}
 .cover img{width:100%;height:100%;object-fit:cover;transition:transform calc(.4s*var(--sp)) cubic-bezier(.2,.9,.3,1)}
@@ -455,7 +454,7 @@ body.shine .card:hover .cover::after{animation:sweep calc(.85s*var(--sp)) ease}
 .listcard{display:flex;align-items:center;gap:15px;padding:8px 12px;border:1px solid transparent;border-bottom:1px solid var(--line);
   border-radius:10px;cursor:pointer;transition:.18s;width:100%}
 .listcard:hover{background:var(--panel);border-color:var(--line2);border-bottom-color:var(--line2);transform:translateX(4px)}
-.listcard img{width:46px;height:69px;border-radius:7px;object-fit:cover;flex:none}
+.listcard img{width:46px;height:69px;object-fit:cover;border-radius:7px;flex:none}
 .lc-body{min-width:0;flex:1}
 .lc-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lc-sub{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);margin-top:2px}
@@ -675,7 +674,6 @@ body.no-modalpop .modal{animation:none}
 .seg .seg-btn.on{background:var(--tc,var(--accent));border-color:var(--tc,var(--accent));color:#1b1420}
 .seg-types .seg-btn{font-family:'Onest';font-weight:600;font-size:13.5px}
 .gchips{display:flex;flex-wrap:wrap;gap:8px;max-height:200px;overflow-y:auto;padding-right:4px}
-.f-genres-selected{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
 .genre-add{display:flex;gap:8px;margin-top:10px}
 .genre-add input{flex:1;background:var(--bg2);border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:13px;outline:none}
 .genre-add input:focus{border-color:var(--accent)}
@@ -1298,7 +1296,6 @@ const fmtInt = n=>Math.round(n).toLocaleString('ru-RU');
 const esc = s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtDur = min=>{const h=Math.floor(min/60),m=Math.round(min%60);if(!h)return m+' мин';return m?`${fmtInt(h)} ч ${m} мин`:`${fmtInt(h)} ч`;};
 const plural = (n,a,b,c)=>{const m=n%10,h=n%100;return(h>=11&&h<=14)?c:(m===1?a:(m>=2&&m<=4?b:c));};
-const findTitle = id=>state.titles.find(t=>t.id===id);
 const mulberry32 = a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
 function shadeColor(hex,f){const n=parseInt(hex.slice(1),16);const r=Math.round(((n>>16)&255)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);return'#'+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
 function lighten(hex,f){const n=parseInt(hex.slice(1),16);const mix=v=>Math.round(v+(255-v)*f);return'#'+((1<<24)+(mix((n>>16)&255)<<16)+(mix((n>>8)&255)<<8)+mix(n&255)).toString(16).slice(1);}
@@ -1399,14 +1396,63 @@ let state=loadTitles();
 let settings=loadSettings();
 let sortMode='added';
 
+/* ---- СИНХРОНИЗАЦИЯ: состояние (объявлено рано — нужно persist) ---- */
+let sync=null;
+try{sync=JSON.parse(localStorage.getItem(LS_SYNC))||null;}catch(e){}
+let syncStatus='off',lastSyncAt=0,pushTimer=null,pollTimer=null;
+let lastSeenSha=null,lastApiCheck=0,apiFailStreak=0;
+const POLL_MS=5000,API_MS=70000;
+const b64encode=str=>{const b=new TextEncoder().encode(str);let s='';b.forEach(x=>s+=String.fromCharCode(x));return btoa(s);};
+function canEdit(){return!!(sync&&sync.mode==='rw');}
+
+/* ================================================================
+   ГЛАВНОЕ ИСПРАВЛЕНИЕ: токен пишется первым и под защитой.
+   Было: saveSync без try/catch — при переполненной квоте молча
+   падал, токен не запоминался, F5 выкидывал из входа.
+   Теперь: при нехватке места жертвуем кэшем каталога и фоном —
+   они восстановятся из GitHub, а вход сохранится.
+================================================================ */
 let quotaWarned=false;
+function saveSync(){
+  try{
+    if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
+    else localStorage.removeItem(LS_SYNC);
+    return true;
+  }catch(e){
+    /* квота переполнена — освобождаем место */
+    try{localStorage.removeItem(LS_KEY);}catch(e2){}
+    try{localStorage.removeItem(LS_BG);}catch(e2){}
+    try{
+      if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
+      toast('Кэш каталога выгружен из браузера — данные остались в GitHub','warn');
+      return true;
+    }catch(e3){
+      toast('Не удалось запомнить вход: хранилище браузера полностью заблокировано','warn');
+      return false;
+    }
+  }
+}
+
 function persist(){
+  /* порядок важен: токен и настройки — маленькие и критичные, пишем первыми */
+  saveSync();
+  persistSettings();
+  if(sync&&sync.mode==='rw'){
+    /* владелец: локальная копия каталога — просто кэш, истина в GitHub */
+    try{localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles}));}
+    catch(e){/* кэш не влез — не страшно */}
+    return;
+  }
+  /* читатель/без входа: пробуем сохранить, при переполнении — обложки вон */
   try{localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles}));}
   catch(e){
     try{
       const light=state.titles.map(t=>(t.cover&&t.cover.startsWith('data:'))?{...t,cover:''}:t);
       localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:0,titles:light}));
-      if(!quotaWarned){quotaWarned=true;toast('Локальный кэш переполнен — полная версия хранится в GitHub','warn');}
+      if(!quotaWarned){
+        quotaWarned=true;
+        toast('Локальный кэш переполнен — обложки временно выгружены; полная версия хранится в GitHub','warn');
+      }
     }catch(e2){}
   }
 }
@@ -1421,6 +1467,7 @@ if(bc)bc.onmessage=e=>{if(e.data&&e.data.updatedAt>(state.updatedAt||0))applyLoc
 window.addEventListener('storage',e=>{if(e.key===LS_KEY&&e.newValue)applyLocalRemote();});
 
 /* ================= расчёты ================= */
+function findTitle(id){return state.titles.find(t=>t.id===id);}
 function titleEpisodes(t){
   if(t.units&&t.units.length)return t.units.reduce((s,u)=>u.kind!=='film'?s+(+u.episodes||0):s,0);
   if(t.type==='film')return 0;return+t.episodes||0;
@@ -1747,7 +1794,7 @@ function renderTrees(){
 renderTrees();
 
 /* ================================================================
-   3D-ЭМБЛЕМЫ для строк тир-листа (СБОКУ, где список тайтлов)
+   3D-ЭМБЛЕМЫ для строк тир-листа (сбоку)
 ================================================================ */
 function emblemShape(tier){
   const c=TIER_COLOR[tier];
@@ -2033,7 +2080,7 @@ function matchesFilters(t){
   return true;
 }
 
-/* ---- тир-лист: строки с 3D-эмблемами сбоку ---- */
+/* ---- тир-лист с эмблемами сбоку ---- */
 const SORTS={
   added:(a,b)=>b.createdAt-a.createdAt,
   name:(a,b)=>a.name.localeCompare(b.name,'ru'),
@@ -2627,15 +2674,9 @@ function bindSettings(){
   e.target.value='';
 });
 
-/* ================= синхронизация ================= */
-let sync=null;
-try{sync=JSON.parse(localStorage.getItem(LS_SYNC))||null;}catch(e){}
-let syncStatus='off',lastSyncAt=0,pushTimer=null,pollTimer=null;
-let lastSeenSha=null,lastApiCheck=0,apiFailStreak=0;
-const POLL_MS=5000,API_MS=70000;
-const b64encode=str=>{const b=new TextEncoder().encode(str);let s='';b.forEach(x=>s+=String.fromCharCode(x));return btoa(s);};
-function canEdit(){return!!(sync&&sync.mode==='rw');}
-function saveSync(){if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));else localStorage.removeItem(LS_SYNC);}
+/* ================================================================
+   СИНХРОНИЗАЦИЯ
+================================================================ */
 function rawURL(){return`https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`;}
 function shaURL(sha){return`https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sha}/${DATA_PATH}`;}
 async function gh(path,token,opts={}){
@@ -2664,7 +2705,11 @@ function renderSyncMenu(){
   $('#sm-sync').onclick=async()=>{m.classList.add('hidden');lastApiCheck=0;
     if(sync.mode==='rw'){await push();await pull(false);}else await pull(false);};
   $('#sm-settings').onclick=()=>{m.classList.add('hidden');openLogin(sync.mode);};
-  $('#sm-logout').onclick=()=>{sync=null;saveSync();clearInterval(pollTimer);pollTimer=null;setSyncStatus('off');updateSyncUI();toast('Вы вышли');};
+  $('#sm-logout').onclick=()=>{
+    sync=null;saveSync();          /* здесь saveSync удалит запись — тоже под защитой */
+    clearInterval(pollTimer);pollTimer=null;
+    setSyncStatus('off');updateSyncUI();toast('Вы вышли');
+  };
 }
 function updateSyncUI(){
   const connected=!!sync;
@@ -2752,10 +2797,11 @@ function schedulePush(){
 }
 async function connectAndSync(){
   updateSyncUI();
+  if(sync&&sync.login)toast('С возвращением, '+sync.login);   /* приветствие при автологине */
   lastSyncAt=0;
   await pull(true);
   if(sync.mode==='rw'&&syncStatus==='err'){await push();await pull(true);}
-  if(syncStatus==='ok')toast('Подключено');
+  if(syncStatus==='ok'&&!lastSyncAt)toast('Подключено');
   clearInterval(pollTimer);
   pollTimer=setInterval(()=>{if(sync&&document.visibilityState==='visible')pull(true);},POLL_MS);
 }
@@ -2826,7 +2872,7 @@ async function loadBranches(){
   const full=$('#lk-repo').value;
   const[owner,repo]=full.split('/');
   sync={mode:'rw',token:checkedToken,owner,repo,branch:$('#lk-branch').value||'main',login:checkedUser.login,avatar:checkedUser.avatar_url};
-  saveSync();
+  saveSync();       /* токен закреплён в localStorage немедленно */
   closeOv('ov-login');
   connectAndSync();
 };
@@ -2944,7 +2990,7 @@ renderAll();
 movePill();
 updateSyncUI();
 setTimeout(movePill,400);
-if(sync)connectAndSync();
+if(sync)connectAndSync();   /* сохранённый вход подхватывается при загрузке страницы */
 </script>
 </body>
 </html>
