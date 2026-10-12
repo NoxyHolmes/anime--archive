@@ -1340,26 +1340,51 @@ const DEFAULT_SETTINGS={
 
 /* --- 1. ВХОД ЧИТАЕТСЯ ПЕРВЫМ, до любых функций сохранения --- */
 let sync=null;
-try{sync=JSON.parse(localStorage.getItem(LS_SYNC))||null;}catch(e){}
+try{
+  const raw=localStorage.getItem(LS_SYNC);
+  if(raw){
+    const parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object'&&parsed.owner&&parsed.repo){
+      sync=parsed;
+      console.log('[ANIME sync] restored from localStorage:',parsed.mode,parsed.owner+'/'+parsed.repo);
+    }else{
+      console.warn('[ANIME sync] LS_SYNC present but malformed, ignoring');
+    }
+  }
+}catch(e){
+  console.warn('[ANIME sync] failed to read LS_SYNC:',e);
+}
 
 /* --- 2. saveSync: запись ТОКЕНА, единственная точка --- */
 function saveSync(){
-  try{
-    if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
-    else localStorage.removeItem(LS_SYNC);
+  if(!sync){
+    try{localStorage.removeItem(LS_SYNC);}catch(e){}
     return true;
-  }catch(e){
-    /* квота переполнена — чистим НЕкритичное и пробуем снова */
+  }
+  const data=JSON.stringify(sync);
+  const write=()=>localStorage.setItem(LS_SYNC,data);
+
+  try{write();}
+  catch(e){
+    /* освобождаем место и пробуем снова — LS_SYNC не трогаем */
     try{localStorage.removeItem(LS_KEY);}catch(e2){}
     try{localStorage.removeItem(LS_BG);}catch(e2){}
-    try{
-      if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
-      return true;
-    }catch(e3){
-      toast('Не удалось запомнить вход: хранилище полностью заблокировано','warn');
+    try{write();}
+    catch(e3){
+      console.error('[ANIME sync] saveSync failed:',e3);
+      toast('Не удалось запомнить вход: хранилище заблокировано','warn');
       return false;
     }
   }
+  /* контрольное чтение — убеждаемся, что запись реально сохранилась */
+  try{
+    const back=localStorage.getItem(LS_SYNC);
+    if(back!==data){
+      console.error('[ANIME sync] saveSync verify mismatch');
+      return false;
+    }
+  }catch(e){}
+  return true;
 }
 
 function normDate(d){return(d&&+d.y)?{d:+d.d||null,m:+d.m||null,y:+d.y}:null;}
@@ -2716,22 +2741,25 @@ function updateSyncUI(){
 $('#sync-user').addEventListener('click',e=>{e.stopPropagation();$('#sync-menu').classList.toggle('hidden');});
 document.addEventListener('click',e=>{if(!e.target.closest('.sync-wrap'))$('#sync-menu').classList.add('hidden');});
 
-/* --- проверка живого токена при автологине --- */
+/* --- проверка живого токена при автологине ---
+   ВАЖНО: эта функция НИКОГДА не должна разлогинивать.
+   Только показывает статус. Выход — только вручную через меню. */
 async function verifyToken(){
   if(!sync||sync.mode!=='rw'||!sync.token)return true;
   try{
-    await gh('/user',sync.token);
+    const user=await gh('/user',sync.token);
+    if(user&&user.login){
+      sync.login=user.login;
+      if(user.avatar_url)sync.avatar=user.avatar_url;
+      saveSync();
+    }
     return true;
   }catch(e){
-    if(e.status===401){
-      /* не разлогиниваем сразу после входа — может быть временный сбой */
-      if(Date.now()-(sync.savedAt||0)<30000)return true;
-      sync=null;
-      try{localStorage.removeItem(LS_SYNC);}catch(e2){}
-      updateSyncUI();
-      toast('Токен доступа недействителен — войдите заново','warn');
-      return false;
+    console.warn('[ANIME sync] verifyToken soft-fail:',e&&e.status,e&&e.message);
+    if(e&&e.status===401){
+      toast('GitHub отклонил токен — правки не будут сохраняться. Отключитесь вручную, если нужно.','warn');
     }
+    /* остаёмся в системе в любом случае */
     return true;
   }
 }
@@ -2810,12 +2838,20 @@ function schedulePush(){
 async function connectAndSync(){
   updateSyncUI();
   if(!sync)return;
-  if(await verifyToken()===false)return;
-  toast('С возвращением, '+(sync.login||sync.owner));
+  /* verifyToken теперь всегда возвращает true — разлогина нет */
+  await verifyToken();
+  updateSyncUI();
+  console.log('[ANIME sync] session active:',sync.mode,sync.owner+'/'+sync.repo);
   lastSyncAt=0;
-  await pull(true);
-  if(sync.mode==='rw'&&syncStatus==='err'){await push();await pull(true);}
-  if(syncStatus==='ok'&&!lastSyncAt)toast('Подключено');
+  try{
+    await pull(true);
+    if(sync.mode==='rw'&&syncStatus==='err'){
+      await push();
+      await pull(true);
+    }
+  }catch(e){
+    console.warn('[ANIME sync] initial sync failed (kept session):',e);
+  }
   clearInterval(pollTimer);
   pollTimer=setInterval(()=>{
     if(sync&&document.visibilityState==='visible')pull(true);
