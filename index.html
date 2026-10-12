@@ -597,6 +597,10 @@ body.no-anim #drawer{transition:none}
 .bg-actions button{padding:7px 13px;border:1px solid var(--line);border-radius:10px;font-size:12.5px;color:var(--muted);transition:.2s;cursor:pointer}
 .bg-actions button:hover{color:var(--warn);border-color:var(--warn)}
 .set-actions{display:flex;gap:12px;flex-wrap:wrap;padding:16px 0;border-top:1px solid var(--line)}
+.imp-old{width:100%;min-height:130px;max-height:280px;resize:vertical;background:var(--bg2);border:1px solid var(--line);
+  border-radius:10px;padding:10px 12px;font:12px/1.5 'JetBrains Mono',monospace;color:var(--text);outline:none;
+  transition:border-color .2s;margin:6px 0 4px}
+.imp-old:focus{border-color:var(--accent)}
 
 /* ---- модалки: сжимаются по ширине контента ---- */
 .overlay{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px;
@@ -1033,12 +1037,16 @@ body.no-modalpop .modal{animation:none}
   </div>
 
   <div class="set-sec"><h3>Данные</h3>
+    <div class="sw-row"><div><div class="sw-name">Импорт из старого архива</div>
+      <div class="sw-desc">Вставьте экспорт JSON из старого приложения (кнопка ⬆ там) или сам старый HTML-файл целиком — тайтлы, серии, фильмы и даты сконвертируются автоматически</div></div></div>
+    <textarea id="impOld" class="imp-old" placeholder="Ctrl+V — вставьте сюда данные старого архива или весь старый index.html…"></textarea>
     <div class="set-actions">
+      <button class="btn btn-accent" data-action="import-old">⇩ Импортировать из архива</button>
       <button class="btn" data-action="export">⇩ Экспорт JSON</button>
       <label class="btn" for="impFile">⇧ Импорт JSON</label>
       <button class="btn btn-danger" data-action="clear-all">Очистить каталог</button>
     </div>
-    <div class="drawer-sub" style="padding-top:10px">Добавление и редактирование — только после входа по токену. Синхронизация — через меню аккаунта (GH).</div>
+    <div class="drawer-sub" style="padding-top:10px">Добавление и редактирование — только после входа по токену. Синхронизация — через меню аккаунта (GH); токену нужна галочка gist.</div>
     <input type="file" id="impFile" accept="application/json" class="hidden">
   </div>
 </aside>
@@ -1153,7 +1161,7 @@ function toast(msg,err){
   var c=document.getElementById('toasts');if(!c)return;
   var t=document.createElement('div');
   t.className='toast'+(err?' err':'');t.textContent=msg;c.appendChild(t);
-  setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(function(){t.remove()},320)},3400);
+  setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(function(){t.remove()},320)},4200);
 }
 
 /* ================================================================
@@ -1169,6 +1177,271 @@ function requireOwner(){
   if(isOwner())return true;
   toast('Войдите по токену (кнопка GH справа), чтобы добавлять и редактировать тайтлы',1);
   return false;
+}
+
+/* ================================================================
+   ИМПОРТ ИЗ СТАРОГО АРХИВА (Sakura Edition и др.)
+   Принимает: экспорт JSON / массив / весь старый HTML-файл.
+   Умеет: названия, тиры SSS–E, типы (series/movie/ova/ona/special),
+   жанры, избранное, историю просмотров (сезоны, серии, фильмы,
+   даты ДД.ММ.ГГГГ / ММ.ГГГГ / ГГГГ).
+================================================================ */
+function pick(o,keys){
+  if(!o)return null;
+  for(var i=0;i<keys.length;i++){
+    var v=o[keys[i]];
+    if(v!==undefined&&v!==null&&v!=='')return v;
+  }
+  return null;
+}
+function isTierCode(v){
+  v=String(v==null?'':v).trim().toUpperCase();
+  return ['SSS','S','A','B','C','D','E'].indexOf(v)>-1;
+}
+function mapType(v){
+  v=String(v==null?'':v).trim().toLowerCase();
+  if(!v)return 'ТВ';
+  if(TYPES.indexOf(String(v))>-1)return TYPES.indexOf(String(v))>=0?v:v;
+  if(v.indexOf('movie')>-1||v.indexOf('film')>-1||v.indexOf('фильм')>-1)return 'Фильм';
+  if(v.indexOf('ova')>-1)return 'OVA';
+  if(v.indexOf('ona')>-1)return 'ONA';
+  if(v.indexOf('special')>-1||v.indexOf('спешл')>-1)return 'Спешл';
+  if(v.indexOf('web')>-1||v.indexOf('веб')>-1)return 'Веб';
+  return 'ТВ';
+}
+function mapKind(v){
+  v=String(v==null?'':v);
+  if(['Сезон','Фильм','OVA','ONA','Спешл'].indexOf(v)>-1)return v;
+  var lv=v.toLowerCase();
+  if(lv.indexOf('movie')>-1||lv.indexOf('фильм')>-1)return 'Фильм';
+  if(lv.indexOf('ova')>-1)return 'OVA';
+  if(lv.indexOf('ona')>-1)return 'ONA';
+  if(lv.indexOf('special')>-1||lv.indexOf('спешл')>-1)return 'Спешл';
+  return 'Сезон';
+}
+function normGenres(v){
+  if(Array.isArray(v))return v.map(function(g){return String(g).trim()}).filter(Boolean);
+  if(typeof v==='string'&&v)return v.split(/[,;]/).map(function(g){return g.trim()}).filter(Boolean);
+  return [];
+}
+function pad2(x){x=String(+x);return x.length<2?('0'+x):x}
+function normDate(v){
+  if(v==null)return '';
+  if(typeof v==='number'){
+    if(v>1e12)return new Date(v).toISOString().slice(0,10);
+    if(v>1e9)return new Date(v*1000).toISOString().slice(0,10);
+    return '';
+  }
+  v=String(v).trim();
+  if(!v)return '';
+  var m=v.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?/);
+  if(m)return m[1]+'-'+pad2(m[2])+'-'+pad2(m[3]||'01');
+  m=v.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})$/);
+  if(m)return m[3]+'-'+pad2(m[2])+'-'+pad2(m[1]);
+  m=v.match(/^(\d{1,2})[.\/](\d{4})$/);
+  if(m)return m[2]+'-'+pad2(m[1])+'-01';
+  m=v.match(/^(\d{4})$/);
+  if(m)return m[1]+'-01-01';
+  return '';
+}
+function looksLikeTitle(o){
+  if(!o||typeof o!=='object'||Array.isArray(o))return false;
+  var hasName=pick(o,['title','name','n','ru','ttl'])!=null;
+  if(!hasName&&typeof o.t==='string'&&!isTierCode(o.t)&&String(o.t).length>2)hasName=true;
+  if(!hasName)return false;
+  var tr=pick(o,['tier','rank','r']);
+  if(tr!=null&&isTierCode(tr))return true;
+  if(typeof tr==='number'&&tr>=1&&tr<=7)return true;
+  var ty=String(pick(o,['type','ty','format','kind'])||'').toLowerCase();
+  if(ty&&['series','movie','ova','ona','special','film','tv','web','сериал','фильм','спешл','веб'].some(function(x){return ty.indexOf(x)>-1}))return true;
+  if(Array.isArray(o.history)||Array.isArray(o.h)||Array.isArray(o.units)||Array.isArray(o.entries)||Array.isArray(o.seasons))return true;
+  if(pick(o,['cover','img','image','poster','i','art'])!=null)return true;
+  return false;
+}
+function normImportItem(o){
+  if(!o||typeof o!=='object')return null;
+  /* наш родной формат (экспорт этого приложения) */
+  if(Array.isArray(o.units)&&o.units.length&&o.units[0]&&typeof o.units[0]==='object'&&o.units[0].kind!=null){
+    var tN=pick(o,['tier']);
+    var tierN=isTierCode(tN)?String(tN).trim().toUpperCase():'C';
+    var unitsN=[];
+    o.units.forEach(function(u){
+      if(!u||typeof u!=='object')return;
+      unitsN.push({id:u.id||uid(),kind:mapKind(u.kind),eps:+u.eps||0,date:normDate(u.date),done:!!u.done,label:String(u.label||'')});
+    });
+    return {id:o.id||uid(),title:String(pick(o,['title','name','n'])||'Без названия'),
+      type:mapType(pick(o,['type'])),tier:tierN,
+      cover:String(pick(o,['cover','img','image','poster','i'])||''),
+      genres:normGenres(pick(o,['genres'])),notes:String(pick(o,['notes','note'])||''),
+      units:unitsN,created:+o.created||Date.now(),updated:Date.now()};
+  }
+  /* универсальный формат старого архива */
+  var title=pick(o,['title','name','n','ru','ttl']);
+  if(title==null&&typeof o.t==='string'&&!isTierCode(o.t)&&String(o.t).length>2)title=o.t;
+  if(title==null)return null;
+  var tier=null;
+  ['tier','rank','r'].forEach(function(k){
+    if(tier==null&&o[k]!=null&&isTierCode(o[k]))tier=String(o[k]).trim().toUpperCase();
+  });
+  if(tier==null&&typeof o.rank==='number'&&o.rank>=1&&o.rank<=7)tier=['SSS','S','A','B','C','D','E'][o.rank-1];
+  var type=mapType(pick(o,['type','ty','format','kind']));
+  var cover=String(pick(o,['cover','img','image','poster','i','art'])||'');
+  var genres=normGenres(pick(o,['genres','g','tags']));
+  var fav=!!(o.fav||o.favorite||o.isFav||o.liked);
+  var notes=String(pick(o,['notes','note','comment','desc','description'])||'');
+  if(fav)notes=(notes?notes+'\n':'')+'\u2764\uFE0F Избранное';
+  var hist=o.history||o.h||o.entries||o.seasons||o.log||o.watches||o.viewing;
+  var units=[];
+  if(Array.isArray(hist)){
+    hist.forEach(function(u){
+      if(!u||typeof u!=='object')return;
+      var d=normDate(pick(u,['date','d','when','dt','at','day']));
+      var eps=+pick(u,['eps','episodes','e','ep','ser','series'])||0;
+      var mov=+pick(u,['movies','movie','m','films','film'])||0;
+      var lab=String(pick(u,['label','l','title','name','note','season','entry'])||'');
+      var sn=units.filter(function(q){return q.kind==='Сезон'}).length+1;
+      if(eps>0)units.push({id:uid(),kind:'Сезон',eps:eps,date:d,label:lab||('Сезон '+sn),done:true});
+      if(mov>0)units.push({id:uid(),kind:'Фильм',eps:mov,date:d,label:lab?('Фильм — '+lab):('Фильмы ×'+mov),done:true});
+    });
+  }
+  if(!units.length){
+    var ie=+pick(o,['episodes','eps','total'])||0;
+    var im=+pick(o,['movies','movie'])||0;
+    if(ie>0)units.push({id:uid(),kind:'Сезон',eps:ie,date:'',label:'Сезон 1',done:true});
+    if(im>0)units.push({id:uid(),kind:'Фильм',eps:im,date:'',label:'Фильмы ×'+im,done:true});
+  }
+  if(!units.length&&type==='Фильм')units=[{id:uid(),kind:'Фильм',eps:1,date:'',label:'Фильм',done:true}];
+  return {id:uid(),title:String(title),type:type,tier:tier||'C',cover:cover,genres:genres,notes:notes,
+    units:units,created:+pick(o,['added','created','add','createdAt'])||Date.now(),updated:Date.now()};
+}
+function collectObjects(node,out){
+  if(Array.isArray(node)){for(var i=0;i<node.length;i++)collectObjects(node[i],out)}
+  else if(node&&typeof node==='object'){
+    out.push(node);
+    for(var k in node){if(Object.prototype.hasOwnProperty.call(node,k))collectObjects(node[k],out)}
+  }
+}
+function scanObjects(text){
+  var out=[],depth=0,start=-1,inStr=null;
+  for(var i=0;i<text.length;i++){
+    var c=text[i];
+    if(inStr){
+      if(c==='\\'){i++;continue}
+      if(c===inStr)inStr=null;
+      continue;
+    }
+    if(c==='"'||c==="'"||c==='`'){inStr=c;continue}
+    if(c==='{'){if(depth===0)start=i;depth++}
+    else if(c==='}'){
+      if(depth>0){
+        depth--;
+        if(depth===0&&start>-1)out.push(text.slice(start,i+1));
+      }
+    }
+  }
+  return out;
+}
+function parseRelaxed(s){
+  var i=0;
+  function ws(){while(i<s.length&&(s[i]===' '||s[i]==='\n'||s[i]==='\r'||s[i]==='\t'))i++}
+  function parseStr(){
+    var q=s[i];i++;var out='';
+    while(i<s.length){
+      var c=s[i];
+      if(c==='\\'){
+        var nx=s[i+1];
+        out+=(nx==='n'?'\n':(nx==='t'?'\t':(nx==='r'?'':nx)));
+        i+=2;continue;
+      }
+      if(c===q){i++;return out}
+      out+=c;i++;
+    }
+    return out;
+  }
+  function parseVal(){
+    ws();
+    var c=s[i];
+    if(c==='{'){
+      i++;var o={};ws();
+      if(s[i]==='}'){i++;return o}
+      for(;;){
+        ws();
+        var k='';
+        if(s[i]==='"'||s[i]==="'"||s[i]==='`'){k=parseStr()}
+        else{var st=i;while(i<s.length&&/[A-Za-z0-9_$\-]/.test(s[i]))i++;k=s.slice(st,i)}
+        ws();
+        if(s[i]===':')i++;
+        ws();
+        o[k]=parseVal();
+        ws();
+        if(s[i]===','){i++;ws();if(s[i]==='}'){i++;return o}continue}
+        if(s[i]==='}'){i++;return o}
+        return o;
+      }
+    }
+    if(c==='['){
+      i++;var a=[];ws();
+      if(s[i]===']'){i++;return a}
+      for(;;){
+        a.push(parseVal());ws();
+        if(s[i]===','){i++;ws();if(s[i]===']'){i++;return a}continue}
+        if(s[i]===']'){i++;return a}
+        return a;
+      }
+    }
+    if(c==='"'||c==="'"||c==='`')return parseStr();
+    if(s.substr(i,4)==='true'){i+=4;return true}
+    if(s.substr(i,5)==='false'){i+=5;return false}
+    if(s.substr(i,4)==='null'){i+=4;return null}
+    if(s.substr(i,9)==='undefined'){i+=9;return undefined}
+    var st2=i;
+    if(s[i]==='-'||s[i]==='+')i++;
+    var digits=false;
+    while(i<s.length&&/[0-9]/.test(s[i])){i++;digits=true}
+    if(digits){
+      if(s[i]==='.'||s[i]==='e'||s[i]==='E'){
+        while(i<s.length&&/[0-9eE.+\-]/.test(s[i]))i++;
+      }
+      return parseFloat(s.slice(st2,i));
+    }
+    var st3=i;
+    while(i<s.length&&/[^\s,;()\[\]{}:]/.test(s[i]))i++;
+    return s.slice(st3,i);
+  }
+  return parseVal();
+}
+function parseArchiveBlob(text){
+  var objs=[];
+  var j=null;
+  try{j=JSON.parse(text)}catch(e){}
+  if(j&&typeof j==='object'){collectObjects(j,objs)}
+  else{
+    var scripts=text;
+    if(/<script[\s>]/i.test(text)){
+      var ms=text.match(/<script[\s\S]*?<\/script\s*>/gi)||[];
+      scripts=ms.map(function(m){
+        return m.replace(/^<script[^>]*>/i,'').replace(/<\/script\s*>$/i,'');
+      }).join('\n;\n');
+    }
+    var blocks=scanObjects(scripts);
+    for(var i=0;i<blocks.length;i++){
+      try{
+        var o=parseRelaxed(blocks[i]);
+        if(o&&typeof o==='object'&&!Array.isArray(o))objs.push(o);
+      }catch(e){}
+    }
+  }
+  var out=[],seen={};
+  for(var k=0;k<objs.length;k++){
+    if(!looksLikeTitle(objs[k]))continue;
+    var it=null;
+    try{it=normImportItem(objs[k])}catch(e){}
+    if(!it)continue;
+    var key=String(it.title).toLowerCase().replace(/\s+/g,' ').trim();
+    if(!key||seen[key])continue;
+    seen[key]=1;out.push(it);
+  }
+  return out;
 }
 
 /* ================================================================
@@ -1373,18 +1646,31 @@ function fileToDataURL(file,maxW,q){
 }
 
 /* ================================================================
-   АВТОРИЗАЦИЯ ПО ТОКЕНУ
+   АВТОРИЗАЦИЯ ПО ТОКЕНУ + СИНХРОНИЗАЦИЯ (исправлен 404)
+   404/403 на /gists = токен БЕЗ права gist (GitHub так отвечает).
+   404 на конкретном gist = gist удалён → создаём новый.
+   При ошибке прав автосинхронизация приостанавливается до
+   ручной попытки или смены токена.
 ================================================================ */
 var AUTH=(function(){
-  var T='anime_token',U='anime_user',G='anime_gist',L='anime_last_sync';
+  var T='anime_token',U='anime_user',G='anime_gist',L='anime_last_sync',B='anime_sync_disabled';
   function user(){return store.get(U,null)}
   function token(){try{return localStorage.getItem(T)}catch(e){return null}}
   function short(s){return s&&s.length>14?s.slice(0,10)+'…'+s.slice(-4):(s||'')}
   function dot(s){var d=document.getElementById('syncDot');if(d)d.className='sync-dot'+(s?' '+s:'')}
+  function syncDisabled(){try{return localStorage.getItem(B)==='1'}catch(e){return false}}
+  function enableSync(){try{localStorage.removeItem(B)}catch(e){}}
+  function disableSync(){try{localStorage.setItem(B,'1')}catch(e){}}
   function gh(path,opts){
     opts=opts||{};
     return fetch('https://api.github.com'+path,Object.assign({},opts,{
       headers:{Authorization:'Bearer '+token(),Accept:'application/vnd.github+json','Content-Type':'application/json'}}));
+  }
+
+  function scopeErr(){
+    disableSync();
+    dot('err');
+    toast('Токен без доступа к gist — пересоздайте токен с галочкой gist (GitHub → Settings → Developer settings → Personal access tokens → галочка gist) и нажмите «Сменить токен»',1);
   }
 
   function login(tok){
@@ -1397,6 +1683,7 @@ var AUTH=(function(){
       return r.json().then(function(u){
         try{localStorage.setItem(T,tok)}catch(e){}
         store.set(U,{login:u.login,name:u.name||u.login,avatar:u.avatar_url});
+        enableSync();
         renderBtn();renderMenu();toast('Вы вошли как @'+u.login);
         syncPull(true);
       });
@@ -1427,7 +1714,7 @@ var AUTH=(function(){
       m.innerHTML='<div class="sm-head">Синхронизация каталога<br>через <b>GitHub Gist</b></div>'+
         '<input class="sm-token" id="tokIn" type="password" placeholder="GitHub токен (права gist)">'+
         '<button data-action="sync-login">Войти по токену</button>'+
-        '<div class="sm-note">Токен: GitHub → Settings → Developer settings → Personal access tokens (нужен доступ к gist). Хранится только в вашем браузере.</div>';
+        '<div class="sm-note">Токен: GitHub → Settings → Developer settings → Personal access tokens → ОБЯЗАТЕЛЬНО галочка gist. Хранится только в вашем браузере.</div>';
     }else{
       var last='';
       try{last=localStorage.getItem(L)}catch(e){}
@@ -1442,7 +1729,25 @@ var AUTH=(function(){
   }
 
   var syncT=null;
-  function scheduleSync(){if(!token())return;clearTimeout(syncT);syncT=setTimeout(syncPush,4000)}
+  function scheduleSync(){if(!token()||syncDisabled())return;clearTimeout(syncT);syncT=setTimeout(syncPush,4000)}
+
+  var gistWarned=false;
+  function gistBody(){
+    var s=JSON.stringify({v:1,savedAt:savedAt,items:items});
+    if(s.length<=900000)return s;
+    if(!gistWarned){gistWarned=true;toast('Каталог слишком велик для gist — обложки-файлы не уйдут в облако (локально останутся)',1)}
+    var light=items.map(function(it){
+      var c=it.cover||'';
+      if(c.slice(0,5)==='data:')c='';
+      return {id:it.id,title:it.title,type:it.type,tier:it.tier,cover:c,genres:it.genres,notes:it.notes,units:it.units,created:it.created,updated:it.updated};
+    });
+    return JSON.stringify({v:1,savedAt:savedAt,items:light});
+  }
+
+  function pushOk(){
+    try{localStorage.setItem(L,new Date().toLocaleString('ru-RU'))}catch(e){}
+    dot('ok');renderMenu();
+  }
 
   function ensureGist(){
     var id=null;
@@ -1450,50 +1755,74 @@ var AUTH=(function(){
     if(id)return Promise.resolve(id);
     return gh('/gists',{method:'POST',body:JSON.stringify({
       description:'ANIME tier catalog (auto)',public:false,
-      files:{'anime-catalog.json':{content:JSON.stringify({v:1,savedAt:savedAt,items:items})}}})})
+      files:{'anime-catalog.json':{content:gistBody()}}})})
     .then(function(r){
+      if(r.status===401){dot('err');toast('Токен истёк — обновите его в меню',1);return null}
+      if(r.status===403||r.status===404){scopeErr();return null}
       if(!r.ok)throw new Error('создание gist: '+r.status);
       return r.json();
     })
-    .then(function(g){try{localStorage.setItem(G,g.id)}catch(e){}return g.id});
+    .then(function(g){if(!g)return null;try{localStorage.setItem(G,g.id)}catch(e){}return g.id});
   }
 
   function syncPush(){
-    if(!token())return Promise.resolve();
+    if(!token()||syncDisabled())return Promise.resolve();
     dot('sync');
     return ensureGist()
     .then(function(id){
+      if(!id)return;
       return gh('/gists/'+id,{method:'PATCH',body:JSON.stringify({
-        files:{'anime-catalog.json':{content:JSON.stringify({v:1,savedAt:savedAt,items:items})}}})});
-    })
-    .then(function(r){
-      if(r.status===401){dot('err');toast('Токен истёк — обновите его в меню. Профиль сохранён.',1);return}
-      if(r.status===404){try{localStorage.removeItem(G)}catch(e){}return syncPush()}
-      if(!r.ok)throw new Error(r.status);
-      try{localStorage.setItem(L,new Date().toLocaleString('ru-RU'))}catch(e){}
-      dot('ok');renderMenu();
+        files:{'anime-catalog.json':{content:gistBody()}}})})
+      .then(function(r){
+        if(r.status===401){dot('err');toast('Токен истёк — обновите его в меню. Профиль сохранён.',1);return}
+        if(r.status===403){scopeErr();return}
+        if(r.status===404){
+          /* gist удалён в облаке — создаём новый и завершаем */
+          try{localStorage.removeItem(G)}catch(e){}
+          return ensureGist().then(function(id2){if(id2)pushOk()});
+        }
+        if(!r.ok)throw new Error(r.status);
+        pushOk();
+      });
     })
     .catch(function(e){dot('err');toast('Не удалось синхронизировать: '+e.message,1)});
   }
 
   function syncPull(silent){
-    if(!token())return Promise.resolve();
+    if(!token()||syncDisabled())return Promise.resolve();
     dot('sync');
     var id=null;
     try{id=localStorage.getItem(G)}catch(e){}
-    var p=id?Promise.resolve(id):gh('/gists?per_page=100').then(function(lr){
-      if(!lr.ok)return null;
-      return lr.json().then(function(gs){
-        for(var i=0;i<gs.length;i++){
-          if(gs[i].files&&gs[i].files['anime-catalog.json']){try{localStorage.setItem(G,gs[i].id)}catch(e){}return gs[i].id}
-        }
-        return null;
+    var p;
+    if(id){p=Promise.resolve(id)}
+    else{
+      p=gh('/gists?per_page=100').then(function(lr){
+        if(lr.status===401){dot('err');if(!silent)toast('Токен истёк',1);return null}
+        if(lr.status===403||lr.status===404){scopeErr();return null}
+        if(!lr.ok)return null;
+        return lr.json().then(function(gs){
+          for(var i=0;i<gs.length;i++){
+            if(gs[i].files&&gs[i].files['anime-catalog.json']){try{localStorage.setItem(G,gs[i].id)}catch(e){}return gs[i].id}
+          }
+          return null;
+        });
       });
-    });
+    }
     return p.then(function(gid){
       if(!gid){dot('ok');if(!silent)toast('Облако пусто — gist создастся при первом изменении');return}
       return gh('/gists/'+gid).then(function(r){
         if(r.status===401){dot('err');if(!silent)toast('Токен истёк',1);return}
+        if(r.status===403){scopeErr();return}
+        if(r.status===404){
+          /* 404 на gist: либо gist удалён, либо токен без права gist.
+             Проверяем список: если он тоже 404/403 — проблема в правах. */
+          return gh('/gists?per_page=1').then(function(lr){
+            if(lr.status===403||lr.status===404){scopeErr();return}
+            try{localStorage.removeItem(G)}catch(e){}
+            dot('ok');
+            if(!silent)toast('Gist в облаке не найден — при следующем изменении создастся новый');
+          });
+        }
         if(!r.ok)throw new Error(r.status);
         return r.json();
       }).then(function(g){
@@ -1536,7 +1865,8 @@ var AUTH=(function(){
   }
 
   return {init:init,login:login,logout:logout,renderBtn:renderBtn,renderMenu:renderMenu,
-    syncPush:syncPush,syncPull:syncPull,scheduleSync:scheduleSync,user:user,token:token};
+    syncPush:syncPush,syncPull:syncPull,scheduleSync:scheduleSync,enableSync:enableSync,
+    user:user,token:token};
 })();
 
 function persist(){
@@ -1675,8 +2005,9 @@ function renderTierlist(anim){
   var tl=document.getElementById('tierlist');
   if(!items.length){
     tl.innerHTML='<div class="empty-state"><div class="empty-word">ANIME</div>'+
-      '<h2>Каталог пуст</h2><p>Добавьте первый тайтл — и тир-лист оживёт.</p>'+
-      '<div class="row"><button class="btn btn-accent owner-only" data-action="add">＋ Добавить тайтл</button></div></div>';
+      '<h2>Каталог пуст</h2><p>Импортируйте старый архив в настройках или добавьте первый тайтл.</p>'+
+      '<div class="row"><button class="btn btn-accent owner-only" data-action="add">＋ Добавить тайтл</button>'+
+      '<button class="btn" data-action="settings">⚙ Импорт в настройках</button></div></div>';
     document.getElementById('filterInfo').textContent='0 / 0';
     tl.classList.remove('anim-in');return;
   }
@@ -2267,9 +2598,9 @@ function closeDrawer(){document.body.classList.remove('drawer-open')}
 var ACTIONS={
   'sync-menu':function(){document.getElementById('syncMenu').classList.toggle('hidden')},
   'sync-login':function(){hideMenu();var i=document.getElementById('tokIn');AUTH.login(i?i.value:'')},
-  'sync-now':function(){hideMenu();AUTH.syncPush()},
-  'sync-pull':function(){hideMenu();AUTH.syncPull(false)},
-  'sync-change':function(){hideMenu();var t=prompt('Вставьте новый GitHub-токен:');if(t)AUTH.login(t)},
+  'sync-now':function(){hideMenu();AUTH.enableSync();AUTH.syncPush()},
+  'sync-pull':function(){hideMenu();AUTH.enableSync();AUTH.syncPull(false)},
+  'sync-change':function(){hideMenu();var t=prompt('Вставьте новый GitHub-токен (нужна галочка gist):');if(t)AUTH.login(t)},
   'sync-logout':function(){hideMenu();AUTH.logout()},
   'view':function(el){switchView(el.getAttribute('data-view'))},
   'go-catalog':function(){switchView('catalog');window.scrollTo({top:0,behavior:'smooth'})},
@@ -2302,6 +2633,18 @@ var ACTIONS={
   'accent':function(el){S.accent=el.getAttribute('data-c');applySettings();renderAccPick()},
   'bg-clear':function(){S.bg=null;applySettings();toast('Фон убран')},
   'export':function(){exportData()},
+  'import-old':function(){
+    var ta=document.getElementById('impOld');
+    var txt=(ta&&ta.value||'').trim();
+    if(!txt){toast('Сначала вставьте данные старого архива в поле',1);return}
+    var res=[];
+    try{res=parseArchiveBlob(txt)}catch(e){toast('Не удалось разобрать данные: '+e.message,1);return}
+    if(!res.length){toast('Тайтлы не распознаны — пришлите мне часть старого файла со списком тайтлов, и я вшью данные напрямую',1);return}
+    if(!confirm('Импортировать '+res.length+' '+plural(res.length,'тайтл','тайтла','тайтлов')+'? Текущий каталог будет заменён.'))return;
+    items=res;persist();renderAll();
+    if(ta)ta.value='';
+    toast('Импортировано: '+res.length+' '+plural(res.length,'тайтл','тайтла','тайтлов'));
+  },
   'clear-all':function(){
     if(!requireOwner())return;
     if(!confirm('Удалить ВСЕ тайтлы из каталога? (gist в облаке не трогаем)'))return;
