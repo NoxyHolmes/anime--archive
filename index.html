@@ -103,7 +103,6 @@ body:not(.no-anim) .brand-word i:nth-child(4){animation-delay:calc(260ms*var(--s
 body:not(.no-anim) .brand-word i:nth-child(5){animation-delay:calc(330ms*var(--sp))}
 .brand-sub{font-family:'JetBrains Mono';font-size:8.5px;letter-spacing:.34em;color:var(--muted)}
 
-/* навигация — отдельный блок в центре страницы, над «Коллекцией» */
 .nav{position:relative;display:flex;gap:2px;padding:4px;border-radius:13px;
   background:var(--panel);border:1px solid var(--line);
   margin:0 auto 22px;width:max-content;max-width:100%;
@@ -145,8 +144,8 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease
 .sm-logout{color:var(--warn)!important}
 .sm-last{padding:8px 10px 4px;font-family:'JetBrains Mono';font-size:10.5px;color:var(--faint);border-top:1px solid var(--line);margin-top:5px}
 
-/* расширенный контейнер, чтобы в ряд помещалось 8 постеров */
-main{position:relative;z-index:1;max-width:1520px;margin:0 auto;padding:26px 28px 80px}
+/* широкий контейнер — 10 постеров в ряд */
+main{position:relative;z-index:1;max-width:1800px;margin:0 auto;padding:26px 28px 80px}
 @keyframes viewIn{from{opacity:0;transform:translateY(16px) scale(.99);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
 body:not(.no-anim) .view{animation:viewIn calc(.45s*var(--sp)) cubic-bezier(.2,.9,.3,1) both}
 body.no-modalpop .view{animation:none}
@@ -187,7 +186,7 @@ body.no-modalpop .view{animation:none}
 .recent-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
 .recent-head h2{font-family:'Unbounded';font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase}
 .recent-head span{font-family:'JetBrains Mono';font-size:11px;color:var(--faint)}
-.recent-strip{display:flex;gap:13px;overflow-x:auto;padding:6px 2px 10px}
+.recent-strip{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 10px}
 body:not(.no-anim):not(.no-cascade) .recent .card{animation:cardIn calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*50ms*var(--sp))}
 
 .filters{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
@@ -309,7 +308,7 @@ body[data-embanim="float"] .emb-orb{animation:none!important}
 .tier-epithet{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tier-count{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);white-space:nowrap}
 .tier-count b{color:var(--text);font-weight:600}
-.tier-cards{display:flex;flex-wrap:wrap;gap:13px;align-content:flex-start;flex:1;min-width:0}
+.tier-cards{display:flex;flex-wrap:wrap;gap:12px;align-content:flex-start;flex:1;min-width:0}
 .tier-empty{color:var(--faint);font-size:13px;padding:38px 0;letter-spacing:.06em}
 
 .card{width:var(--cover-w);flex:none;cursor:pointer;--ci:0;position:relative;transition:transform .25s cubic-bezier(.2,.9,.3,1.2)}
@@ -1231,7 +1230,6 @@ body.no-anim .tl-row{opacity:1}
 <script>
 'use strict';
 
-/* ================= константы ================= */
 const TIERS = ['SSS','S','A','B','C','D','E'];
 const TIER_COLOR = {SSS:'#ffd76e',S:'#ff4d6d',A:'#a78bfa',B:'#38bdf8',C:'#34d399',D:'#fb923c',E:'#94a3b8'};
 const TIER_EPITHET = {SSS:'Шедевры',S:'Элита',A:'Отличные',B:'Хорошие',C:'Средние',D:'Слабые',E:'Провал'};
@@ -1348,7 +1346,6 @@ function compressImage(file, maxW, quality){
   });
 }
 
-/* ================= хранилище ================= */
 const LS_KEY = 'anime.v3', LS_SET = 'anime.settings', LS_BG = 'anime.bg', LS_SYNC = 'anime.sync';
 const OLD_KEYS = ['anime.v2','tsundoku.v1'];
 const DEFAULT_SETTINGS = {
@@ -1504,7 +1501,6 @@ function applyLocalRemote(){
 if (bc) bc.onmessage = e => { if (e.data && e.data.updatedAt > (state.updatedAt||0)) applyLocalRemote(); };
 window.addEventListener('storage', e => { if (e.key === LS_KEY && e.newValue) applyLocalRemote(); });
 
-/* ================= расчёты ================= */
 function titleEpisodes(t){
   if (t.units && t.units.length) return t.units.reduce((s,u) => u.kind !== 'film' ? s + (+u.episodes||0) : s, 0);
   if (t.type === 'film') return 0;
@@ -1557,7 +1553,6 @@ function totals(){
   return { n: state.titles.length, eps, films, sMin, fMin, hours: (sMin + fMin) / 60 };
 }
 
-/* ================= даты ================= */
 function parseDate(s){
   if (!s || !s.trim()) return null;
   s = s.trim().replace(/\s+/g,'');
@@ -1577,7 +1572,6 @@ function fmtDate(d){
 }
 const dateKey = d => d ? d.y*10000 + (d.m||1)*100 + (d.d||1) : -1;
 
-/* ================= обложки ================= */
 function coverSrc(t){
   if (t.cover) return t.cover;
   const letter = (t.name || '?').trim().charAt(0).toUpperCase().replace(/[<>&]/g,'');
@@ -2116,7 +2110,6 @@ function emblemHTML(tier, i){
   </div>`;
 }
 
-/* ================= тосты / модалки ================= */
 const PETAL_ICO = '<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 C 15.5 6.5, 20 8.5, 20 13.5 C 20 18, 15.5 21, 12 22 C 8.5 21, 4 18, 4 13.5 C 4 8.5, 8.5 6.5, 12 2 Z"/></svg>';
 function toast(msg, kind='ok'){
   const el = document.createElement('div');
@@ -2168,7 +2161,6 @@ function animNum(el, target, dur){
   (function s(now){ const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3); el.textContent = fmtInt(target*e); if (p<1) requestAnimationFrame(s); })(t0);
 }
 
-/* ================= рендер ================= */
 function renderAll(){ renderHero(); renderRecent(); renderFilters(); renderTierlist(false); renderTimeline(); renderCalendar(); renderStats(); }
 
 function renderHero(){
@@ -3059,7 +3051,6 @@ $('#title-form').addEventListener('submit', e => {
   renderAll();
 });
 
-/* ================= настройки ================= */
 const TEMPO = {calm:1.5, normal:1, lively:.6, instant:.15};
 function applySettings(){
   const s = settings, b = document.body, root = document.documentElement;
@@ -3277,8 +3268,8 @@ $('#file-import').addEventListener('change', e => {
 
 /* ================================================================
    СИНХРОНИЗАЦИЯ: GitHub — источник истины
-   · публичная ссылка (?repo=owner/repo) даёт ТОЛЬКО режим чтения
-   · права владельца (rw) появляются только после ввода токена через «Вход»
+   публичная ссылка (?repo=owner/repo) даёт ТОЛЬКО режим чтения
+   права владельца (rw) появляются только после ввода токена через «Вход»
 ================================================================ */
 let sync = null;
 try{ sync = JSON.parse(localStorage.getItem(LS_SYNC)) || null; }catch(e){}
@@ -3488,7 +3479,7 @@ async function findOwnerRepo(token, user){
     try{
       const c = await gh(`/repos/${r.full_name}/contents/${DATA_PATH}?ref=${r.default_branch||'main'}`, token);
       if (c && (c.sha || Array.isArray(c))) return r;
-    }catch(e){ /* нет файла — идём дальше */ }
+    }catch(e){ }
   }
   return pushable[0];
 }
@@ -3517,7 +3508,6 @@ $('#lk-connect').onclick = async () => {
 };
 $('#lk-token').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('#lk-connect').click(); } });
 
-/* авто-подключение читателей по публичной ссылке: только чтение */
 (function(){
   const qp = new URLSearchParams(location.search);
   const repo = qp.get('repo');
@@ -3529,9 +3519,6 @@ $('#lk-token').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.prev
   }
 })();
 
-/* ================================================================
-   НАВИГАЦИЯ, ПАНЕЛЬ, МЕЛОЧИ
-================================================================ */
 let currentView = 'tier';
 function movePill(){
   const act = $('.nav-btn.active'), pill = $('#nav-pill');
@@ -3614,7 +3601,6 @@ window.addEventListener('blur', () => { if (tiltEl){ tiltEl.style.transform = ''
 window.addEventListener('resize', movePill);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(movePill);
 
-/* ================= старт ================= */
 Particles.init();
 applySettings();
 bindSettings();
