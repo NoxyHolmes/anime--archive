@@ -16,17 +16,16 @@
   --accent:#ff7aa2; --accent2:#ffd76e;
   --accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
   --ok:#8fd6a4; --warn:#ff6b6b;
-  --t-sss:#ffd76e; --t-s:#ff5c8a; --t-a:#ff9a62; --t-b:#d4b483;
-  --t-c:#9b93a6; --t-d:#736b82; --t-e:#524a5e;
+  --t-sss:#ffd76e; --t-s:#ff4d7d; --t-a:#ff8a3d; --t-b:#c9a86a;
+  --t-c:#8fb8d6; --t-d:#8a93a8; --t-e:#7d7391;
   --shadow:0 20px 46px -18px rgba(0,0,0,.65);
   --cover-w:120px;
-  --sp:1; --tws:6s; --pa:88%; --rad:11px; --branch-alpha:.95;
+  --sp:1; --tes:6s; --pa:88%; --rad:11px; --branch-alpha:.95;
 }
 body.light{
   --bg:#fbf4f6; --bg2:#fff8fa; --panel:#fffdfd; --panel2:#f8edf1;
   --line:#ecdfe5; --line2:#dcc7d0;
   --text:#2c2230; --muted:#7c6e83; --faint:#a99bad;
-  --t-c:#8b8394; --t-d:#655d70; --t-e:#4a4354;
   --shadow:0 14px 34px -16px rgba(120,70,95,.22);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -54,7 +53,7 @@ img{display:block}
 .ic{flex:none;vertical-align:-3px}
 .hidden{display:none!important}
 
-/* ---- фоновые слои ---- */
+/* ---- фоновые слои (лепестки — в этом же слое, ПОЗАДИ контента) ---- */
 #user-bg,#user-dim{position:fixed;inset:0;z-index:0;pointer-events:none;display:none}
 body.has-bg #user-bg{display:block;background-image:var(--user-img);background-size:cover;background-position:center}
 body.has-bg #user-dim{display:block;background:var(--bg);opacity:var(--bg-dim,.55)}
@@ -84,7 +83,9 @@ body.light .bg-branch{opacity:calc(var(--branch-alpha)*.5)}
 .br-bl .crown{animation-duration:8s;animation-delay:-3s}
 @keyframes crownSway{from{transform:rotate(-.7deg)}to{transform:rotate(.8deg) translateY(2px)}}
 body.no-sway .sway,body.no-sway .crown,body.no-anim .sway,body.no-anim .crown{animation:none}
-#petals{position:fixed;inset:0;z-index:80;pointer-events:none}
+/* лепестки падают позади всего контента; переключатель может вернуть их поверх */
+#petals{position:fixed;inset:0;z-index:0;pointer-events:none}
+body.pets-front #petals{z-index:80}
 
 /* ---- шапка ---- */
 .topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;
@@ -237,30 +238,65 @@ body.no-tierbg .tier-row::before{display:none}
 #tierlist.anim-in .tier-row{animation:rowIn calc(.55s*var(--sp)) cubic-bezier(.2,.9,.3,1) both;animation-delay:calc(var(--i)*85ms*var(--sp))}
 body.no-rowanim #tierlist.anim-in .tier-row{animation:none}
 @keyframes rowIn{from{opacity:0;transform:translateX(-34px);filter:blur(5px)}}
-.tier-side{flex:none;width:118px;border-left:3px solid var(--tc);padding-left:16px;
+.tier-side{flex:none;width:120px;border-left:3px solid var(--tc);padding-left:16px;
   display:flex;flex-direction:column;gap:4px;padding-top:2px}
 
-/* ---- 3D-эмблема тира ---- */
-.emb{position:relative;width:78px;height:78px;margin:2px 0 4px;perspective:700px}
-.emb-inner{position:absolute;inset:0;animation:embFloat 5.5s ease-in-out infinite;animation-delay:calc(var(--i)*-.9s)}
-@keyframes embFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-body.no-tierwob .emb-inner{animation:none}
-.emb-rot{position:absolute;inset:0;transform-style:preserve-3d;animation:embRot var(--tes,9s) linear infinite;animation-delay:calc(var(--i)*-1.37s)}
-body.no-tierwob .emb-rot{animation:none}
-@keyframes embRot{from{transform:rotateY(0deg) rotateX(10deg)}50%{transform:rotateY(180deg) rotateX(-10deg)}to{transform:rotateY(360deg) rotateX(10deg)}}
-.emb-orbit{position:absolute;inset:-7px;border-radius:50%;border:1.5px dashed color-mix(in srgb,var(--tc) 60%,transparent);animation:orbit 16s linear infinite}
-@keyframes orbit{to{transform:rotate(360deg)}}
-body.no-tierwob .emb-orbit{animation:none}
-.emb-shape{position:absolute;inset:3px}
-.emb-shape svg{width:100%;height:100%;overflow:visible}
-body.tier-glow .emb-shape{filter:drop-shadow(0 0 13px var(--tc)) drop-shadow(0 5px 12px rgba(0,0,0,.4))}
+/* ================================================================
+   3D-ЭМБЛЕМЫ ТИРОВ — кристаллы с индивидуальной формой и анимацией
+   SSS звезда · S лотос · A алмаз · B кристалл · C орбита · D щит · E куб
+================================================================ */
+.emb{position:relative;width:76px;height:76px;margin:4px 0 8px;flex:none;perspective:760px}
+.emb-aura{position:absolute;inset:-16px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, color-mix(in srgb,var(--tc) 42%,transparent), transparent 68%);
+  animation:embAura 3.6s ease-in-out infinite;animation-delay:calc(var(--i)*-.6s)}
+.emb-ring{position:absolute;inset:-5px;border-radius:50%;pointer-events:none;
+  border:1.5px dashed color-mix(in srgb,var(--tc) 58%,transparent);
+  animation:embRing calc(var(--tes)*2.2) linear infinite}
+.emb-3d{position:absolute;inset:0;transform-style:preserve-3d}
+.emb-card{position:absolute;inset:3px;transform-style:preserve-3d;
+  filter:drop-shadow(0 12px 18px color-mix(in srgb,var(--tc) 32%,transparent)) drop-shadow(0 3px 6px rgba(0,0,0,.35))}
+body.tier-glow .emb-card{filter:drop-shadow(0 0 14px color-mix(in srgb,var(--tc) 55%,transparent)) drop-shadow(0 12px 18px color-mix(in srgb,var(--tc) 30%,transparent))}
+.emb-card svg{width:100%;height:100%;overflow:visible;display:block}
 .emb-letter{position:absolute;inset:0;display:grid;place-items:center;font-family:'Unbounded';font-weight:800;line-height:1;color:#fff;z-index:2;
-  text-shadow:0 1px 0 color-mix(in srgb,var(--tc) 60%,#000),0 2px 0 color-mix(in srgb,var(--tc) 35%,#000),0 4px 12px rgba(0,0,0,.55)}
-.tier-row[data-tier="SSS"] .emb-letter{font-size:15px}
-.tier-row[data-tier="S"] .emb-letter{font-size:21px}
-.tier-row[data-tier="A"] .emb-letter,.tier-row[data-tier="B"] .emb-letter,.tier-row[data-tier="C"] .emb-letter,
-.tier-row[data-tier="D"] .emb-letter,.tier-row[data-tier="E"] .emb-letter{font-size:22px}
-.emb-crown{position:absolute;top:-15px;left:50%;transform:translateX(-50%);width:24px;z-index:3;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+  text-shadow:0 1px 0 color-mix(in srgb,var(--tc) 55%,#000),
+    0 2px 0 color-mix(in srgb,var(--tc) 38%,#000),
+    0 3px 0 color-mix(in srgb,var(--tc) 24%,#000),
+    0 6px 16px rgba(0,0,0,.5)}
+.emb-crown{position:absolute;top:-17px;left:50%;transform:translateX(-50%);width:26px;z-index:3;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));pointer-events:none}
+.emb[data-tier="SSS"] .emb-letter{font-size:14px}
+.emb[data-tier="S"] .emb-letter{font-size:20px}
+.emb[data-tier="A"] .emb-letter,.emb[data-tier="B"] .emb-letter,.emb[data-tier="C"] .emb-letter,
+.emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:21px}
+
+/* индивидуальные анимации */
+.emb[data-tier="SSS"] .emb-3d{animation:embSpinY var(--tes) linear infinite}              /* звезда: полный оборот */
+.emb[data-tier="S"] .emb-3d{animation:embLotus var(--tes) ease-in-out infinite alternate}  /* лотос: раскрытие */
+.emb[data-tier="A"] .emb-3d{animation:embFlip calc(var(--tes)*1.2) cubic-bezier(.5,0,.5,1) infinite} /* алмаз: монетка */
+.emb[data-tier="B"] .emb-3d{animation:embGem 6.5s ease-in-out infinite}                    /* кристалл: парение */
+.emb[data-tier="C"] .emb-3d{animation:embOrbit calc(var(--tes)*1.4) linear infinite}       /* орбита: вращение */
+.emb[data-tier="D"] .emb-3d{animation:embSwing 5s ease-in-out infinite alternate;transform-origin:50% -12%} /* щит: маятник */
+.emb[data-tier="E"] .emb-3d{animation:embSpinY calc(var(--tes)*1.7) linear infinite reverse} /* куб: медленный реверс */
+
+@keyframes embSpinY{from{transform:rotateY(0deg) rotateX(10deg)}50%{transform:rotateY(180deg) rotateX(-10deg)}to{transform:rotateY(360deg) rotateX(10deg)}}
+@keyframes embLotus{from{transform:rotateY(-40deg) rotateZ(-5deg) scale(.96)}to{transform:rotateY(40deg) rotateZ(5deg) scale(1)}}
+@keyframes embFlip{from{transform:rotateX(0deg)}to{transform:rotateX(360deg)}}
+@keyframes embGem{0%,100%{transform:translateY(0) rotateY(0) rotateZ(-4deg)}30%{transform:translateY(-9px) rotateY(28deg) rotateZ(3deg)}70%{transform:translateY(-3px) rotateY(-28deg) rotateZ(-2deg)}}
+@keyframes embOrbit{from{transform:rotate(0deg) rotateY(16deg)}to{transform:rotate(360deg) rotateY(16deg)}}
+@keyframes embSwing{from{transform:rotate(11deg)}to{transform:rotate(-11deg)}}
+@keyframes embAura{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes embRing{to{transform:rotate(360deg)}}
+@keyframes embGentle{0%,100%{transform:translateY(0) rotateY(-6deg)}50%{transform:translateY(-6px) rotateY(6deg)}}
+
+/* режимы анимации эмблем: полная / только парение / выключена */
+body[data-embanim="off"] .emb-3d,
+body[data-embanim="off"] .emb-aura,
+body[data-embanim="off"] .emb-ring{animation:none!important}
+body[data-embanim="float"] .emb-3d{animation:embGentle 6s ease-in-out infinite!important}
+body[data-embanim="float"] .emb-aura,
+body[data-embanim="float"] .emb-ring{animation:none!important}
+body[data-embanim="off"] .emb-card{filter:drop-shadow(0 6px 12px color-mix(in srgb,var(--tc) 28%,transparent))}
+
 .tier-epithet{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tier-count{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);white-space:nowrap}
 .tier-count b{color:var(--text);font-weight:600}
@@ -431,7 +467,6 @@ body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .bar-fill{height:100%;border-radius:5px;width:0;transition:width .9s cubic-bezier(.2,1,.3,1)}
 .bar-v{font-family:'JetBrains Mono';font-size:12px;text-align:right}
 .bar-note{color:var(--faint);font-size:12.5px;margin-top:14px}
-/* тепловая карта */
 .heatmap-wrap{display:flex;gap:4px;overflow-x:auto;padding:4px 2px 8px}
 .hm-col{display:flex;flex-direction:column;align-items:center;gap:3px}
 .hm-cells{display:grid;grid-template-rows:repeat(31,11px);gap:3px}
@@ -443,7 +478,6 @@ body.no-anim .tl-row,body.no-cascade .tl-row{opacity:1;animation:none}
 .hm-lab{font-family:'JetBrains Mono';font-size:9px;color:var(--faint);margin-top:2px}
 .hm-legend{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono';font-size:9.5px;color:var(--faint);margin-top:6px}
 .hm-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
-/* рекорды */
 .rec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
 .rec-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:color-mix(in srgb,var(--panel) var(--pa),transparent);cursor:pointer;transition:.2s}
 .rec-card:hover{border-color:var(--accent);transform:translateY(-2px)}
@@ -661,12 +695,13 @@ footer{position:relative;z-index:1;border-top:1px solid var(--line);padding:26px
   .topbar{padding:12px 16px;gap:12px}
   main{padding:22px 16px 70px}
   #drawer{top:54px}
-  .tier-side{width:92px}
-  .emb{width:64px;height:64px}
-  .tier-row[data-tier="SSS"] .emb-letter{font-size:12px}
-  .tier-row[data-tier="S"] .emb-letter{font-size:17px}
-  .tier-row[data-tier="A"] .emb-letter,.tier-row[data-tier="B"] .emb-letter,.tier-row[data-tier="C"] .emb-letter,
-  .tier-row[data-tier="D"] .emb-letter,.tier-row[data-tier="E"] .emb-letter{font-size:18px}
+  .tier-side{width:96px}
+  .emb{width:62px;height:62px}
+  .emb[data-tier="SSS"] .emb-letter{font-size:11px}
+  .emb[data-tier="S"] .emb-letter{font-size:16px}
+  .emb[data-tier="A"] .emb-letter,.emb[data-tier="B"] .emb-letter,.emb[data-tier="C"] .emb-letter,
+  .emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:17px}
+  .emb-crown{width:21px;top:-14px}
   .tier-row::before{display:none}
   .hst{min-width:92px;padding:12px 16px}
   .add-label,.login-label{display:none}
@@ -686,9 +721,9 @@ body.no-anim .tl-row{opacity:1}
 }
 </style>
 </head>
-<body class="ambient pill-glow tier-glow">
+<body class="ambient pill-glow tier-glow" data-embanim="full">
 
-<!-- фоновые слои -->
+<!-- фоновые слои: лепестки — в самом конце слоя, позади контента -->
 <div id="user-bg" aria-hidden="true"></div>
 <div id="user-dim" aria-hidden="true"></div>
 <div class="bg-moon" aria-hidden="true"></div>
@@ -841,6 +876,26 @@ body.no-anim .tl-row{opacity:1}
   </div>
 
   <div class="set-sec">
+    <h3>Эмблемы тиров</h3>
+    <div class="sw-row">
+      <div><div class="sw-name">Анимация эмблем</div><div class="sw-desc">У каждого тира — своя: звезда, лотос, алмаз, кристалл, орбита, щит, куб</div></div>
+      <select class="sel-set" id="sel-embanim">
+        <option value="full">Полная</option>
+        <option value="float">Только парение</option>
+        <option value="off">Выключена</option>
+      </select>
+    </div>
+    <div class="sw-row">
+      <div><div class="sw-name">Скорость анимации</div><div class="sw-desc">Период полного цикла эмблемы</div></div>
+      <div class="range-in"><input type="range" id="s-embanimspd" min="2" max="14" step="1"><span class="rng-val" id="v-embanimspd"></span></div>
+    </div>
+    <div class="sw-row">
+      <div><div class="sw-name">Свечение тира</div><div class="sw-desc">Цветное сияние эмблемы каждого тира</div></div>
+      <label class="switch"><input type="checkbox" id="s-tierglow"><i></i></label>
+    </div>
+  </div>
+
+  <div class="set-sec">
     <h3>Частицы и погода</h3>
     <div class="sw-row">
       <div><div class="sw-name">Частицы</div><div class="sw-desc">Лепестки, снег, листья, светлячки — по выбранному стилю</div></div>
@@ -849,6 +904,10 @@ body.no-anim .tl-row{opacity:1}
     <div class="sw-row">
       <div><div class="sw-name">Стиль частиц</div><div class="sw-desc">20 вариаций: сакура, зимний снег, осень, звёзды и другие</div></div>
       <select class="sel-set" id="sel-pstyle"></select>
+    </div>
+    <div class="sw-row">
+      <div><div class="sw-name">Поверх контента</div><div class="sw-desc">По умолчанию частицы падают позади всех окон и карточек</div></div>
+      <label class="switch"><input type="checkbox" id="s-petsfront"><i></i></label>
     </div>
     <div class="sw-row">
       <div><div class="sw-name">Плотность</div><div class="sw-desc">Сколько частиц одновременно в воздухе</div></div>
@@ -950,18 +1009,6 @@ body.no-anim .tl-row{opacity:1}
     <div class="sw-row">
       <div><div class="sw-name">Каскад карточек</div><div class="sw-desc">Карточки появляются волной</div></div>
       <label class="switch"><input type="checkbox" id="s-cascade"><i></i></label>
-    </div>
-    <div class="sw-row">
-      <div><div class="sw-name">3D-вращение эмблем</div><div class="sw-desc">Эмблемы тиров кружатся в пространстве</div></div>
-      <label class="switch"><input type="checkbox" id="s-tierwob"><i></i></label>
-    </div>
-    <div class="sw-row">
-      <div><div class="sw-name">Скорость вращения</div><div class="sw-desc">Период полного оборота эмблемы</div></div>
-      <div class="range-in"><input type="range" id="s-tierwobspd" min="2" max="14" step="1"><span class="rng-val" id="v-tierwobspd"></span></div>
-    </div>
-    <div class="sw-row">
-      <div><div class="sw-name">Свечение тира</div><div class="sw-desc">Цветное сияние эмблемы каждого тира</div></div>
-      <label class="switch"><input type="checkbox" id="s-tierglow"><i></i></label>
     </div>
     <div class="sw-row">
       <div><div class="sw-name">Подсветка строк тиров</div><div class="sw-desc">Цветной полупрозрачный след слева от строки</div></div>
@@ -1216,7 +1263,7 @@ body.no-anim .tl-row{opacity:1}
       </div>
     </div>
     <div id="lk-ro" class="hidden">
-      <div class="lk-hint">Режим чтения: укажите публичный репозиторий владельца — каталог будет автоматически подтягиваться оттуда, без токена.</div>
+      <div class="lk-hint">Режим чтения: укажите публичный репозиторий владельца — каталог будет автоматически подтягиваться оттуда, без токена. Обновления у владельца появляются здесь в течение минуты.</div>
       <div class="lk-row">
         <div class="field"><label>Владелец</label><input id="ro-owner" name="an-ro-owner" placeholder="github-логин" autocomplete="off" spellcheck="false"></div>
         <div class="field"><label>Репозиторий</label><input id="ro-repo" name="an-ro-repo" placeholder="имя репозитория" autocomplete="off" spellcheck="false"></div>
@@ -1239,8 +1286,7 @@ body.no-anim .tl-row{opacity:1}
 
 /* ================= константы ================= */
 const TIERS = ['SSS','S','A','B','C','D','E'];
-const TIER_COLOR = {SSS:'#ffd76e',S:'#ff5c8a',A:'#ff9a62',B:'#d4b483',C:'#9b93a6',D:'#736b82',E:'#524a5e'};
-const TIER_LIGHT = {SSS:'#fff3c4',S:'#ffc9d9',A:'#ffd2b0',B:'#f0e3c8',C:'#d8d4de',D:'#c9c3d1',E:'#b0aab8'};
+const TIER_COLOR = {SSS:'#ffd76e',S:'#ff4d7d',A:'#ff8a3d',B:'#c9a86a',C:'#8fb8d6',D:'#8a93a8',E:'#7d7391'};
 const TIER_EPITHET = {SSS:'Шедевры',S:'Элита',A:'Отличные',B:'Хорошие',C:'Средние',D:'Слабые',E:'Провал'};
 const TIER_SCORE = {SSS:7,S:6,A:5,B:4,C:3,D:2,E:1};
 const TYPES = [{id:'tv',label:'Сериал'},{id:'film',label:'Фильм'},{id:'ova',label:'OVA'},{id:'ona',label:'ONA'}];
@@ -1327,19 +1373,29 @@ const fmtDur = min => { const h = Math.floor(min/60), m = Math.round(min%60); if
 const plural = (n,a,b,c) => { const m=n%10,h=n%100; return (h>=11&&h<=14)?c:(m===1?a:(m>=2&&m<=4?b:c)); };
 const findTitle = id => state.titles.find(t => t.id === id);
 const mulberry32 = a => () => { a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; };
+function shadeColor(hex, f){
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.round(((n>>16)&255)*f), g = Math.round(((n>>8)&255)*f), b = Math.round((n&255)*f);
+  return '#' + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+function lighten(hex, f){
+  const n = parseInt(hex.slice(1), 16);
+  const mix = v => Math.round(v + (255-v)*f);
+  return '#' + ((1<<24)+(mix((n>>16)&255)<<16)+(mix((n>>8)&255)<<8)+mix(n&255)).toString(16).slice(1);
+}
 
 /* ================= хранилище ================= */
 const LS_KEY = 'anime.v3', LS_SET = 'anime.settings', LS_BG = 'anime.bg', LS_SYNC = 'anime.sync';
 const OLD_KEYS = ['anime.v2','tsundoku.v1'];
 const DEFAULT_SETTINGS = {
   anim:true, tempo:'normal', rowAnim:true, cascade:true, modalPop:true, toastAnim:true, pillGlow:true,
-  tierWobble:true, tierWobbleSpeed:6, tierGlow:true, tierBg:true,
+  emblemAnim:'full', embAnimSpeed:6, tierGlow:true, tierBg:true,
   tilt:true, tiltPower:8, cardLift:true, glow:true, shine:true,
   counters:true, counterSpeed:800, recent:true,
   light:false, panelOp:88, radius:11, accent:'sakura',
   catalogView:'posters',
   particles:true, particleStyle:'sakura', petalDensity:45, fallSpeed:100,
-  particleSize:100, particleOpacity:100, particleSpin:true, twinkle:true, wind:100,
+  particleSize:100, particleOpacity:100, particleSpin:true, twinkle:true, wind:100, petsFront:false,
   branches:true, branchStyle:'sakura', sway:true, parallax:30, branchAlpha:95,
   ambient:true, moon:true, bgDim:55,
   epMin:24, filmMin:110
@@ -1423,20 +1479,20 @@ function loadTitles(){
   return { titles: [], updatedAt: 0 };
 }
 function loadSettings(){
-  try{
-    const raw = localStorage.getItem(LS_SET);
-    if (raw) return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(raw));
-  }catch(e){}
-  try{
-    const old = JSON.parse(localStorage.getItem(LS_KEY));
-    if (old && old.settings){
-      const s = Object.assign({}, DEFAULT_SETTINGS, old.settings);
-      if (s.sssGlow != null) s.tierGlow = s.sssGlow;
-      delete s.grain; delete s.grainOp; delete s.sssGlow;
-      return s;
-    }
-  }catch(e){}
-  return {...DEFAULT_SETTINGS};
+  let s = null;
+  try{ const raw = localStorage.getItem(LS_SET); if (raw) s = JSON.parse(raw); }catch(e){}
+  if (!s){
+    try{ const old = JSON.parse(localStorage.getItem(LS_KEY)); if (old && old.settings) s = old.settings; }catch(e){}
+  }
+  const out = Object.assign({}, DEFAULT_SETTINGS, s || {});
+  if (s){
+    if (s.tierWobble === false) out.emblemAnim = 'off';                 /* миграция старой настройки */
+    if (s.tierWobbleSpeed != null && s.embAnimSpeed == null) out.embAnimSpeed = s.tierWobbleSpeed;
+    if (s.sssGlow != null) out.tierGlow = s.sssGlow;
+    delete out.tierWobble; delete out.tierWobbleSpeed; delete out.sssGlow;
+    delete out.grain; delete out.grainOp;
+  }
+  return out;
 }
 let state = loadTitles();
 let settings = loadSettings();
@@ -1950,6 +2006,69 @@ function renderTrees(){
 }
 renderTrees();
 
+/* ================================================================
+   3D-ЭМБЛЕМЫ ТИРОВ — SVG-кристаллы с гранями и стеклянным блеском
+================================================================ */
+function emblemSVG(tier){
+  const c = TIER_COLOR[tier];
+  const lt = lighten(c, .55);
+  const dk = shadeColor(c, .42);
+  const id = 'eg' + tier;
+  const petal = (rot) => `<ellipse rx="9.5" ry="23" cy="-23" fill="url(#${id}f)" transform="rotate(${rot})" opacity=".94"/>`;
+  const shapes = {
+    SSS: `<polygon points="50,4 61,36 95,36 67,57 78,91 50,71 22,91 33,57 5,36 39,36" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M50 50 L50 4 M50 50 L95 36 M50 50 L78 91 M50 50 L22 91 M50 50 L5 36" stroke="rgba(70,40,0,.42)" stroke-width=".9"/>
+      <polygon points="50,4 61,36 39,36" fill="url(#${id}g)" opacity=".8"/>
+      <polygon points="50,71 78,91 67,57" fill="url(#${id}g)" opacity=".35"/>`,
+    S: `<g transform="translate(50,50)">${[0,60,120,180,240,300].map(petal).join('')}</g>
+      <circle cx="50" cy="50" r="18.5" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.6"/>
+      <path d="M40 44 Q50 36 60 44" stroke="rgba(255,255,255,.5)" stroke-width="1.4" fill="none" stroke-linecap="round"/>`,
+    A: `<polygon points="50,4 84,40 50,96 16,40" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M16 40 H84 M50 4 L37 40 L50 96 M50 4 L63 40 L50 96" stroke="rgba(70,30,0,.4)" stroke-width=".9" fill="none"/>
+      <polygon points="50,4 63,40 50,40" fill="url(#${id}g)" opacity=".8"/>`,
+    B: `<polygon points="50,5 83,24 83,71 50,90 17,71 17,24" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
+      <polygon points="50,17 71,29 71,63 50,75 29,63 29,29" fill="none" stroke="rgba(50,30,0,.35)" stroke-width="1"/>
+      <path d="M50 5 V90 M17 24 L50 40 L83 24 M17 71 L50 55 L83 71" stroke="rgba(50,30,0,.3)" stroke-width=".8" fill="none"/>
+      <polygon points="50,5 83,24 50,40" fill="url(#${id}g)" opacity=".7"/>`,
+    C: `<circle cx="50" cy="50" r="37" fill="none" stroke="url(#${id}f)" stroke-width="6.5"/>
+      <circle cx="50" cy="50" r="37" fill="none" stroke="${lt}" stroke-width="1" opacity=".75"/>
+      <circle cx="50" cy="50" r="23" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.4"/>
+      <circle cx="50" cy="13" r="4.6" fill="${lt}" stroke="${dk}" stroke-width="1.2"/>`,
+    D: `<path d="M50 5 L84 18 V52 C84 73 68 87 50 94 C32 87 16 73 16 52 V18 Z" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M50 5 L84 18 V52 H16 V18 Z" fill="url(#${id}g)" opacity=".4"/>
+      <path d="M50 22 L68 33 V54 C68 66 59 74 50 78 C41 74 32 66 32 54 V33 Z" fill="none" stroke="rgba(20,15,30,.35)" stroke-width="1"/>`,
+    E: `<rect x="17" y="17" width="66" height="66" rx="15" fill="url(#${id}f)" stroke="${lt}" stroke-width="1.5"/>
+      <rect x="27" y="27" width="46" height="46" rx="10" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+      <path d="M24 34 Q50 22 76 34" stroke="rgba(255,255,255,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>`
+  };
+  return `<svg viewBox="0 0 100 100">
+    <defs>
+      <linearGradient id="${id}f" x1="0" y1="0" x2=".22" y2="1">
+        <stop offset="0" stop-color="${lt}"/><stop offset=".5" stop-color="${c}"/><stop offset="1" stop-color="${dk}"/>
+      </linearGradient>
+      <radialGradient id="${id}g" cx=".35" cy=".28" r=".95">
+        <stop offset="0" stop-color="#ffffff" stop-opacity=".85"/><stop offset=".65" stop-color="#ffffff" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    ${shapes[tier]}
+    <ellipse cx="42" cy="32" rx="23" ry="13" fill="url(#${id}g)" opacity=".45"/>
+  </svg>`;
+}
+function emblemHTML(tier, i){
+  return `
+  <div class="emb" data-tier="${tier}" style="--tc:${TIER_COLOR[tier]};--i:${i}">
+    <span class="emb-aura"></span>
+    <span class="emb-ring"></span>
+    <div class="emb-3d">
+      <div class="emb-card">
+        ${emblemSVG(tier)}
+        <span class="emb-letter">${tier}</span>
+      </div>
+    </div>
+    ${tier === 'SSS' ? `<span class="emb-crown">${CROWN}</span>` : ''}
+  </div>`;
+}
+
 /* ================= тосты / модалки ================= */
 const PETAL_ICO = '<svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 C 15.5 6.5, 20 8.5, 20 13.5 C 20 18, 15.5 21, 12 22 C 8.5 21, 4 18, 4 13.5 C 4 8.5, 8.5 6.5, 12 2 Z"/></svg>';
 function toast(msg, kind='ok'){
@@ -1972,8 +2091,8 @@ document.addEventListener('keydown', e => {
     if (document.body.classList.contains('drawer-open')){ closeDrawer(); return; }
     const t = topOv(); if (t) closeOv(t);
   }
-  if (e.key === '/' && !e.target.closest('input,textarea,select') && !topOv()){ e.preventDefault(); switchView('tier'); $('#search-input')?.focus(); }
-  if ((e.key === '?' || (e.key === '/' && e.shiftKey)) && !e.target.closest('input,textarea,select') && !topOv()){ showHelp(); }
+  if (e.key === '/' && !e.shiftKey && !e.target.closest('input,textarea,select') && !topOv()){ e.preventDefault(); switchView('tier'); $('#search-input')?.focus(); }
+  if (e.key === '?' && !e.target.closest('input,textarea,select') && !topOv()){ showHelp(); }
 });
 document.addEventListener('click', e => { if (e.target.closest('[data-close]')){ const ov = e.target.closest('.overlay'); if (ov) closeOv(ov.id); } });
 function openConfirm({title, text, okLabel='Подтвердить', danger=false, cancel=true, onOk}){
@@ -2018,39 +2137,6 @@ function renderHero(){
   $$('#hero-stats b').forEach(el => animNum(el, +el.dataset.num));
 }
 
-/* ---- 3D-эмблема тира ---- */
-function emblemHTML(tier, i){
-  const c = TIER_COLOR[tier], l = TIER_LIGHT[tier];
-  const shapes = {
-    SSS:`<polygon points="50,3 61.5,35 95,36 68,57 78,91 50,71 22,91 32,57 5,36 38.5,35"/>`,
-    S:`${[0,60,120,180,240,300].map(a=>`<ellipse cx="50" cy="27" rx="9.5" ry="21" transform="rotate(${a} 50 50)"/>`).join('')}<circle cx="50" cy="50" r="23"/>`,
-    A:`<polygon points="50,5 89,50 50,95 11,50"/>`,
-    B:`<polygon points="50,6 85,27 85,73 50,94 15,73 15,27"/>`,
-    C:`<polygon points="36,8 64,8 89,30 89,70 64,92 36,92 11,70 11,30"/>`,
-    D:`<path d="M50,6 L85,19 V52 C85,74 69,88 50,95 C31,88 15,74 15,52 V19 Z"/>`,
-    E:`<rect x="14" y="14" width="72" height="72" rx="17"/>`
-  };
-  return `
-  <div class="emb" style="--tc:${c};--i:${i}">
-    <div class="emb-inner">
-      <span class="emb-orbit"></span>
-      <div class="emb-rot">
-        <div class="emb-shape">
-          <svg viewBox="0 0 100 100">
-            <defs><linearGradient id="eg-${tier}-${i}" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="${l}"/><stop offset="1" stop-color="${c}"/>
-            </linearGradient></defs>
-            <g fill="url(#eg-${tier}-${i})" fill-opacity=".3" stroke="url(#eg-${tier}-${i})" stroke-width="2.6" stroke-linejoin="round">${shapes[tier]}</g>
-          </svg>
-        </div>
-        <span class="emb-letter">${tier}</span>
-      </div>
-    </div>
-    ${tier==='SSS' ? `<span class="emb-crown">${CROWN}</span>` : ''}
-  </div>`;
-}
-
-/* ---- карточки: три вида ---- */
 function cardHTML(t, mini=false, ci=0){
   const eps = titleEpisodes(t);
   const films = titleFilms(t);
@@ -2076,7 +2162,7 @@ function cardHTML(t, mini=false, ci=0){
 function chipCardHTML(t, ci){
   const eps = titleEpisodes(t);
   return `
-  <button type="button" class="chipcard js-open" data-id="${t.id}" style="--tc:${TIER_COLOR[t.tier]};--ci:${Math.min(ci,14)}">
+  <button type="button" class="chipcard js-open" data-id="${t.id}" style="--tc:${TIER_COLOR[t.tier]}">
     <img src="${esc(coverSrc(t))}" alt="" loading="lazy" data-fb="${t.id}">
     <span class="cc-body">
       <span class="cc-name">${t.tier==='SSS'?CROWN_MINI:''}${esc(t.name)}</span>
@@ -2085,7 +2171,7 @@ function chipCardHTML(t, ci){
     <span class="cc-tier">${t.tier}</span>
   </button>`;
 }
-function listCardHTML(t, ci){
+function listCardHTML(t){
   const eps = titleEpisodes(t);
   const sum = t.type === 'tv' ? tvSummary(t) : (titleFilms(t) > 1 ? titleFilms(t)+' '+plural(titleFilms(t),'фильм','фильма','фильмов') : '');
   return `
@@ -2252,9 +2338,6 @@ function renderTierlist(animate){
     if (filtering && !items.length) return;
     items.sort(SORTS[sortMode] || SORTS.added);
     const cards = items.map((t,ci) => renderCard(t, ci)).join('');
-    const cardsHtml = view === 'posters'
-      ? cards
-      : `<div class="tier-cards view-${view}">${cards}</div>`;
     html += `
     <div class="tier-row" data-tier="${tier}" style="--tc:${TIER_COLOR[tier]};--i:${i}">
       <div class="tier-side">
@@ -2262,9 +2345,7 @@ function renderTierlist(animate){
         <span class="tier-epithet">${TIER_EPITHET[tier]}</span>
         <span class="tier-count"><b class="tc-n" data-n="${items.length}">${items.length}</b> ${plural(items.length,'тайтл','тайтла','тайтлов')}</span>
       </div>
-      ${view === 'posters'
-        ? `<div class="tier-cards">${cards}</div>`
-        : cardsHtml}
+      <div class="tier-cards ${view !== 'posters' ? 'view-'+view : ''}">${cards}</div>
     </div>`;
   });
   box.innerHTML = html || '<p class="tier-empty" style="padding:50px 0">Ничего не найдено — измените запрос или жанры</p>';
@@ -2466,7 +2547,6 @@ function renderStats(){
     avg >= 4.5 ? 'Сбалансированно: и классика, и эксперименты.' :
     avg >= 3.5 ? 'Широкие горизонты: количество не в ущерб интересу.' :
                  'Всеядность как метод исследования.';
-  /* тепловая карта активности */
   const dayCount = new Map();
   calEntries().forEach(e => {
     if (e.date && e.date.d != null){
@@ -2491,7 +2571,6 @@ function renderStats(){
     }
     return `<div class="hm-col"><div class="hm-cells">${cells}</div><span class="hm-lab">${MON_S[m]}</span></div>`;
   }).join('');
-  /* рекорды и средние */
   const bigEps = state.titles.reduce((a,b) => titleEpisodes(b) > titleEpisodes(a) ? b : a);
   const bigMin = state.titles.reduce((a,b) => titleMinutes(b) > titleMinutes(a) ? b : a);
   const genresTop = [...byGenre.entries()].sort((a,b) => b[1]-a[1]);
@@ -2945,16 +3024,17 @@ function applySettings(){
   b.classList.toggle('no-branches', !s.branches);
   b.classList.toggle('no-rowanim', !s.rowAnim);
   b.classList.toggle('no-cascade', !s.cascade);
-  b.classList.toggle('no-tierwob', !s.tierWobble);
   b.classList.toggle('no-tierbg', !s.tierBg);
   b.classList.toggle('tier-glow', !!s.tierGlow);
   b.classList.toggle('no-modalpop', !s.modalPop);
   b.classList.toggle('no-toastanim', !s.toastAnim);
   b.classList.toggle('pill-glow', !!s.pillGlow);
+  b.classList.toggle('pets-front', !!s.petsFront);
+  b.dataset.embanim = ['full','float','off'].includes(s.emblemAnim) ? s.emblemAnim : 'full';
   root.style.setProperty('--accent', ACCENTS[s.accent] || ACCENTS.sakura);
   root.style.setProperty('--bg-dim', (s.bgDim/100).toFixed(2));
   root.style.setProperty('--sp', (TEMPO[s.tempo] || 1));
-  root.style.setProperty('--tes', s.tierWobbleSpeed + 's');
+  root.style.setProperty('--tes', s.embAnimSpeed + 's');
   root.style.setProperty('--pa', s.panelOp + '%');
   root.style.setProperty('--rad', s.radius + 'px');
   root.style.setProperty('--branch-alpha', (s.branchAlpha/100).toFixed(2));
@@ -2998,16 +3078,18 @@ function bindSettings(){
   $('#sel-pstyle').value = PRESETS[settings.particleStyle] ? settings.particleStyle : 'sakura';
   $('#sel-bstyle').value = TREE_STYLES[settings.branchStyle] ? settings.branchStyle : 'sakura';
   $('#sel-catview').value = ['posters','chips','list'].includes(settings.catalogView) ? settings.catalogView : 'posters';
+  $('#sel-embanim').value = ['full','float','off'].includes(settings.emblemAnim) ? settings.emblemAnim : 'full';
   $('#sel-pstyle').addEventListener('change', e => { settings.particleStyle = e.target.value; persistSettings(); Particles.restyle(); });
   $('#sel-bstyle').addEventListener('change', e => { settings.branchStyle = e.target.value; persistSettings(); renderTrees(); });
   $('#sel-tempo').addEventListener('change', e => { settings.tempo = e.target.value; persistSettings(); applySettings(); });
   $('#sel-catview').addEventListener('change', e => { settings.catalogView = e.target.value; persistSettings(); renderTierlist(true); });
+  $('#sel-embanim').addEventListener('change', e => { settings.emblemAnim = e.target.value; persistSettings(); applySettings(); });
 
   const map = {anim:'s-anim', rowAnim:'s-rowanim', cascade:'s-cascade', modalPop:'s-modalpop', toastAnim:'s-toastanim',
-    pillGlow:'s-pillglow', tierWobble:'s-tierwob', tierGlow:'s-tierglow', tierBg:'s-tierbg',
+    pillGlow:'s-pillglow', tierGlow:'s-tierglow', tierBg:'s-tierbg',
     tilt:'s-tilt', cardLift:'s-lift', glow:'s-glow', shine:'s-shine',
     counters:'s-counters', recent:'s-recent', light:'s-light',
-    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle',
+    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle', petsFront:'s-petsfront',
     branches:'s-branches', sway:'s-sway', ambient:'s-ambient', moon:'s-moon'};
   for (const [key, id] of Object.entries(map)){
     $('#'+id).checked = !!settings[key];
@@ -3035,7 +3117,7 @@ function bindSettings(){
   range('s-parallax', 'v-parallax', 'parallax', v => v + '%');
   range('s-balpha', 'v-balpha', 'branchAlpha', v => v + '%', applySettings);
   range('s-bgdim', 'v-bgdim', 'bgDim', v => v + '%');
-  range('s-tierwobspd', 'v-tierwobspd', 'tierWobbleSpeed', v => v + ' с', applySettings);
+  range('s-embanimspd', 'v-embanimspd', 'embAnimSpeed', v => v + ' с', applySettings);
   range('s-tiltpow', 'v-tiltpow', 'tiltPower', v => '±' + v + '°');
   range('s-cntspd', 'v-cntspd', 'counterSpeed', v => v + ' мс');
   range('s-panelop', 'v-panelop', 'panelOp', v => v + '%', applySettings);
@@ -3061,10 +3143,10 @@ function bindSettings(){
 }
 function bindSettingsValues(){
   const map = {anim:'s-anim', rowAnim:'s-rowanim', cascade:'s-cascade', modalPop:'s-modalpop', toastAnim:'s-toastanim',
-    pillGlow:'s-pillglow', tierWobble:'s-tierwob', tierGlow:'s-tierglow', tierBg:'s-tierbg',
+    pillGlow:'s-pillglow', tierGlow:'s-tierglow', tierBg:'s-tierbg',
     tilt:'s-tilt', cardLift:'s-lift', glow:'s-glow', shine:'s-shine',
     counters:'s-counters', recent:'s-recent', light:'s-light',
-    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle',
+    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle', petsFront:'s-petsfront',
     branches:'s-branches', sway:'s-sway', ambient:'s-ambient', moon:'s-moon'};
   for (const [k, id] of Object.entries(map)) $('#'+id).checked = !!settings[k];
   const rv = (rid, vid, key, fmt) => { $('#'+rid).value = settings[key]; $('#'+vid).textContent = fmt(settings[key]); };
@@ -3076,7 +3158,7 @@ function bindSettingsValues(){
   rv('s-parallax','v-parallax','parallax', v => v + '%');
   rv('s-balpha','v-balpha','branchAlpha', v => v + '%');
   rv('s-bgdim','v-bgdim','bgDim', v => v + '%');
-  rv('s-tierwobspd','v-tierwobspd','tierWobbleSpeed', v => v + ' с');
+  rv('s-embanimspd','v-embanimspd','embAnimSpeed', v => v + ' с');
   rv('s-tiltpow','v-tiltpow','tiltPower', v => '±' + v + '°');
   rv('s-cntspd','v-cntspd','counterSpeed', v => v + ' мс');
   rv('s-panelop','v-panelop','panelOp', v => v + '%');
@@ -3085,6 +3167,7 @@ function bindSettingsValues(){
   $('#sel-pstyle').value = PRESETS[settings.particleStyle] ? settings.particleStyle : 'sakura';
   $('#sel-bstyle').value = TREE_STYLES[settings.branchStyle] ? settings.branchStyle : 'sakura';
   $('#sel-catview').value = ['posters','chips','list'].includes(settings.catalogView) ? settings.catalogView : 'posters';
+  $('#sel-embanim').value = ['full','float','off'].includes(settings.emblemAnim) ? settings.emblemAnim : 'full';
   $$('#acc-pick button').forEach(b => b.classList.toggle('on', settings.accent === b.dataset.acc));
   $('#s-epmin').value = settings.epMin;
   $('#s-filmmin').value = settings.filmMin;
@@ -3124,7 +3207,7 @@ function bindSettingsValues(){
     if (!arr){ toast('В файле не найден список тайтлов', 'warn'); return; }
     openConfirm({
       title:'Импорт тайтлов',
-      text:`В файле ${arr.length} тайтлов. Заменить каталог или добавить к нему?${data.settings ? ' Настройки из файла можно применить отдельно.' : ''}`,
+      text:`В файле ${arr.length} тайтлов. Заменить каталог или добавить к нему?`,
       okLabel:'Заменить каталог', danger:true, cancel:true,
       onOk(){ state.titles = arr.map(normalizeTitle); save(); renderAll(); toast('Каталог заменён'); }
     });
@@ -3138,21 +3221,6 @@ function bindSettingsValues(){
         save(); renderAll(); toast(`Импортировано: ${arr.length} тайтлов`);
       };
       foot.appendChild(add);
-      if (data.settings){
-        const withSet = document.createElement('button');
-        withSet.className = 'btn'; withSet.textContent = 'Вместе с настройками';
-        withSet.onclick = () => {
-          closeOv('ov-confirm');
-          state.titles = arr.map(normalizeTitle);
-          settings = Object.assign({}, DEFAULT_SETTINGS, data.settings);
-          if (settings.sssGlow != null) settings.tierGlow = settings.sssGlow;
-          persistSettings();
-          applySettings(); bindSettingsValues(); renderTrees(); Particles.restyle();
-          save(); renderAll();
-          toast('Каталог и настройки импортированы');
-        };
-        foot.appendChild(withSet);
-      }
     }, 0);
   };
   r.readAsText(f);
@@ -3160,16 +3228,23 @@ function bindSettingsValues(){
 });
 
 /* ================================================================
-   СИНХРОНИЗАЦИЯ
+   СИНХРОНИЗАЦИЯ ЧЕРЕЗ GITHUB — каталог общий, настройки личные
+   Опрос гибридный: сырой raw каждые 10 секунд (быстро) +
+   раз в ~75 секунд проверка последнего коммита через API и
+   загрузка по SHA-пинненому URL (гарантированно без CDN-кэша).
+   Так читатели со ссылкой получают правки владельца вовремя.
 ================================================================ */
 let sync = null;
 try{ sync = JSON.parse(localStorage.getItem(LS_SYNC)) || null; }catch(e){}
 let syncStatus = 'off', lastSyncAt = 0, pushTimer = null, pullTimer = null;
+let lastSeenSha = null, lastApiCheck = 0;
+const API_CHECK_MS = 75000;
 const b64encode = str => { const b = new TextEncoder().encode(str); let s=''; b.forEach(x => s += String.fromCharCode(x)); return btoa(s); };
 
 function canEdit(){ return !!(sync && sync.mode === 'rw'); }
 function saveSync(){ if (sync) localStorage.setItem(LS_SYNC, JSON.stringify(sync)); else localStorage.removeItem(LS_SYNC); }
 function rawURL(){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`; }
+function shaURL(sha){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sha}/${DATA_PATH}`; }
 async function gh(path, token, opts = {}){
   const h = {'Accept':'application/vnd.github+json', ...opts.headers};
   if (token) h.Authorization = 'Bearer ' + token;
@@ -3199,7 +3274,8 @@ function renderSyncMenu(){
     <div class="sm-last">${lastSyncAt ? 'обновлено: ' + new Date(lastSyncAt).toLocaleTimeString('ru-RU') : 'ещё не синхронизировалось'}</div>`;
   $('#sm-sync').onclick = async () => {
     m.classList.add('hidden');
-    if (sync.mode === 'rw'){ await push(); await pull(true); }
+    lastApiCheck = 0;            /* форсируем проверку через API */
+    if (sync.mode === 'rw'){ await push(); await pull(false); }
     else await pull(false);
   };
   $('#sm-settings').onclick = () => { m.classList.add('hidden'); openLogin(sync.mode); };
@@ -3235,7 +3311,27 @@ async function pull(silent = true){
   if (!sync) return;
   setSyncStatus('sync');
   try{
-    const r = await fetch(rawURL() + '?t=' + Date.now(), {cache:'no-store'});
+    const now = Date.now();
+    let dataUrl = rawURL();
+    let sha = null;
+    /* раз в ~75 секунд — авторитетная проверка через API (CDN не участвует) */
+    if (now - lastApiCheck > API_CHECK_MS){
+      lastApiCheck = now;
+      try{
+        const cs = await gh(`/repos/${sync.owner}/${sync.repo}/commits?path=${encodeURIComponent(DATA_PATH)}&sha=${sync.branch}&per_page=1`, sync.token || '');
+        if (Array.isArray(cs) && cs.length){
+          sha = cs[0].sha;
+          if (sha === lastSeenSha){        /* коммитов не было — данных новых нет */
+            lastSyncAt = Date.now();
+            setSyncStatus('ok');
+            return;
+          }
+          /* URL с SHA коммита: содержимое этого коммита неизменно, кэш всегда верен */
+          dataUrl = shaURL(sha);
+        }
+      }catch(e){ /* лимит API или сеть — продолжим обычным raw-опросом */ }
+    }
+    const r = await fetch(dataUrl + '?t=' + Date.now(), {cache:'no-store'});
     if (r.status === 404){
       setSyncStatus('err');
       if (!silent) toast('Данные не найдены', 'warn');
@@ -3243,6 +3339,7 @@ async function pull(silent = true){
     }
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const remote = await r.json();
+    if (sha) lastSeenSha = sha;
     lastSyncAt = Date.now();
     if (Array.isArray(remote.titles) && (remote.updatedAt||0) > (state.updatedAt||0)){
       const before = state.titles.length;
@@ -3260,10 +3357,6 @@ async function pull(silent = true){
 }
 async function getFileSha(){
   try{
-    const cs = await gh(`/repos/${sync.owner}/${sync.repo}/commits?path=${encodeURIComponent(DATA_PATH)}&sha=${sync.branch}&per_page=1`, sync.token);
-    if (Array.isArray(cs) && cs.length && cs[0].files && cs[0].files.length) return cs[0].files[0].sha;
-  }catch(e){}
-  try{
     const cur = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${DATA_PATH}?ref=${sync.branch}`, sync.token);
     if (cur && cur.sha) return cur.sha;
   }catch(e){ if (e.status === 404) return null; }
@@ -3277,11 +3370,12 @@ async function push(){
     const payload = {v: 3, updatedAt: state.updatedAt || Date.now(), titles: state.titles};
     const content = b64encode(JSON.stringify(payload));
     if (content.length > 20 * 1024 * 1024) throw {message:'файл данных слишком большой — уменьшите обложки-файлы'};
-    await gh(`/repos/${sync.owner}/${sync.repo}/contents/${DATA_PATH}`, sync.token, {
+    const res = await gh(`/repos/${sync.owner}/${sync.repo}/contents/${DATA_PATH}`, sync.token, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({message: 'ANIME: обновление каталога', content, sha, branch: sync.branch})
     });
+    if (res && res.commit && res.commit.sha) lastSeenSha = res.commit.sha;   /* наш свежий коммит */
     lastSyncAt = Date.now();
     setSyncStatus('ok');
   }catch(err){
@@ -3308,6 +3402,13 @@ async function connectAndSync(){
     if (sync && document.visibilityState === 'visible') pull(true);
   }, 10000);
 }
+/* вернулись во вкладку — сразу подтянуть изменения */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && sync){
+    if (Date.now() - lastSyncAt > 60000) lastApiCheck = 0;
+    pull(true);
+  }
+});
 
 /* ---- модалка входа ---- */
 let loginTab = 'rw', checkedToken = '', checkedUser = null;
@@ -3398,6 +3499,21 @@ async function loadBranches(){
   }
 };
 
+/* ---- ссылка-приглашение ---- */
+(function(){
+  const qp = new URLSearchParams(location.search);
+  const repo = qp.get('repo');
+  if (repo && repo.includes('/')){
+    const [o, r] = repo.split('/');
+    setTimeout(() => {
+      openLogin('ro');
+      $('#ro-owner').value = o;
+      $('#ro-repo').value = r;
+      if (qp.get('branch')) $('#ro-branch').value = qp.get('branch');
+    }, 600);
+  }
+})();
+
 /* ================================================================
    НАВИГАЦИЯ, ПАНЕЛЬ, МЕЛОЧИ
 ================================================================ */
@@ -3457,7 +3573,6 @@ document.addEventListener('click', e => {
  $('#cal-mode-grid').onclick = () => { calMode = 'grid'; renderCalendar(); };
  $('#cal-mode-list').onclick = () => { calMode = 'list'; renderCalendar(); };
 
-/* наверх */
 window.addEventListener('scroll', () => {
   $('#to-top').classList.toggle('show', scrollY > 500);
 }, {passive:true});
@@ -3495,7 +3610,6 @@ movePill();
 updateSyncUI();
 setTimeout(movePill, 400);
 if (sync) connectAndSync();
-/* открыть тайтл по ссылке ?title=id */
 (function(){
   const tp = new URLSearchParams(location.search).get('title');
   if (tp && findTitle(tp)) setTimeout(() => openTitle(tp), 500);
