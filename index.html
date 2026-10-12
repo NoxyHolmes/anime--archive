@@ -1320,10 +1320,14 @@ function compressImage(file,maxW,quality){
 }
 
 /* ================================================================
-   ХРАНИЛИЩЕ — GitHub истина, localStorage кэш
+   ХРАНИЛИЩЕ
+   ВХОД ХРАНИТСЯ ТРОЙНО: localStorage + cookie (365 дней) + cookie при восстановлении.
+   При загрузке: localStorage → cookie → самовосстановление.
+   persist() НЕ трогает ключ входа. saveSync() — единственная точка записи входа.
 ================================================================ */
 const LS_KEY='anime.v3',LS_SET='anime.settings',LS_BG='anime.bg',LS_SYNC='anime.sync';
 const OLD_KEYS=['anime.v2','tsundoku.v1'];
+const SYNC_COOKIE='anime_login';
 const DEFAULT_SETTINGS={
   anim:true,tempo:'normal',rowAnim:true,cascade:true,modalPop:true,
   emblemAnim:'full',embAnimSpeed:6,tierGlow:true,
@@ -1338,53 +1342,51 @@ const DEFAULT_SETTINGS={
   epMin:24,filmMin:110
 };
 
-/* --- 1. ВХОД ЧИТАЕТСЯ ПЕРВЫМ, до любых функций сохранения --- */
-let sync=null;
-try{
-  const raw=localStorage.getItem(LS_SYNC);
-  if(raw){
-    const parsed=JSON.parse(raw);
-    if(parsed&&typeof parsed==='object'&&parsed.owner&&parsed.repo){
-      sync=parsed;
-      console.log('[ANIME sync] restored from localStorage:',parsed.mode,parsed.owner+'/'+parsed.repo);
-    }else{
-      console.warn('[ANIME sync] LS_SYNC present but malformed, ignoring');
-    }
-  }
-}catch(e){
-  console.warn('[ANIME sync] failed to read LS_SYNC:',e);
-}
-
-/* --- 2. saveSync: запись ТОКЕНА, единственная точка --- */
-function saveSync(){
-  if(!sync){
-    try{localStorage.removeItem(LS_SYNC);}catch(e){}
-    return true;
-  }
-  const data=JSON.stringify(sync);
-  const write=()=>localStorage.setItem(LS_SYNC,data);
-
-  try{write();}
-  catch(e){
-    /* освобождаем место и пробуем снова — LS_SYNC не трогаем */
-    try{localStorage.removeItem(LS_KEY);}catch(e2){}
-    try{localStorage.removeItem(LS_BG);}catch(e2){}
-    try{write();}
-    catch(e3){
-      console.error('[ANIME sync] saveSync failed:',e3);
-      toast('Не удалось запомнить вход: хранилище заблокировано','warn');
-      return false;
-    }
-  }
-  /* контрольное чтение — убеждаемся, что запись реально сохранилась */
+/* --- COOKIE: переживет перезагрузку, очистку localStorage, браузер --- */
+function writeSyncCookie(data){
   try{
-    const back=localStorage.getItem(LS_SYNC);
-    if(back!==data){
-      console.error('[ANIME sync] saveSync verify mismatch');
-      return false;
+    if(data){
+      document.cookie=SYNC_COOKIE+'='+encodeURIComponent(JSON.stringify(data))+';max-age=31536000;path=/;SameSite=Lax';
+    }else{
+      document.cookie=SYNC_COOKIE+'=;max-age=0;path=/';
     }
   }catch(e){}
-  return true;
+}
+function readSyncCookie(){
+  try{
+    const m=document.cookie.match(new RegExp('(?:^|;\\s*)'+SYNC_COOKIE+'=([^;]*)'));
+    if(m&&m[1])return JSON.parse(decodeURIComponent(m[1]));
+  }catch(e){}
+  return null;
+}
+
+/* --- ЧТЕНИЕ ВХОДА: первым действием скрипта, до любых сохранений --- */
+let sync=null;
+try{sync=JSON.parse(localStorage.getItem(LS_SYNC))||null;}catch(e){}
+if(!sync){
+  sync=readSyncCookie();
+  if(sync){
+    /* самовосстановление localStorage из cookie */
+    try{localStorage.setItem(LS_SYNC,JSON.stringify(sync));}catch(e){}
+    console.log('[ANIME] вход восстановлен из cookie');
+  }
+}
+
+/* --- ЕДИНСТВЕННАЯ точка записи входа --- */
+function saveSync(){
+  writeSyncCookie(sync); /* cookie пишем ВСЕГДА — он не зависит от квоты */
+  try{
+    if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
+    else localStorage.removeItem(LS_SYNC);
+    return true;
+  }catch(e){
+    try{localStorage.removeItem(LS_KEY);}catch(e2){}
+    try{localStorage.removeItem(LS_BG);}catch(e2){}
+    try{
+      if(sync)localStorage.setItem(LS_SYNC,JSON.stringify(sync));
+    }catch(e3){}
+    return true; /* cookie уже записан — вход сохранён гарантированно */
+  }
 }
 
 function normDate(d){return(d&&+d.y)?{d:+d.d||null,m:+d.m||null,y:+d.y}:null;}
@@ -1448,7 +1450,7 @@ let state=loadTitles();
 let settings=loadSettings();
 let sortMode='added';
 
-/* --- 3. persist: НЕ ТРОГАЕТ LS_SYNC — только кэш --- */
+/* --- persist: только кэш каталога, НИКОГДА не трогает LS_SYNC --- */
 let quotaWarned=false;
 function persist(){
   try{localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles}));}
@@ -1954,7 +1956,7 @@ function renderTiersBanner(){
     $$('#tiers-grid .tc-bar-fill').forEach(f=>f.style.width=f.dataset.w+'%');
   }));
 }
-$('#tiers-grid').addEventListener('click',e=>{
+ $('#tiers-grid').addEventListener('click',e=>{
   const card=e.target.closest('.tc');
   if(!card)return;
   const row=document.querySelector(`.tier-row[data-tier="${card.dataset.goto}"]`);
@@ -2015,7 +2017,7 @@ let filterQuery='',filterGenres=new Set();
 let gpOpen=false,gpMode='my',gpQuery='';
 function genreCounts(){
   const counts=new Map();
-  state.titles.forEach(t=>(t.genres||[]).forEach(g=>counts.set(g,(counts.get(g)||0)+1)));
+  state.titles.forEach(t=>(t.genres||[]).forEach(g=>counts.set(g,(counts.get(g)||0)+1));
   return counts;
 }
 function renderFilters(){
@@ -2490,21 +2492,21 @@ function renderUnitRows(popIdx=-1){
   }).join('');
   list.classList.toggle('scrolled',formUnits.length>7);
 }
-$('#units-list').addEventListener('input',e=>{
+ $('#units-list').addEventListener('input',e=>{
   const row=e.target.closest('.urow');if(!row)return;
   const r=formUnits[+row.dataset.i];
   if(e.target.dataset.k==='name')r.name=e.target.value;
   if(e.target.dataset.k==='count')r.count=e.target.value;
   if(e.target.dataset.k==='date')r.date=e.target.value;
 });
-$('#units-list').addEventListener('change',e=>{
+ $('#units-list').addEventListener('change',e=>{
   if(e.target.classList.contains('urow-type')){
     const row=e.target.closest('.urow');
     formUnits[+row.dataset.i].kind=e.target.value;
     renderUnitRows();
   }
 });
-$('#units-list').addEventListener('click',e=>{
+ $('#units-list').addEventListener('click',e=>{
   const del=e.target.closest('[data-del]');
   if(!del)return;
   formUnits.splice(+del.dataset.del,1);
@@ -2523,24 +2525,24 @@ function collectUnits(){
   return{units,bad};
 }
 function updatePreview(){$('#f-preview').src=coverSrc({name:$('#f-name').value||'?',tier:formTier,cover:formCover});}
-$('#f-name').addEventListener('input',updatePreview);
-$('#f-cover-url').addEventListener('input',e=>{formCover=e.target.value.trim();updatePreview();});
-$('#f-cover-file').addEventListener('change',async e=>{
+ $('#f-name').addEventListener('input',updatePreview);
+ $('#f-cover-url').addEventListener('input',e=>{formCover=e.target.value.trim();updatePreview();});
+ $('#f-cover-file').addEventListener('change',async e=>{
   const file=e.target.files[0];if(!file)return;
   try{formCover=await compressImage(file,420,.72);$('#f-cover-url').value='';updatePreview();}catch(err){toast('Ошибка изображения','warn');}
   e.target.value='';
 });
-$('#f-cover-clear').onclick=()=>{formCover='';$('#f-cover-url').value='';updatePreview();};
-$('#f-genre-add').onclick=()=>{
+ $('#f-cover-clear').onclick=()=>{formCover='';$('#f-cover-url').value='';updatePreview();};
+ $('#f-genre-add').onclick=()=>{
   const v=$('#f-genre-new').value.trim();
   if(!v)return;
   extraChips.push(v);formGenres.add(v);
   $('#f-genre-new').value='';
   buildGenreChips();
 };
-$('#f-genre-new').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#f-genre-add').click();}});
+ $('#f-genre-new').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#f-genre-add').click();}});
 
-$('#title-form').addEventListener('submit',e=>{
+ $('#title-form').addEventListener('submit',e=>{
   e.preventDefault();
   const name=$('#f-name').value.trim();
   if(!name){toast('Введите название','warn');return;}
@@ -2591,7 +2593,7 @@ function applyUserBg(){
   document.body.classList.toggle('has-bg',!!bg);
   if(bg)document.documentElement.style.setProperty('--user-img',`url("${bg}")`);
 }
-$('#bg-file').addEventListener('change',async e=>{
+ $('#bg-file').addEventListener('change',async e=>{
   const file=e.target.files[0];if(!file)return;
   try{
     const d=await compressImage(file,1600,.8);
@@ -2600,7 +2602,7 @@ $('#bg-file').addEventListener('change',async e=>{
   }catch(err){toast('Ошибка','warn');}
   e.target.value='';
 });
-$('#bg-remove').onclick=()=>{try{localStorage.removeItem(LS_BG);}catch(e){}applyUserBg();};
+ $('#bg-remove').onclick=()=>{try{localStorage.removeItem(LS_BG);}catch(e){}applyUserBg();};
 
 function bindSettings(){
   $('#sel-pstyle').innerHTML=Object.entries(PRESETS).map(([k,p])=>`<option value="${k}">${esc(p.label)}</option>`).join('');
@@ -2648,7 +2650,7 @@ function bindSettings(){
     };
   });
 }
-$('#btn-reset-set').onclick=()=>openConfirm({
+ $('#btn-reset-set').onclick=()=>openConfirm({
   title:'Вернуть стандартные настройки?',
   text:'Оформление сбросится к исходным. Каталог не затрагивается.',
   okLabel:'Сбросить',
@@ -2659,14 +2661,14 @@ $('#btn-reset-set').onclick=()=>openConfirm({
     toast('Настройки сброшены');
   }
 });
-$('#btn-export').onclick=()=>{
+ $('#btn-export').onclick=()=>{
   const blob=new Blob([JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles,settings},null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);a.download='anime-catalog.json';a.click();URL.revokeObjectURL(a.href);
   toast('Экспорт готов');
 };
-$('#btn-import').onclick=()=>$('#file-import').click();
-$('#file-import').addEventListener('change',e=>{
+ $('#btn-import').onclick=()=>$('#file-import').click();
+ $('#file-import').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=()=>{
@@ -2682,7 +2684,7 @@ $('#file-import').addEventListener('change',e=>{
 });
 
 /* ================================================================
-   СИНХРОНИЗАЦИЯ — вход сохраняется до ручного выхода
+   СИНХРОНАЦИЯ — вход хранится в localStorage + cookie (365 дней)
 ================================================================ */
 let syncStatus='off',lastSyncAt=0,pushTimer=null,pollTimer=null;
 let lastSeenSha=null,lastApiCheck=0,apiFailStreak=0;
@@ -2711,7 +2713,7 @@ function renderSyncMenu(){
   const mode=sync.mode==='rw'?'владелец':'чтение';
   m.innerHTML=`
     <div class="sm-head"><b>${esc(sync.login||sync.owner)}</b><br>${esc(sync.owner)}/${esc(sync.repo)} · ${mode}
-    <div class="sm-role">вход сохранён — до ручного выхода</div></div>
+    <div class="sm-role">вход сохранён до ручного выхода</div></div>
     <button id="sm-sync">Синхронизировать</button>
     <button id="sm-settings">Настройки</button>
     <button id="sm-logout" class="sm-logout">Отключиться</button>
@@ -2721,7 +2723,7 @@ function renderSyncMenu(){
   $('#sm-settings').onclick=()=>{m.classList.add('hidden');openLogin(sync.mode);};
   $('#sm-logout').onclick=()=>{
     sync=null;
-    saveSync();
+    saveSync(); /* удалит оба хранилища */
     clearInterval(pollTimer);pollTimer=null;
     setSyncStatus('off');updateSyncUI();toast('Вы вышли из профиля');
   };
@@ -2738,28 +2740,24 @@ function updateSyncUI(){
   $('#btn-add').classList.toggle('hidden',!canEdit());
   setSyncStatus(sync?syncStatus:'off');
 }
-$('#sync-user').addEventListener('click',e=>{e.stopPropagation();$('#sync-menu').classList.toggle('hidden');});
+ $('#sync-user').addEventListener('click',e=>{e.stopPropagation();$('#sync-menu').classList.toggle('hidden');});
 document.addEventListener('click',e=>{if(!e.target.closest('.sync-wrap'))$('#sync-menu').classList.add('hidden');});
 
-/* --- проверка живого токена при автологине ---
-   ВАЖНО: эта функция НИКОГДА не должна разлогинивать.
-   Только показывает статус. Выход — только вручную через меню. */
+/* --- проверка живого токена при автологине --- */
 async function verifyToken(){
   if(!sync||sync.mode!=='rw'||!sync.token)return true;
   try{
-    const user=await gh('/user',sync.token);
-    if(user&&user.login){
-      sync.login=user.login;
-      if(user.avatar_url)sync.avatar=user.avatar_url;
-      saveSync();
-    }
+    await gh('/user',sync.token);
     return true;
   }catch(e){
-    console.warn('[ANIME sync] verifyToken soft-fail:',e&&e.status,e&&e.message);
-    if(e&&e.status===401){
-      toast('GitHub отклонил токен — правки не будут сохраняться. Отключитесь вручную, если нужно.','warn');
+    if(e.status===401){
+      sync=null;
+      try{localStorage.removeItem(LS_SYNC);}catch(e2){}
+      writeSyncCookie(null);
+      updateSyncUI();
+      toast('Токен недействителен — войдите заново','warn');
+      return false;
     }
-    /* остаёмся в системе в любом случае */
     return true;
   }
 }
@@ -2838,20 +2836,12 @@ function schedulePush(){
 async function connectAndSync(){
   updateSyncUI();
   if(!sync)return;
-  /* verifyToken теперь всегда возвращает true — разлогина нет */
-  await verifyToken();
-  updateSyncUI();
-  console.log('[ANIME sync] session active:',sync.mode,sync.owner+'/'+sync.repo);
+  if(await verifyToken()===false)return;
+  toast('С возвращением, '+(sync.login||sync.owner));
   lastSyncAt=0;
-  try{
-    await pull(true);
-    if(sync.mode==='rw'&&syncStatus==='err'){
-      await push();
-      await pull(true);
-    }
-  }catch(e){
-    console.warn('[ANIME sync] initial sync failed (kept session):',e);
-  }
+  await pull(true);
+  if(sync.mode==='rw'&&syncStatus==='err'){await push();await pull(true);}
+  if(syncStatus==='ok'&&!lastSyncAt)toast('Подключено');
   clearInterval(pollTimer);
   pollTimer=setInterval(()=>{
     if(sync&&document.visibilityState==='visible')pull(true);
@@ -2881,9 +2871,9 @@ function openLogin(tab){
   $('#lk-ro').classList.toggle('hidden',loginTab!=='ro');
   openOv('ov-login');
 }
-$$('.login-tabs button').forEach(b=>b.addEventListener('click',()=>openLogin(b.dataset.tab)));
-$('#btn-login').onclick=()=>openLogin('rw');
-$('#lk-check').onclick=async()=>{
+ $$('.login-tabs button').forEach(b=>b.addEventListener('click',()=>openLogin(b.dataset.tab)));
+ $('#btn-login').onclick=()=>openLogin('rw');
+ $('#lk-check').onclick=async()=>{
   const token=$('#lk-token').value.trim();
   if(!token){$('#lk-status').textContent='введите токен';return;}
   $('#lk-status').textContent='проверяю…';
@@ -2919,19 +2909,19 @@ async function loadBranches(){
     $('#lk-branch-w').classList.remove('hidden');
   }catch(e){$('#lk-branch').innerHTML='<option value="main">main</option>';$('#lk-branch-w').classList.remove('hidden');}
 }
-$('#lk-connect').onclick=()=>{
+ $('#lk-connect').onclick=()=>{
   if(!checkedUser)return;
   const full=$('#lk-repo').value;
   const[owner,repo]=full.split('/');
-  sync={mode:'rw',token:checkedToken,owner,repo,branch:$('#lk-branch').value||'main',login:checkedUser.login,avatar:checkedUser.avatar_url,savedAt:Date.now()};
-  saveSync();
+  sync={mode:'rw',token:checkedToken,owner,repo,branch:$('#lk-branch').value||'main',login:checkedUser.login,avatar:checkedUser.avatar_url};
+  saveSync(); /* пишет в localStorage И cookie — вход закреплён */
   closeOv('ov-login');
   connectAndSync();
 };
-$('#ro-connect').onclick=async()=>{
+ $('#ro-connect').onclick=async()=>{
   const owner=$('#ro-owner').value.trim(),repo=$('#ro-repo').value.trim();
   if(!owner||!repo){$('#ro-status').textContent='укажите владельца и репозиторий';return;}
-  const cfg={mode:'ro',token:'',owner,repo,branch:$('#ro-branch').value.trim()||'main',login:owner,avatar:'',savedAt:Date.now()};
+  const cfg={mode:'ro',token:'',owner,repo,branch:$('#ro-branch').value.trim()||'main',login:owner,avatar:''};
   $('#ro-status').textContent='проверяю…';
   try{
     const r=await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${cfg.branch}/${DATA_PATH}?t=${Date.now()}`,{cache:'no-store'});
@@ -2968,7 +2958,7 @@ function switchView(name){
   if(name==='settings'){toggleDrawer();return;}
   closeDrawer();
   currentView=name;
-  $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===name));
+  $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===name);
   $$('.view').forEach(x=>x.classList.add('hidden'));
   $('#view-'+name).classList.remove('hidden');
   if(name==='tier')renderTierlist(true);
@@ -2978,22 +2968,22 @@ function switchView(name){
 function toggleDrawer(){
   const open=!document.body.classList.contains('drawer-open');
   document.body.classList.toggle('drawer-open',open);
-  $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===(open?'settings':currentView)));
+  $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===(open?'settings':currentView));
   movePill();
 }
 function closeDrawer(){
   if(!document.body.classList.contains('drawer-open'))return;
   document.body.classList.remove('drawer-open');
-  $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===currentView));
+  $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===currentView);
   movePill();
 }
-$('#drawer-x').addEventListener('click',closeDrawer);
-$('#nav').addEventListener('click',e=>{
+ $('#drawer-x').addEventListener('click',closeDrawer);
+ $('#nav').addEventListener('click',e=>{
   const b=e.target.closest('[data-view]');
   if(b)switchView(b.dataset.view);
 });
-$$('[data-act="add"]').forEach(b=>b.addEventListener('click',()=>{if(canEdit())openForm();}));
-$('#btn-random').onclick=()=>{
+ $$('[data-act="add"]').forEach(b=>b.addEventListener('click',()=>{if(canEdit())openForm();}));
+ $('#btn-random').onclick=()=>{
   if(!state.titles.length){toast('Каталог пуст','warn');return;}
   openTitle(state.titles[Math.floor(Math.random()*state.titles.length)].id);
 };
@@ -3003,18 +2993,18 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#ov-day')){closeOv('ov-day');setTimeout(()=>openTitle(c.dataset.id),60);}
   else openTitle(c.dataset.id);
 });
-$('#cal-prev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCalGrid();};
-$('#cal-next').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalGrid();};
-$('#cal-today').onclick=()=>{const n=new Date();calY=n.getFullYear();calM=n.getMonth();renderCalGrid();};
-$('#cal-sel-m').addEventListener('change',e=>{calM=+e.target.value;renderCalGrid();});
-$('#cal-sel-y').addEventListener('change',e=>{calY=+e.target.value;renderCalGrid();});
-$('#cal-mode-grid').onclick=()=>{calMode='grid';renderCalendar();};
-$('#cal-mode-list').onclick=()=>{calMode='list';renderCalendar();};
+ $('#cal-prev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCalGrid();};
+ $('#cal-next').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalGrid();};
+ $('#cal-today').onclick=()=>{const n=new Date();calY=n.getFullYear();calM=n.getMonth();renderCalGrid();};
+ $('#cal-sel-m').addEventListener('change',e=>{calM=+e.target.value;renderCalGrid();});
+ $('#cal-sel-y').addEventListener('change',e=>{calY=+e.target.value;renderCalGrid();};
+ $('#cal-mode-grid').onclick=()=>{calMode='grid';renderCalendar();};
+ $('#cal-mode-list').onclick=()=>{calMode='list';renderCalendar();};
 
 window.addEventListener('scroll',()=>{
   $('#to-top').classList.toggle('show',scrollY>500);
 },{passive:true});
-$('#to-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+ $('#to-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 
 let tiltEl=null;
 document.addEventListener('pointermove',e=>{
@@ -3035,6 +3025,7 @@ window.addEventListener('blur',()=>{if(tiltEl){tiltEl.style.transform='';tiltEl=
 window.addEventListener('resize',movePill);
 
 /* ================= старт ================= */
+console.log('[ANIME] вход при загрузке:',sync?(sync.login||sync.owner):'не найден');
 Particles.init();
 applySettings();
 bindSettings();
