@@ -1321,10 +1321,6 @@ function compressImage(file,maxW,quality){
 
 /* ================================================================
    ХРАНИЛИЩЕ — GitHub истина, localStorage кэш
-   КРИТИЧНО для сохранения входа:
-   1. sync читается из localStorage ПЕРВЫМ (до любых persist)
-   2. saveSync() — единственное место записи токена; под защитой
-   3. persist() НЕ трогает LS_SYNC вообще — только кэш каталога
 ================================================================ */
 const LS_KEY='anime.v3',LS_SET='anime.settings',LS_BG='anime.bg',LS_SYNC='anime.sync';
 const OLD_KEYS=['anime.v2','tsundoku.v1'];
@@ -1437,7 +1433,6 @@ function persist(){
       localStorage.setItem(LS_KEY,JSON.stringify({v:3,updatedAt:0,titles:light}));
       if(!quotaWarned){quotaWarned=true;toast('Локальный кэш переполнен — полная версия хранится в GitHub','warn');}
     }catch(e2){
-      /* совсем нет места: чистим ТОЛЬКО кэш, НЕ трогая LS_SYNC и LS_SET */
       try{localStorage.removeItem(LS_KEY);}catch(e3){}
       if(!quotaWarned){quotaWarned=true;toast('Кэш каталога не сохраняется локально — работаем из GitHub','warn');}
     }
@@ -1934,7 +1929,7 @@ function renderTiersBanner(){
     $$('#tiers-grid .tc-bar-fill').forEach(f=>f.style.width=f.dataset.w+'%');
   }));
 }
- $('#tiers-grid').addEventListener('click',e=>{
+$('#tiers-grid').addEventListener('click',e=>{
   const card=e.target.closest('.tc');
   if(!card)return;
   const row=document.querySelector(`.tier-row[data-tier="${card.dataset.goto}"]`);
@@ -2470,21 +2465,21 @@ function renderUnitRows(popIdx=-1){
   }).join('');
   list.classList.toggle('scrolled',formUnits.length>7);
 }
- $('#units-list').addEventListener('input',e=>{
+$('#units-list').addEventListener('input',e=>{
   const row=e.target.closest('.urow');if(!row)return;
   const r=formUnits[+row.dataset.i];
   if(e.target.dataset.k==='name')r.name=e.target.value;
   if(e.target.dataset.k==='count')r.count=e.target.value;
   if(e.target.dataset.k==='date')r.date=e.target.value;
 });
- $('#units-list').addEventListener('change',e=>{
+$('#units-list').addEventListener('change',e=>{
   if(e.target.classList.contains('urow-type')){
     const row=e.target.closest('.urow');
     formUnits[+row.dataset.i].kind=e.target.value;
     renderUnitRows();
   }
 });
- $('#units-list').addEventListener('click',e=>{
+$('#units-list').addEventListener('click',e=>{
   const del=e.target.closest('[data-del]');
   if(!del)return;
   formUnits.splice(+del.dataset.del,1);
@@ -2503,24 +2498,24 @@ function collectUnits(){
   return{units,bad};
 }
 function updatePreview(){$('#f-preview').src=coverSrc({name:$('#f-name').value||'?',tier:formTier,cover:formCover});}
- $('#f-name').addEventListener('input',updatePreview);
- $('#f-cover-url').addEventListener('input',e=>{formCover=e.target.value.trim();updatePreview();});
- $('#f-cover-file').addEventListener('change',async e=>{
+$('#f-name').addEventListener('input',updatePreview);
+$('#f-cover-url').addEventListener('input',e=>{formCover=e.target.value.trim();updatePreview();});
+$('#f-cover-file').addEventListener('change',async e=>{
   const file=e.target.files[0];if(!file)return;
   try{formCover=await compressImage(file,420,.72);$('#f-cover-url').value='';updatePreview();}catch(err){toast('Ошибка изображения','warn');}
   e.target.value='';
 });
- $('#f-cover-clear').onclick=()=>{formCover='';$('#f-cover-url').value='';updatePreview();};
- $('#f-genre-add').onclick=()=>{
+$('#f-cover-clear').onclick=()=>{formCover='';$('#f-cover-url').value='';updatePreview();};
+$('#f-genre-add').onclick=()=>{
   const v=$('#f-genre-new').value.trim();
   if(!v)return;
   extraChips.push(v);formGenres.add(v);
   $('#f-genre-new').value='';
   buildGenreChips();
 };
- $('#f-genre-new').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#f-genre-add').click();}});
+$('#f-genre-new').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#f-genre-add').click();}});
 
- $('#title-form').addEventListener('submit',e=>{
+$('#title-form').addEventListener('submit',e=>{
   e.preventDefault();
   const name=$('#f-name').value.trim();
   if(!name){toast('Введите название','warn');return;}
@@ -2571,7 +2566,7 @@ function applyUserBg(){
   document.body.classList.toggle('has-bg',!!bg);
   if(bg)document.documentElement.style.setProperty('--user-img',`url("${bg}")`);
 }
- $('#bg-file').addEventListener('change',async e=>{
+$('#bg-file').addEventListener('change',async e=>{
   const file=e.target.files[0];if(!file)return;
   try{
     const d=await compressImage(file,1600,.8);
@@ -2580,7 +2575,7 @@ function applyUserBg(){
   }catch(err){toast('Ошибка','warn');}
   e.target.value='';
 });
- $('#bg-remove').onclick=()=>{try{localStorage.removeItem(LS_BG);}catch(e){}applyUserBg();};
+$('#bg-remove').onclick=()=>{try{localStorage.removeItem(LS_BG);}catch(e){}applyUserBg();};
 
 function bindSettings(){
   $('#sel-pstyle').innerHTML=Object.entries(PRESETS).map(([k,p])=>`<option value="${k}">${esc(p.label)}</option>`).join('');
@@ -2628,7 +2623,7 @@ function bindSettings(){
     };
   });
 }
- $('#btn-reset-set').onclick=()=>openConfirm({
+$('#btn-reset-set').onclick=()=>openConfirm({
   title:'Вернуть стандартные настройки?',
   text:'Оформление сбросится к исходным. Каталог не затрагивается.',
   okLabel:'Сбросить',
@@ -2639,14 +2634,14 @@ function bindSettings(){
     toast('Настройки сброшены');
   }
 });
- $('#btn-export').onclick=()=>{
+$('#btn-export').onclick=()=>{
   const blob=new Blob([JSON.stringify({v:3,updatedAt:state.updatedAt,titles:state.titles,settings},null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);a.download='anime-catalog.json';a.click();URL.revokeObjectURL(a.href);
   toast('Экспорт готов');
 };
- $('#btn-import').onclick=()=>$('#file-import').click();
- $('#file-import').addEventListener('change',e=>{
+$('#btn-import').onclick=()=>$('#file-import').click();
+$('#file-import').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=()=>{
@@ -2701,7 +2696,7 @@ function renderSyncMenu(){
   $('#sm-settings').onclick=()=>{m.classList.add('hidden');openLogin(sync.mode);};
   $('#sm-logout').onclick=()=>{
     sync=null;
-    saveSync(); /* удалит запись — тоже под защитой */
+    saveSync();
     clearInterval(pollTimer);pollTimer=null;
     setSyncStatus('off');updateSyncUI();toast('Вы вышли из профиля');
   };
@@ -2718,7 +2713,7 @@ function updateSyncUI(){
   $('#btn-add').classList.toggle('hidden',!canEdit());
   setSyncStatus(sync?syncStatus:'off');
 }
- $('#sync-user').addEventListener('click',e=>{e.stopPropagation();$('#sync-menu').classList.toggle('hidden');});
+$('#sync-user').addEventListener('click',e=>{e.stopPropagation();$('#sync-menu').classList.toggle('hidden');});
 document.addEventListener('click',e=>{if(!e.target.closest('.sync-wrap'))$('#sync-menu').classList.add('hidden');});
 
 /* --- проверка живого токена при автологине --- */
@@ -2729,14 +2724,15 @@ async function verifyToken(){
     return true;
   }catch(e){
     if(e.status===401){
-      /* токен отозван/истёк — честно разлогиниваем */
+      /* не разлогиниваем сразу после входа — может быть временный сбой */
+      if(Date.now()-(sync.savedAt||0)<30000)return true;
       sync=null;
       try{localStorage.removeItem(LS_SYNC);}catch(e2){}
       updateSyncUI();
       toast('Токен доступа недействителен — войдите заново','warn');
       return false;
     }
-    return true; /* сеть/лимит — считаем валидным */
+    return true;
   }
 }
 
@@ -2814,7 +2810,7 @@ function schedulePush(){
 async function connectAndSync(){
   updateSyncUI();
   if(!sync)return;
-  if(await verifyToken()===false)return; /* токен живой? нет — уже разлогинило */
+  if(await verifyToken()===false)return;
   toast('С возвращением, '+(sync.login||sync.owner));
   lastSyncAt=0;
   await pull(true);
@@ -2849,9 +2845,9 @@ function openLogin(tab){
   $('#lk-ro').classList.toggle('hidden',loginTab!=='ro');
   openOv('ov-login');
 }
- $$('.login-tabs button').forEach(b=>b.addEventListener('click',()=>openLogin(b.dataset.tab)));
- $('#btn-login').onclick=()=>openLogin('rw');
- $('#lk-check').onclick=async()=>{
+$$('.login-tabs button').forEach(b=>b.addEventListener('click',()=>openLogin(b.dataset.tab)));
+$('#btn-login').onclick=()=>openLogin('rw');
+$('#lk-check').onclick=async()=>{
   const token=$('#lk-token').value.trim();
   if(!token){$('#lk-status').textContent='введите токен';return;}
   $('#lk-status').textContent='проверяю…';
@@ -2887,19 +2883,19 @@ async function loadBranches(){
     $('#lk-branch-w').classList.remove('hidden');
   }catch(e){$('#lk-branch').innerHTML='<option value="main">main</option>';$('#lk-branch-w').classList.remove('hidden');}
 }
- $('#lk-connect').onclick=()=>{
+$('#lk-connect').onclick=()=>{
   if(!checkedUser)return;
   const full=$('#lk-repo').value;
   const[owner,repo]=full.split('/');
-  sync={mode:'rw',token:checkedToken,owner,repo,branch:$('#lk-branch').value||'main',login:checkedUser.login,avatar:checkedUser.avatar_url};
-  saveSync(); /* токен закреплён в localStorage немедленно, под защитой */
+  sync={mode:'rw',token:checkedToken,owner,repo,branch:$('#lk-branch').value||'main',login:checkedUser.login,avatar:checkedUser.avatar_url,savedAt:Date.now()};
+  saveSync();
   closeOv('ov-login');
   connectAndSync();
 };
- $('#ro-connect').onclick=async()=>{
+$('#ro-connect').onclick=async()=>{
   const owner=$('#ro-owner').value.trim(),repo=$('#ro-repo').value.trim();
   if(!owner||!repo){$('#ro-status').textContent='укажите владельца и репозиторий';return;}
-  const cfg={mode:'ro',token:'',owner,repo,branch:$('#ro-branch').value.trim()||'main',login:owner,avatar:''};
+  const cfg={mode:'ro',token:'',owner,repo,branch:$('#ro-branch').value.trim()||'main',login:owner,avatar:'',savedAt:Date.now()};
   $('#ro-status').textContent='проверяю…';
   try{
     const r=await fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${cfg.branch}/${DATA_PATH}?t=${Date.now()}`,{cache:'no-store'});
@@ -2955,13 +2951,13 @@ function closeDrawer(){
   $$('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===currentView));
   movePill();
 }
- $('#drawer-x').addEventListener('click',closeDrawer);
- $('#nav').addEventListener('click',e=>{
+$('#drawer-x').addEventListener('click',closeDrawer);
+$('#nav').addEventListener('click',e=>{
   const b=e.target.closest('[data-view]');
   if(b)switchView(b.dataset.view);
 });
- $$('[data-act="add"]').forEach(b=>b.addEventListener('click',()=>{if(canEdit())openForm();}));
- $('#btn-random').onclick=()=>{
+$$('[data-act="add"]').forEach(b=>b.addEventListener('click',()=>{if(canEdit())openForm();}));
+$('#btn-random').onclick=()=>{
   if(!state.titles.length){toast('Каталог пуст','warn');return;}
   openTitle(state.titles[Math.floor(Math.random()*state.titles.length)].id);
 };
@@ -2971,18 +2967,18 @@ document.addEventListener('click',e=>{
   if(e.target.closest('#ov-day')){closeOv('ov-day');setTimeout(()=>openTitle(c.dataset.id),60);}
   else openTitle(c.dataset.id);
 });
- $('#cal-prev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCalGrid();};
- $('#cal-next').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalGrid();};
- $('#cal-today').onclick=()=>{const n=new Date();calY=n.getFullYear();calM=n.getMonth();renderCalGrid();};
- $('#cal-sel-m').addEventListener('change',e=>{calM=+e.target.value;renderCalGrid();});
- $('#cal-sel-y').addEventListener('change',e=>{calY=+e.target.value;renderCalGrid();};
- $('#cal-mode-grid').onclick=()=>{calMode='grid';renderCalendar();};
- $('#cal-mode-list').onclick=()=>{calMode='list';renderCalendar();};
+$('#cal-prev').onclick=()=>{calM--;if(calM<0){calM=11;calY--;}renderCalGrid();};
+$('#cal-next').onclick=()=>{calM++;if(calM>11){calM=0;calY++;}renderCalGrid();};
+$('#cal-today').onclick=()=>{const n=new Date();calY=n.getFullYear();calM=n.getMonth();renderCalGrid();};
+$('#cal-sel-m').addEventListener('change',e=>{calM=+e.target.value;renderCalGrid();});
+$('#cal-sel-y').addEventListener('change',e=>{calY=+e.target.value;renderCalGrid();});
+$('#cal-mode-grid').onclick=()=>{calMode='grid';renderCalendar();};
+$('#cal-mode-list').onclick=()=>{calMode='list';renderCalendar();};
 
 window.addEventListener('scroll',()=>{
   $('#to-top').classList.toggle('show',scrollY>500);
 },{passive:true});
- $('#to-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+$('#to-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
 
 let tiltEl=null;
 document.addEventListener('pointermove',e=>{
@@ -3010,7 +3006,7 @@ renderAll();
 movePill();
 updateSyncUI();
 setTimeout(movePill,400);
-if(sync)connectAndSync(); /* сохранённый вход подхватывается при загрузке */
+if(sync)connectAndSync();
 </script>
 </body>
 </html>
