@@ -83,12 +83,12 @@ body.light .bg-branch{opacity:calc(var(--branch-alpha)*.5)}
 @keyframes crownSway{from{transform:rotate(-.7deg)}to{transform:rotate(.8deg) translateY(2px)}}
 body.no-sway .sway,body.no-sway .crown,body.no-anim .sway,body.no-anim .crown{animation:none}
 #petals{position:fixed;inset:0;z-index:0;pointer-events:none}
-body.pets-front #petals{z-index:80}
 
-.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:18px;
   padding:13px 28px;border-bottom:1px solid var(--line);
   background:color-mix(in srgb,var(--bg) 78%,transparent);
   backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.topbar-right{display:flex;align-items:center;gap:12px}
 .brand{display:flex;flex-direction:column;gap:3px;text-decoration:none;color:inherit;flex:none}
 .brand-word{display:flex}
 .brand-word i{font-style:normal;font-family:'Unbounded';font-weight:800;font-size:16px;letter-spacing:.13em;
@@ -102,8 +102,12 @@ body:not(.no-anim) .brand-word i:nth-child(3){animation-delay:calc(190ms*var(--s
 body:not(.no-anim) .brand-word i:nth-child(4){animation-delay:calc(260ms*var(--sp))}
 body:not(.no-anim) .brand-word i:nth-child(5){animation-delay:calc(330ms*var(--sp))}
 .brand-sub{font-family:'JetBrains Mono';font-size:8.5px;letter-spacing:.34em;color:var(--muted)}
+
+/* навигация — отдельный блок в центре страницы, над «Коллекцией» */
 .nav{position:relative;display:flex;gap:2px;padding:4px;border-radius:13px;
-  background:var(--panel);border:1px solid var(--line);overflow-x:auto;flex:1;min-width:0;scrollbar-width:none}
+  background:var(--panel);border:1px solid var(--line);
+  margin:0 auto 22px;width:max-content;max-width:100%;
+  overflow-x:auto;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
 .nav-pill{position:absolute;border-radius:9px;background:var(--accent);z-index:0;
   transition:left calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1),width calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1),top calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1),height calc(.38s*var(--sp)) cubic-bezier(.3,1.35,.4,1)}
@@ -141,7 +145,8 @@ body:not(.no-anim) .btn:hover::after{animation:sweepBtn calc(.7s*var(--sp)) ease
 .sm-logout{color:var(--warn)!important}
 .sm-last{padding:8px 10px 4px;font-family:'JetBrains Mono';font-size:10.5px;color:var(--faint);border-top:1px solid var(--line);margin-top:5px}
 
-main{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:28px 28px 80px}
+/* расширенный контейнер, чтобы в ряд помещалось 8 постеров */
+main{position:relative;z-index:1;max-width:1520px;margin:0 auto;padding:26px 28px 80px}
 @keyframes viewIn{from{opacity:0;transform:translateY(16px) scale(.99);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
 body:not(.no-anim) .view{animation:viewIn calc(.45s*var(--sp)) cubic-bezier(.2,.9,.3,1) both}
 body.no-modalpop .view{animation:none}
@@ -182,7 +187,7 @@ body.no-modalpop .view{animation:none}
 .recent-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
 .recent-head h2{font-family:'Unbounded';font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase}
 .recent-head span{font-family:'JetBrains Mono';font-size:11px;color:var(--faint)}
-.recent-strip{display:flex;gap:16px;overflow-x:auto;padding:6px 2px 10px}
+.recent-strip{display:flex;gap:13px;overflow-x:auto;padding:6px 2px 10px}
 body:not(.no-anim):not(.no-cascade) .recent .card{animation:cardIn calc(.5s*var(--sp)) cubic-bezier(.2,.9,.3,1.15) both;animation-delay:calc(var(--ci)*50ms*var(--sp))}
 
 .filters{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
@@ -230,33 +235,25 @@ body.no-rowanim #tierlist.anim-in .tier-row{animation:none}
   display:flex;flex-direction:column;gap:4px;padding-top:2px}
 
 /* ================================================================
-   3D-ЭМБЛЕМЫ — «голографический кристалл», полностью новый дизайн
+   3D-ЭМБЛЕМЫ — «голографический кристалл»
 ================================================================ */
 .emb{position:relative;width:96px;height:96px;margin:8px 0 16px;flex:none;perspective:1100px}
-
-/* пульсирующее гало */
 .emb-halo{position:absolute;inset:-24px;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle at 50% 48%, color-mix(in srgb,var(--tc) 55%,transparent), transparent 62%);
   filter:blur(8px);animation:embHalo 4.2s ease-in-out infinite;animation-delay:calc(var(--i)*-.55s)}
 @keyframes embHalo{0%,100%{opacity:.45;transform:scale(.94)}50%{opacity:1;transform:scale(1.18)}}
-
-/* три вращающихся декоративных кольца */
 .emb-ring{position:absolute;border-radius:50%;pointer-events:none;
   border:1.5px solid color-mix(in srgb,var(--tc) 55%,transparent)}
 .emb-ring.r1{inset:-5px;border-style:dashed;animation:embSpinZ calc(var(--tes)*1.6) linear infinite}
 .emb-ring.r2{inset:-12px;border-color:color-mix(in srgb,var(--tc) 35%,transparent);animation:embSpinZ calc(var(--tes)*2.6) linear infinite reverse}
 .emb-ring.r3{inset:-19px;border-width:2px;opacity:.35;animation:embSpinZ calc(var(--tes)*3.8) linear infinite}
 @keyframes embSpinZ{to{transform:rotate(360deg)}}
-
-/* спутники на орбитах */
 .emb-orb{position:absolute;inset:-20px;pointer-events:none;
   animation:embSpinZ calc(var(--tes)*1.2) linear infinite}
 .emb-orb.o2{inset:-13px;animation-duration:calc(var(--tes)*1.9);animation-direction:reverse}
 .emb-orb i{position:absolute;top:50%;left:-3px;width:6px;height:6px;margin-top:-3px;border-radius:50%;
   background:#fff;box-shadow:0 0 8px var(--tc),0 0 2px var(--tc)}
 .emb-orb.o2 i{top:-2px;left:50%;margin:0 0 0 -3px;width:5px;height:5px;background:var(--tc);box-shadow:0 0 8px var(--tc)}
-
-/* вращающаяся сборка кристалла */
 .emb-rot{position:absolute;inset:0;transform-style:preserve-3d}
 .emb-layer{position:absolute;inset:10px;
   transform:translateZ(var(--z,0px));
@@ -264,8 +261,6 @@ body.no-rowanim #tierlist.anim-in .tier-row{animation:none}
   filter:brightness(var(--br,1)) drop-shadow(0 6px 12px color-mix(in srgb,var(--tc) 40%,transparent))}
 .emb-layer svg{width:100%;height:100%;overflow:visible;display:block}
 body.tier-glow .emb-layer:nth-child(3){filter:brightness(1.4) drop-shadow(0 0 16px color-mix(in srgb,var(--tc) 70%,transparent))}
-
-/* буква тира */
 .emb-letter{position:absolute;inset:0;display:grid;place-items:center;transform:translateZ(32px);
   font-family:'Unbounded';font-weight:800;line-height:1;color:#fff;z-index:3;letter-spacing:-.02em;
   text-shadow:0 1px 0 color-mix(in srgb,var(--tc) 62%,#000),
@@ -277,35 +272,28 @@ body.tier-glow .emb-layer:nth-child(3){filter:brightness(1.4) drop-shadow(0 0 16
 .emb[data-tier="S"] .emb-letter{font-size:20px}
 .emb[data-tier="A"] .emb-letter,.emb[data-tier="B"] .emb-letter,.emb[data-tier="C"] .emb-letter,
 .emb[data-tier="D"] .emb-letter,.emb[data-tier="E"] .emb-letter{font-size:22px}
-
-/* тень-подставка */
 .emb-base{position:absolute;left:16%;right:16%;bottom:-10px;height:9px;border-radius:50%;pointer-events:none;
   background:radial-gradient(ellipse, color-mix(in srgb,var(--tc) 60%,transparent), transparent 72%);
   filter:blur(3px);animation:embBase 4.2s ease-in-out infinite;animation-delay:calc(var(--i)*-.55s)}
 @keyframes embBase{0%,100%{transform:scaleX(1);opacity:.8}50%{transform:scaleX(.68);opacity:.4}}
-
-/* корона SSS */
 .emb-crown{position:absolute;top:-21px;left:50%;transform:translateX(-50%);width:30px;z-index:4;
   filter:drop-shadow(0 2px 5px rgba(0,0,0,.6));pointer-events:none;
   animation:embCrown 3.6s ease-in-out infinite}
 @keyframes embCrown{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
 
-/* индивидуальные анимации сборки кристалла */
-.emb[data-tier="SSS"] .emb-rot{animation:embSpinY calc(var(--tes)*1.2) linear infinite}                                     /* звезда: полный оборот вокруг Y */
-.emb[data-tier="S"]   .emb-rot{animation:embTilt  calc(var(--tes)*1.4) ease-in-out infinite alternate}                        /* лотос: маятник по Y */
-.emb[data-tier="A"]   .emb-rot{animation:embSpinY calc(var(--tes)*1.6) linear infinite}                                     /* алмаз: медленный оборот */
-.emb[data-tier="B"]   .emb-rot{animation:embSpinY calc(var(--tes)*2.0) linear infinite reverse}                             /* гекс: оборот в другую сторону */
-.emb[data-tier="C"]   .emb-rot{animation:embRingRun calc(var(--tes)*1.8) ease-in-out infinite}                              /* кольца: орбитальная качка */
-.emb[data-tier="D"]   .emb-rot{animation:embSwing calc(var(--tes)*.9) ease-in-out infinite alternate;transform-origin:50% -16%} /* щит: качание */
-.emb[data-tier="E"]   .emb-rot{animation:embIso  calc(var(--tes)*2.2) linear infinite}                                      /* куб: изометрическое вращение */
-
+.emb[data-tier="SSS"] .emb-rot{animation:embSpinY calc(var(--tes)*1.2) linear infinite}
+.emb[data-tier="S"]   .emb-rot{animation:embTilt  calc(var(--tes)*1.4) ease-in-out infinite alternate}
+.emb[data-tier="A"]   .emb-rot{animation:embSpinY calc(var(--tes)*1.6) linear infinite}
+.emb[data-tier="B"]   .emb-rot{animation:embSpinY calc(var(--tes)*2.0) linear infinite reverse}
+.emb[data-tier="C"]   .emb-rot{animation:embRingRun calc(var(--tes)*1.8) ease-in-out infinite}
+.emb[data-tier="D"]   .emb-rot{animation:embSwing calc(var(--tes)*.9) ease-in-out infinite alternate;transform-origin:50% -16%}
+.emb[data-tier="E"]   .emb-rot{animation:embIso  calc(var(--tes)*2.2) linear infinite}
 @keyframes embSpinY{from{transform:rotateY(0deg) rotateX(8deg)}50%{transform:rotateY(180deg) rotateX(-8deg)}to{transform:rotateY(360deg) rotateX(8deg)}}
 @keyframes embTilt{from{transform:rotateY(-48deg) rotateX(6deg)}to{transform:rotateY(48deg) rotateX(6deg)}}
 @keyframes embRingRun{0%,100%{transform:rotateY(-24deg) rotateZ(-8deg)}50%{transform:rotateY(24deg) rotateZ(8deg)}}
 @keyframes embSwing{from{transform:rotateZ(-14deg) rotateY(-12deg)}to{transform:rotateZ(14deg) rotateY(12deg)}}
 @keyframes embIso{0%{transform:rotateX(-18deg) rotateY(0deg)}100%{transform:rotateX(-18deg) rotateY(360deg)}}
 
-/* режимы */
 body[data-embanim="off"] .emb-rot,
 body[data-embanim="off"] .emb-halo,
 body[data-embanim="off"] .emb-ring,
@@ -321,7 +309,7 @@ body[data-embanim="float"] .emb-orb{animation:none!important}
 .tier-epithet{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .tier-count{font-family:'JetBrains Mono';font-size:11px;color:var(--muted);white-space:nowrap}
 .tier-count b{color:var(--text);font-weight:600}
-.tier-cards{display:flex;flex-wrap:wrap;gap:15px;align-content:flex-start;flex:1;min-width:0}
+.tier-cards{display:flex;flex-wrap:wrap;gap:13px;align-content:flex-start;flex:1;min-width:0}
 .tier-empty{color:var(--faint);font-size:13px;padding:38px 0;letter-spacing:.06em}
 
 .card{width:var(--cover-w);flex:none;cursor:pointer;--ci:0;position:relative;transition:transform .25s cubic-bezier(.2,.9,.3,1.2)}
@@ -658,7 +646,6 @@ body.no-modalpop .modal{animation:none}
 .modal-confirm p{color:var(--muted);font-size:14px;margin-bottom:22px;line-height:1.7}
 .modal-confirm .form-foot{margin-top:0;padding-top:0;border:none;flex-wrap:wrap}
 
-/* модалка входа: только токен */
 .modal-login{max-width:440px;padding:30px}
 .modal-login h2{font-family:'Unbounded';font-weight:600;font-size:18px;margin-bottom:8px;padding-right:36px}
 .modal-login .lk-sub{color:var(--muted);font-size:12.5px;margin-bottom:20px;line-height:1.55}
@@ -737,6 +724,28 @@ body.no-anim .tl-row{opacity:1}
     <span class="brand-word" aria-label="ANIME"><i>A</i><i>N</i><i>I</i><i>M</i><i>E</i></span>
     <span class="brand-sub">КАТАЛОГ ПРОСМОТРА</span>
   </a>
+  <div class="topbar-right">
+    <div class="sync-wrap" id="sync-wrap">
+      <button class="btn" id="btn-login" title="Вход владельца">
+        <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span class="login-label">Вход</span>
+      </button>
+      <div class="sync-user hidden" id="sync-user" title="Синхронизация">
+        <img id="su-avatar" alt="" class="hidden">
+        <span class="gh-mini hidden" id="su-ghmini"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></span>
+        <span class="sync-dot" id="su-dot"></span>
+      </div>
+      <div class="sync-menu hidden" id="sync-menu"></div>
+    </div>
+    <button class="btn btn-accent hidden" id="btn-add">
+      <svg class="ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      <span class="add-label">Добавить тайтл</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
   <nav class="nav" id="nav">
     <span class="nav-pill" id="nav-pill"></span>
     <button class="nav-btn active" data-view="tier">Тир-лист</button>
@@ -745,25 +754,6 @@ body.no-anim .tl-row{opacity:1}
     <button class="nav-btn" data-view="stats">Статистика</button>
     <button class="nav-btn" data-view="settings">Настройки</button>
   </nav>
-  <div class="sync-wrap" id="sync-wrap">
-    <button class="btn" id="btn-login" title="Вход владельца">
-      <svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      <span class="login-label">Вход</span>
-    </button>
-    <div class="sync-user hidden" id="sync-user" title="Синхронизация">
-      <img id="su-avatar" alt="" class="hidden">
-      <span class="gh-mini hidden" id="su-ghmini"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></span>
-      <span class="sync-dot" id="su-dot"></span>
-    </div>
-    <div class="sync-menu hidden" id="sync-menu"></div>
-  </div>
-  <button class="btn btn-accent hidden" id="btn-add">
-    <svg class="ic" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-    <span class="add-label">Добавить тайтл</span>
-  </button>
-</header>
-
-<main>
 
   <section class="view" id="view-tier">
     <div class="hero" id="hero">
@@ -899,10 +889,6 @@ body.no-anim .tl-row{opacity:1}
     <div class="sw-row">
       <div><div class="sw-name">Стиль частиц</div><div class="sw-desc">20 вариаций: сакура, зимний снег, осень, звёзды и другие</div></div>
       <select class="sel-set" id="sel-pstyle"></select>
-    </div>
-    <div class="sw-row">
-      <div><div class="sw-name">Поверх контента</div><div class="sw-desc">По умолчанию частицы падают позади всех окон и карточек</div></div>
-      <label class="switch"><input type="checkbox" id="s-petsfront"><i></i></label>
     </div>
     <div class="sw-row">
       <div><div class="sw-name">Плотность</div><div class="sw-desc">Сколько частиц одновременно в воздухе</div></div>
@@ -1373,7 +1359,7 @@ const DEFAULT_SETTINGS = {
   light:false, panelOp:88, radius:11, accent:'sakura',
   catalogView:'posters',
   particles:true, particleStyle:'sakura', petalDensity:45, fallSpeed:100,
-  particleSize:100, particleOpacity:100, particleSpin:true, twinkle:true, wind:100, petsFront:false,
+  particleSize:100, particleOpacity:100, particleSpin:true, twinkle:true, wind:100,
   branches:true, branchStyle:'sakura', sway:true, parallax:30, branchAlpha:95,
   ambient:true, moon:true, bgDim:55,
   epMin:24, filmMin:110
@@ -1469,6 +1455,7 @@ function loadSettings(){
     if (s.sssGlow != null) out.tierGlow = s.sssGlow;
     delete out.tierWobble; delete out.tierWobbleSpeed; delete out.sssGlow;
     delete out.grain; delete out.grainOp;
+    delete out.petsFront;
   }
   return out;
 }
@@ -1996,15 +1983,14 @@ function renderTrees(){
 renderTrees();
 
 /* ================================================================
-   НОВЫЙ ДИЗАЙН 3D-ЭМБЛЕМ: «голографический кристалл»
-   Каждый тир — уникальная форма + уникальная анимация сборки.
+   3D-ЭМБЛЕМЫ — «голографический кристалл»
 ================================================================ */
 function emblemShape(tier){
   const c  = TIER_COLOR[tier];
-  const lt = lighten(c, .78);   // блик
-  const lt2= lighten(c, .45);   // светлая грань
-  const dk = shadeColor(c, .45); // тёмная грань
-  const dk2= shadeColor(c, .72); // глубокая тень
+  const lt = lighten(c, .78);
+  const lt2= lighten(c, .45);
+  const dk = shadeColor(c, .45);
+  const dk2= shadeColor(c, .72);
   const id = 'em' + tier;
 
   const defs = `<defs>
@@ -2036,7 +2022,6 @@ function emblemShape(tier){
   </defs>`;
 
   const shapes = {
-    /* SSS — восьмиконечная звезда (корона-сияние) */
     SSS: `
       <polygon points="50,3 61,32 93,20 71,42 97,50 71,58 93,80 61,68 50,97 39,68 7,80 29,58 3,50 29,42 7,20 39,32"
         fill="url(#${id}M)" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round"/>
@@ -2048,8 +2033,6 @@ function emblemShape(tier){
       <polygon points="50,97 61,68 50,50 39,68" fill="url(#${id}D)" opacity="0.6"/>
       <circle cx="50" cy="50" r="4.5" fill="${lt}"/>
       <circle cx="48" cy="48" r="1.8" fill="#fff"/>`,
-
-    /* S — шестилепестковый лотос */
     S: `
       <g transform="translate(50,52)">
         ${[0,60,120,180,240,300].map(a=>`<ellipse rx="10.5" ry="24" cy="-22" transform="rotate(${a})"
@@ -2062,8 +2045,6 @@ function emblemShape(tier){
       <circle cx="50" cy="52" r="15" fill="url(#${id}M)" stroke="${lt}" stroke-width="1.3"/>
       <circle cx="50" cy="52" r="15" fill="url(#${id}S)"/>
       <circle cx="50" cy="52" r="6.5" fill="url(#${id}H)"/>`,
-
-    /* A — фасетный алмаз (ромб) */
     A: `
       <polygon points="50,5 85,42 50,95 15,42" fill="url(#${id}M)" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round"/>
       <polygon points="50,5 85,42 50,95 15,42" fill="url(#${id}S)"/>
@@ -2071,8 +2052,6 @@ function emblemShape(tier){
         stroke="${dk}" stroke-width="0.85" opacity="0.55" fill="none"/>
       <polygon points="50,5 65,42 50,42 35,42" fill="url(#${id}H)"/>
       <polygon points="50,95 65,42 50,42 35,42" fill="url(#${id}D)" opacity="0.55"/>`,
-
-    /* B — гексагональный кристалл */
     B: `
       <polygon points="50,4 82,25 82,75 50,96 18,75 18,25" fill="url(#${id}M)" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round"/>
       <polygon points="50,4 82,25 82,75 50,96 18,75 18,25" fill="url(#${id}S)"/>
@@ -2080,8 +2059,6 @@ function emblemShape(tier){
         stroke="${dk}" stroke-width="0.85" opacity="0.55" fill="none"/>
       <polygon points="50,4 82,25 50,44 18,25" fill="url(#${id}H)"/>
       <polygon points="50,96 82,75 50,56 18,75" fill="url(#${id}D)" opacity="0.55"/>`,
-
-    /* C — орбитальные кольца */
     C: `
       <circle cx="50" cy="50" r="34" fill="none" stroke="url(#${id}M)" stroke-width="10"/>
       <circle cx="50" cy="50" r="34" fill="none" stroke="url(#${id}S)" stroke-width="10" opacity="0.55"/>
@@ -2091,8 +2068,6 @@ function emblemShape(tier){
       <circle cx="46" cy="46" r="5.5" fill="url(#${id}H)"/>
       <circle cx="50" cy="16" r="5.5" fill="${lt}" stroke="${dk}" stroke-width="1.2"/>
       <circle cx="50" cy="16" r="2" fill="#fff" opacity="0.9"/>`,
-
-    /* D — щит со стрелкой */
     D: `
       <path d="M50,4 L84,18 V52 C84,74 68,88 50,96 C32,88 16,74 16,52 V18 Z"
         fill="url(#${id}M)" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round"/>
@@ -2102,8 +2077,6 @@ function emblemShape(tier){
         fill="none" stroke="${dk}" stroke-width="1.2" opacity="0.65"/>
       <path d="M50,32 L58,40 L54,40 L54,52 L46,52 L46,40 L42,40 Z" fill="${dk}" opacity="0.55"/>
       <path d="M50,96 L84,52 L84,74 C84,80 78,88 50,96 Z" fill="url(#${id}D)" opacity="0.5"/>`,
-
-    /* E — изометрический куб */
     E: `
       <polygon points="50,10 82,28 82,64 50,82 18,64 18,28" fill="url(#${id}M)" stroke="${lt}" stroke-width="1.3" stroke-linejoin="round"/>
       <polygon points="50,10 50,46 82,64 82,28" fill="url(#${id}D)" opacity="0.55"/>
@@ -2119,8 +2092,6 @@ function emblemShape(tier){
   return `<svg viewBox="0 0 100 100">${defs}${shapes[tier]}</svg>`;
 }
 function emblemHTML(tier, i){
-  /* 5 слоёв с разной Z-глубиной, разной яркостью и разной прозрачностью —
-     при вращении сборки создаётся настоящий объём стеклянного кристалла */
   const layers = [
     {z:-18, op:.14, br:.42},
     {z:-9,  op:.32, br:.66},
@@ -2791,7 +2762,6 @@ function openTitle(id){
         </div>
       </div>
     </div>`;
-  /* права: кнопки правки видны только владельцу */
   if (canEdit()){
     $$('#m-title [data-owner]').forEach(b => b.classList.remove('hidden'));
   }
@@ -3110,7 +3080,6 @@ function applySettings(){
   b.classList.toggle('no-modalpop', !s.modalPop);
   b.classList.toggle('no-toastanim', !s.toastAnim);
   b.classList.toggle('pill-glow', !!s.pillGlow);
-  b.classList.toggle('pets-front', !!s.petsFront);
   b.dataset.embanim = ['full','float','off'].includes(s.emblemAnim) ? s.emblemAnim : 'full';
   root.style.setProperty('--accent', ACCENTS[s.accent] || ACCENTS.sakura);
   root.style.setProperty('--bg-dim', (s.bgDim/100).toFixed(2));
@@ -3168,7 +3137,7 @@ function bindSettings(){
     pillGlow:'s-pillglow', tierGlow:'s-tierglow', tierBg:'s-tierbg',
     tilt:'s-tilt', cardLift:'s-lift', glow:'s-glow', shine:'s-shine',
     counters:'s-counters', recent:'s-recent', light:'s-light',
-    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle', petsFront:'s-petsfront',
+    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle',
     branches:'s-branches', sway:'s-sway', ambient:'s-ambient', moon:'s-moon'};
   for (const [key, id] of Object.entries(map)){
     $('#'+id).checked = !!settings[key];
@@ -3225,7 +3194,7 @@ function bindSettingsValues(){
     pillGlow:'s-pillglow', tierGlow:'s-tierglow', tierBg:'s-tierbg',
     tilt:'s-tilt', cardLift:'s-lift', glow:'s-glow', shine:'s-shine',
     counters:'s-counters', recent:'s-recent', light:'s-light',
-    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle', petsFront:'s-petsfront',
+    particles:'s-particles', particleSpin:'s-pspin', twinkle:'s-twinkle',
     branches:'s-branches', sway:'s-sway', ambient:'s-ambient', moon:'s-moon'};
   for (const [k, id] of Object.entries(map)) $('#'+id).checked = !!settings[k];
   const rv = (rid, vid, key, fmt) => { $('#'+rid).value = settings[key]; $('#'+vid).textContent = fmt(settings[key]); };
@@ -3308,9 +3277,8 @@ $('#file-import').addEventListener('change', e => {
 
 /* ================================================================
    СИНХРОНИЗАЦИЯ: GitHub — источник истины
-   · публичная ссылка (?repo=owner/repo) даёт ТОЛЬКО режим чтения — canEdit()===false
+   · публичная ссылка (?repo=owner/repo) даёт ТОЛЬКО режим чтения
    · права владельца (rw) появляются только после ввода токена через «Вход»
-   · короткий опрос raw каждые 3 с; SHA-проверка через API раз в 30 с
 ================================================================ */
 let sync = null;
 try{ sync = JSON.parse(localStorage.getItem(LS_SYNC)) || null; }catch(e){}
@@ -3319,7 +3287,6 @@ let lastSeenSha = null, lastApiCheck = 0, apiFailStreak = 0;
 const POLL_MS = 3000, API_MS = 30000;
 const b64encode = str => { const b = new TextEncoder().encode(str); let s=''; b.forEach(x => s += String.fromCharCode(x)); return btoa(s); };
 
-/* права владельца — только rw */
 function canEdit(){ return !!(sync && sync.mode === 'rw' && sync.token); }
 function saveSync(){ if (sync) localStorage.setItem(LS_SYNC, JSON.stringify(sync)); else localStorage.removeItem(LS_SYNC); }
 function rawURL(){ return `https://raw.githubusercontent.com/${sync.owner}/${sync.repo}/${sync.branch}/${DATA_PATH}`; }
@@ -3382,7 +3349,6 @@ function renderSyncMenu(){
 function updateSyncUI(){
   const connected = !!sync;
   const isOwner = connected && sync.mode === 'rw';
-  /* публичная ссылка (ro) → кнопка «Вход» остаётся видимой, кнопки правки скрыты */
   $('#btn-login').classList.toggle('hidden', isOwner);
   $('#sync-user').classList.toggle('hidden', !isOwner);
   if (isOwner){
@@ -3503,7 +3469,6 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
-/* ---- модалка входа: только токен ---- */
 function openLogin(){
   $('#lk-token').value = '';
   $('#lk-status').textContent = '';
@@ -3538,7 +3503,6 @@ $('#lk-connect').onclick = async () => {
     const user = await gh('/user', token);
     const repo = await findOwnerRepo(token, user);
     const [owner, name] = repo.full_name.split('/');
-    /* замена ro-сессии на rw: права владельца появляются только теперь */
     sync = { mode:'rw', token, owner, repo: name,
              branch: repo.default_branch || 'main',
              login: user.login, avatar: user.avatar_url };
@@ -3553,14 +3517,13 @@ $('#lk-connect').onclick = async () => {
 };
 $('#lk-token').addEventListener('keydown', e => { if (e.key === 'Enter'){ e.preventDefault(); $('#lk-connect').click(); } });
 
-/* ---- авто-подключение читателей по публичной ссылке: только чтение ---- */
+/* авто-подключение читателей по публичной ссылке: только чтение */
 (function(){
   const qp = new URLSearchParams(location.search);
   const repo = qp.get('repo');
   if (repo && repo.includes('/') && !sync){
     const [o, r] = repo.split('/');
     const branch = qp.get('branch') || 'main';
-    /* mode:'ro' — прав владельца нет, кнопки правки скрыты, «Вход» виден */
     sync = {mode:'ro', token:'', owner:o, repo:r, branch, login:o, avatar:''};
     saveSync();
   }
